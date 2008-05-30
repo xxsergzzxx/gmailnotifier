@@ -17,34 +17,26 @@
 ** 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#ifndef __GMAILNOTIFIER_DATAENGINE_H__
-#define __GMAILNOTIFIER_DATAENGINE_H__
+#ifndef __GMAILATOMFEEDPARSER_H__
+#define __GMAILATOMFEEDPARSER_H__
 
 #include <Plasma/DataEngine>
 
+class QByteArray;
+class QDomNode;
 
-class GMailNotifierEngine : public Plasma::DataEngine
+
+class GMailAtomFeedParser
 {
-    Q_OBJECT
-
 public:
-    GMailNotifierEngine(QObject *parent, const QVariantList &args);
-    ~GMailNotifierEngine();
+    GMailAtomFeedParser() {};
+    ~GMailAtomFeedParser() {};
 
-protected:
-/*    void init(); */
-    bool sourceRequestEvent(const QString &request);
-
-private Q_SLOTS:
-    void httpRequestFinished(const int &requestId, const bool &error);
+    static Plasma::DataEngine::Data parseFeed(const QByteArray &feed);
 
 private:
-    class Private;
-    Private * const d;
+    static QVariantMap parseEntry(const QDomNode &node);
 };
 
 
-K_EXPORT_PLASMA_DATAENGINE(gmailnotifierengine, GMailNotifierEngine)
-
-
-#endif // __GMAILNOTIFIER_DATAENGINE_H__
+#endif // __GMAILATOMFEEDPARSER_H__
