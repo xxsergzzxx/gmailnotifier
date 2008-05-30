@@ -20,6 +20,7 @@
 #ifndef __GMAILNOTIFIER_DATAENGINE_H__
 #define __GMAILNOTIFIER_DATAENGINE_H__
 
+// Plasma
 #include <Plasma/DataEngine>
 
 

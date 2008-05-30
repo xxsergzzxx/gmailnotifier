@@ -88,15 +88,15 @@ bool GMailNotifierEngine::sourceRequestEvent(const QString &request)
     QString password = request.right(request.size()-(sepPos+1));
 
     // Prevent multiple requests for now
-    if ( d->httpReqId == 0 ) {
+    if (d->httpReqId != 0) {
+        kDebug() << "Pending request, cannot execute now!";
+        return false;
+    } else {
         kDebug() << "Requesting data...";
         d->request = request;
         d->http->setHost(d->url.host(), QHttp::ConnectionModeHttps, d->url.port());
         d->http->setUser(username, password);
         d->httpReqId = d->http->get(d->url.path());
-    } else {
-        kDebug() << "Request pending, cannot execute now!";
-        return false;
     }
 
     setData(request, Plasma::DataEngine::Data());
@@ -114,7 +114,10 @@ void GMailNotifierEngine::httpRequestFinished(const int &requestId, const bool &
         return;
     }
     if (error) {
-        qDebug() << d->http->errorString();
+        QVariantList errorInfos;
+        errorInfos << d->http->lastResponse().statusCode();
+        errorInfos << d->http->errorString();
+        setData(d->request, "Error", errorInfos);
         d->httpReqId = 0;
         return;
     }
@@ -122,6 +125,7 @@ void GMailNotifierEngine::httpRequestFinished(const int &requestId, const bool &
     Plasma::DataEngine::Data results;
     results = GMailAtomFeedParser::parseFeed(d->http->readAll());
     setData(d->request, results);
+    d->httpReqId = 0;
 
 } // httpRequestFinished()
 
