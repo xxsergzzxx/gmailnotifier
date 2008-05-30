@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=GMailNotifier data engine
+Name[fr]=Moteur de données de GMailNotifier
+X-KDE-ServiceTypes=Plasma/DataEngine
+Type=Service
+Icon=unknown
+X-KDE-Library=plasma_engine_gmailnotifier
+X-Plasma-EngineName=gmailnotifier
