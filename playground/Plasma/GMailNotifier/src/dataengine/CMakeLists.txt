@@ -1,7 +1,8 @@
 project(plasma-dataengine-GMailNotifier)
 
 set(gmailnotifier_dataengine_SRCS
-    gmailnotifierengine.cpp)
+    gmailnotifierengine.cpp
+    gmailatomfeedparser.cpp)
 
 kde4_add_plugin(plasma_engine_gmailnotifier
                 ${gmailnotifier_dataengine_SRCS})
