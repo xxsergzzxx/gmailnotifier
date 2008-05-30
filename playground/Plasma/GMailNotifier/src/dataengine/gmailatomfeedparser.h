@@ -20,6 +20,7 @@
 #ifndef __GMAILATOMFEEDPARSER_H__
 #define __GMAILATOMFEEDPARSER_H__
 
+// Plasma
 #include <Plasma/DataEngine>
 
 class QByteArray;
