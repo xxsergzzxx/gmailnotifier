@@ -19,9 +19,14 @@
 
 // Own
 #include "gmailnotifierapplet.h"
+#include "gmailnotifierappletconfig.h"
 
 // Plasma
 #include <Plasma/Label>
+
+// KDE
+#include <KConfigDialog>
+#include <KStringHandler>
 
 // Qt
 #include <QtCore/QFile>
@@ -31,51 +36,185 @@
 class GMailNotifierApplet::Private
 {
 public:
+    // Layouts
+    QGraphicsLinearLayout *layout;
+    QGraphicsLinearLayout *headerLayout;
+    QGraphicsLinearLayout *mailboxLayout;
+
+    // Labels / Images
     Plasma::Label *gmailLogo;
     Plasma::Label *accountName;
     Plasma::Label *newMailCount;
 
-    Private() {}
+    // Config
+    QHash<QString, QString> config;
+    GMailNotifierAppletConfig *configDialog;
+
+    // Engine
+    Plasma::DataEngine *engine;
+
+    Private()
+        : configDialog(0)
+        , engine(0)
+    {}
     ~Private() {}
 }; // Private()
 
 
+/*
+** Public
+*/
 GMailNotifierApplet::GMailNotifierApplet(QObject *parent, const QVariantList &args)
     : Plasma::Applet(parent, args)
     , d(new Private)
 {
+    d->layout = new QGraphicsLinearLayout(Qt::Vertical);
+    Plasma::Applet::setLayout(d->layout);
+
+    d->headerLayout = new QGraphicsLinearLayout(Qt::Horizontal);
+    d->headerLayout->setContentsMargins(5, 5, 5, 15);
+    d->layout->addItem(d->headerLayout);
+
+    d->mailboxLayout = new QGraphicsLinearLayout(Qt::Horizontal);
+    d->mailboxLayout->setContentsMargins(5, 0, 5, 0);
+    d->layout->addItem(d->mailboxLayout);
+    d->layout->addStretch(100);
+
     d->gmailLogo = new Plasma::Label(this);
+    d->gmailLogo->setImage(":/images/gmail_logo.png");
+    d->headerLayout->addStretch();
+    d->headerLayout->addItem(d->gmailLogo);
+    d->headerLayout->addStretch();
+
     d->accountName = new Plasma::Label(this);
     d->newMailCount = new Plasma::Label(this);
-    d->gmailLogo->setImage(":/images/gmail_logo.png");
-    d->accountName->setText("Mailbox");
-    d->newMailCount->setText("42");
-} // ctor()
+    d->accountName->setText("");
+    d->newMailCount->setText("---");
+    d->mailboxLayout->insertItem(0, d->accountName);
+    d->mailboxLayout->insertStretch(1);
+    d->mailboxLayout->setItemSpacing(1, 20);
+    d->mailboxLayout->insertItem(2, d->newMailCount);
 
+    Plasma::Applet::setAspectRatioMode(Plasma::IgnoreAspectRatio);
+    Plasma::Applet::setHasConfigurationInterface(true);
+} // ctor()
 
 GMailNotifierApplet::~GMailNotifierApplet()
 {
     delete d;
 } // dtor()
 
-
 void GMailNotifierApplet::init()
 {
-    QGraphicsLinearLayout *layout = new QGraphicsLinearLayout(Qt::Horizontal);
-    layout->addItem(d->gmailLogo);
-    layout->addItem(d->accountName);
-    layout->addItem(d->newMailCount);
-    setLayout(layout);
+    d->engine = Plasma::Applet::dataEngine("gmailnotifier");
+    if (!d->engine->isValid()) {
+        Plasma::Applet::setFailedToLaunch(true, i18n("Unable to open the data engine!"));
+        return;
+    }
 
-    setMinimumSize(300, 100);
-    setMaximumSize(300, 200);
+    readConfig();
 } // init()
 
+
+/*
+** Public slots
+*/
+void GMailNotifierApplet::dataUpdated(const QString &source, const Plasma::DataEngine::Data &data)
+{
+    Q_UNUSED(source)
+
+    d->newMailCount->setText(data["fullcount"].toString());
+} // dataUpdated()
+
+
+/*
+** Protected
+*/
+void GMailNotifierApplet::createConfigurationInterface(KConfigDialog *parent)
+{
+    d->configDialog = new GMailNotifierAppletConfig(parent);
+    parent->setButtons(KDialog::Ok | KDialog::Cancel | KDialog::Apply);
+    parent->addPage(d->configDialog, parent->windowTitle(), icon());
+    parent->setDefaultButton(KDialog::Ok);
+    parent->showButtonSeparator(true);
+    connect( parent, SIGNAL(applyClicked()), this, SLOT(configAccepted()) );
+    connect( parent, SIGNAL(okClicked()), this, SLOT(configAccepted()) );
+
+    d->configDialog->setBackground(d->config["Background"]);
+    d->configDialog->setLogin(d->config["Login"]);
+    d->configDialog->setPassword(KStringHandler::obscure(d->config["Password"]));
+    d->configDialog->setDisplayName(d->config["DisplayName"]);
+} // createConfigurationInterface()
+
+
+/*
+** Private slots
+*/
+void GMailNotifierApplet::configAccepted()
+{
+    config().writeEntry("Background", d->configDialog->background());
+    config().writeEntry("Login", d->configDialog->login());
+    config().writeEntry("Password", KStringHandler::obscure(d->configDialog->password()));
+    config().writeEntry("DisplayName", d->configDialog->displayName());
+
+    KConfigGroup cg = config();
+    save(cg);
+    readConfig();
+} // configAccepted()
 
 void GMailNotifierApplet::constraintsEvent(Plasma::Constraints constraints)
 {
     kDebug() << "constraintsEvent()" << constraints;
 } // constraintsEvent()
+
+
+/*
+** Private
+*/
+void GMailNotifierApplet::readConfig()
+{
+    d->config["Background"] = config().readEntry("Background", "Default");
+    d->config["Login"] = config().readEntry("Login", QString());
+    QString password = config().readEntry("Password", QString());
+    d->config["Password"] = KStringHandler::obscure(password);
+    d->config["DisplayName"] = config().readEntry("DisplayName", QString());
+
+    if (!d->config["DisplayName"].isEmpty()) {
+        d->accountName->setText(d->config["DisplayName"]);
+    } else {
+        if (!d->config["Login"].isEmpty() || !d->config["Password"].isEmpty()) {
+            d->accountName->setText(QString("%1@gmail.com").arg(d->config["Login"]));
+        } else {
+            d->accountName->setText(i18n("Not configured!"));
+            d->newMailCount->setText("");
+        }
+    }
+
+    setBackground(d->config["Background"]);
+    d->layout->invalidate();
+
+    d->engine->connectSource(QString("%1:%2").arg(d->config["Login"]).arg(d->config["Password"]), this);
+
+} // readConfig()
+
+void GMailNotifierApplet::setBackground(const QString &background)
+{
+    Plasma::Applet::BackgroundHints hint;
+
+    if (background == "Standard") {
+        hint = StandardBackground;
+    } else if (background == "Translucent") {
+        hint = TranslucentBackground;
+    } else if (background == "Shadowed") {
+        hint = ShadowedBackground;
+    } else if (background == "None") {
+        hint = NoBackground;
+    } else {
+        hint = DefaultBackground;
+    }
+
+    Plasma::Applet::setBackgroundHints(hint);
+} // setBackground()
 
 
 #include "gmailnotifierapplet.moc"

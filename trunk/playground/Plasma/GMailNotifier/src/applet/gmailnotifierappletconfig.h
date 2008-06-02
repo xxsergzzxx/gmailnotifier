@@ -17,45 +17,40 @@
 ** 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#ifndef __GMAILNOTIFIER_APPLET_H__
-#define __GMAILNOTIFIER_APPLET_H__
+#ifndef __GMAILNOTIFIER_APPLET_CONFIG_H__
+#define __GMAILNOTIFIER_APPLET_CONFIG_H__
 
 
-// Plasma
-#include <Plasma/Applet>
-#include <Plasma/DataEngine>
+// Own
+#include "ui_gmailnotifierappletconfig.h"
+
+// Qt
+#include <QtGui/QWidget>
 
 
-class GMailNotifierApplet : public Plasma::Applet
+class GMailNotifierAppletConfig : public QWidget
 {
     Q_OBJECT
 
 public:
-    GMailNotifierApplet(QObject *parent, const QVariantList &args);
-    ~GMailNotifierApplet();
+    GMailNotifierAppletConfig(QWidget *parent = 0);
+    ~GMailNotifierAppletConfig();
 
-    void init();
-
-public Q_SLOTS:
-    void dataUpdated(const QString &source, const Plasma::DataEngine::Data &data);
-
-protected:
-    void createConfigurationInterface(KConfigDialog *parent);
-    void constraintsEvent(Plasma::Constraints constraints);
-
-private Q_SLOTS:
-    void configAccepted();
+    void setBackground(const QString &background);
+    QString background() const;
+    void setLogin(const QString &login);
+    QString login() const;
+    void setPassword(const QString &password);
+    QString password() const;
+    void setDisplayName(const QString &displayName);
+    QString displayName() const;
 
 private:
+    Ui::GMailNotifierAppletConfig ui;
+
     class Private;
     Private * const d;
-
-    void readConfig();
-    void setBackground(const QString &background);
 };
 
 
-K_EXPORT_PLASMA_APPLET(gmailnotifier, GMailNotifierApplet)
-
-
-#endif // __GMAILNOTIFIER_APPLET_H__
+#endif // __GMAILNOTIFIER_APPLET_CONFIG_H__
