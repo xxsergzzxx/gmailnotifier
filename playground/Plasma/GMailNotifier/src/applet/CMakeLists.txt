@@ -1,9 +1,12 @@
 project(plasma-applet-GMailNotifier)
 
 set(gmailnotifier_applet_SRCS
-    gmailnotifierapplet.cpp)
+    gmailnotifierapplet.cpp
+    gmailnotifierappletconfig.cpp)
 
 qt4_add_resources(gmailnotifier_applet_SRCS gmailnotifierapplet.qrc)
+
+kde4_add_ui_files(gmailnotifier_applet_SRCS gmailnotifierappletconfig.ui)
 
 kde4_add_plugin(plasma_applet_gmailnotifier
                 ${gmailnotifier_applet_SRCS})
