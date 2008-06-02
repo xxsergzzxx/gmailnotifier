@@ -33,7 +33,7 @@ public:
     ~GMailNotifierEngine();
 
 protected:
-/*    void init(); */
+    void init();
     bool sourceRequestEvent(const QString &request);
 
 private Q_SLOTS:
