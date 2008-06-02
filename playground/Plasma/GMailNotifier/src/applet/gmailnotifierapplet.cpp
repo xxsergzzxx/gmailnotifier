@@ -137,8 +137,8 @@ void GMailNotifierApplet::createConfigurationInterface(KConfigDialog *parent)
     parent->addPage(d->configDialog, parent->windowTitle(), icon());
     parent->setDefaultButton(KDialog::Ok);
     parent->showButtonSeparator(true);
-    connect( parent, SIGNAL(applyClicked()), this, SLOT(configAccepted()) );
-    connect( parent, SIGNAL(okClicked()), this, SLOT(configAccepted()) );
+    connect(parent, SIGNAL(applyClicked()), this, SLOT(configAccepted()));
+    connect(parent, SIGNAL(okClicked()), this, SLOT(configAccepted()));
 
     d->configDialog->setBackground(d->config["Background"]);
     d->configDialog->setLogin(d->config["Login"]);
@@ -191,7 +191,6 @@ void GMailNotifierApplet::readConfig()
     }
 
     setBackground(d->config["Background"]);
-    d->layout->invalidate();
 
     d->engine->connectSource(QString("%1:%2").arg(d->config["Login"]).arg(d->config["Password"]), this);
 
