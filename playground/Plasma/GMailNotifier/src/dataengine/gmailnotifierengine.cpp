@@ -29,16 +29,19 @@
 class GMailNotifierEngine::Private
 {
 public:
+    QString  request;
+       QUrl  url;
+      QHttp *http;
+        int  httpReqId;
+
     Private()
         : http(new QHttp)
         , httpReqId(0)
-    {}
+    {
+        // ATOM feed base URL
+        url.setUrl("https://mail.google.com:443/mail/feed/atom/", QUrl::StrictMode);
+    }
     ~Private() {}
-
-    QString  request;
-    QUrl     url;
-    QHttp   *http;
-    int      httpReqId;
 }; // Private()
 
 
@@ -49,9 +52,6 @@ GMailNotifierEngine::GMailNotifierEngine(QObject *parent, const QVariantList &ar
     : Plasma::DataEngine(parent, args)
     , d(new Private)
 {
-    // ATOM feed URL
-    d->url.setUrl("https://mail.google.com:443/mail/feed/atom", QUrl::StrictMode);
-
     connect(d->http, SIGNAL(requestFinished(int, bool)),
             this, SLOT(httpRequestFinished(int, bool)));
 } // ctor()
@@ -66,11 +66,11 @@ GMailNotifierEngine::~GMailNotifierEngine()
 /*
 ** Protected
 */
-/*
 void GMailNotifierEngine::init()
 {
+    // 5 mins ought to be enough for anyone :)
+    setMinimumPollingInterval( 1000 * 60 * 5 );
 } // init()
-*/
 
 bool GMailNotifierEngine::sourceRequestEvent(const QString &request)
 {
@@ -88,7 +88,8 @@ bool GMailNotifierEngine::sourceRequestEvent(const QString &request)
     QString password = request.right(request.size()-(sepPos+1));
 
     // Prevent multiple requests for now
-    if (d->httpReqId != 0) {
+    kDebug() << d->httpReqId;
+    if (d->httpReqId) {
         kDebug() << "Pending request, cannot execute now!";
         return false;
     } else {

@@ -20,10 +20,21 @@
 // Own
 #include "gmailnotifierapplet.h"
 
+// Plasma
+#include <Plasma/Label>
+
+// Qt
+#include <QtCore/QFile>
+#include <QtGui/QGraphicsLinearLayout>
+
 
 class GMailNotifierApplet::Private
 {
 public:
+    Plasma::Label *gmailLogo;
+    Plasma::Label *accountName;
+    Plasma::Label *newMailCount;
+
     Private() {}
     ~Private() {}
 }; // Private()
@@ -33,6 +44,12 @@ GMailNotifierApplet::GMailNotifierApplet(QObject *parent, const QVariantList &ar
     : Plasma::Applet(parent, args)
     , d(new Private)
 {
+    d->gmailLogo = new Plasma::Label(this);
+    d->accountName = new Plasma::Label(this);
+    d->newMailCount = new Plasma::Label(this);
+    d->gmailLogo->setImage(":/images/gmail_logo.png");
+    d->accountName->setText("Mailbox");
+    d->newMailCount->setText("42");
 } // ctor()
 
 
@@ -44,6 +61,14 @@ GMailNotifierApplet::~GMailNotifierApplet()
 
 void GMailNotifierApplet::init()
 {
+    QGraphicsLinearLayout *layout = new QGraphicsLinearLayout(Qt::Horizontal);
+    layout->addItem(d->gmailLogo);
+    layout->addItem(d->accountName);
+    layout->addItem(d->newMailCount);
+    setLayout(layout);
+
+    setMinimumSize(300, 100);
+    setMaximumSize(300, 200);
 } // init()
 
 

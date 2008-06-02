@@ -34,7 +34,7 @@ Plasma::DataEngine::Data GMailAtomFeedParser::parseFeed(const QByteArray &feed)
     Plasma::DataEngine::Data data;
     QList<QVariant>          entries;
 
-    QDomDocument doc("GMailAtomFeed");
+    QDomDocument doc("GMailATOMFeed");
     doc.setContent(feed);
 
     QDomElement de = doc.documentElement();
@@ -64,12 +64,13 @@ Plasma::DataEngine::Data GMailAtomFeedParser::parseFeed(const QByteArray &feed)
             }
             else if (tag == "entry") {
                 entries << parseEntry(dn);
-                data["entries"] = entries;
             }
 
             dn = dn.nextSibling();
         }
     }
+
+    data["entries"] = entries;
 
     return data;
 } // parseFeed()
