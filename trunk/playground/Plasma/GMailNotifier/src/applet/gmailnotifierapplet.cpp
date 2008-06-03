@@ -185,7 +185,7 @@ void GMailNotifierApplet::readConfig()
         if (!d->config["Login"].isEmpty() || !d->config["Password"].isEmpty()) {
             d->accountName->setText(QString("%1@gmail.com").arg(d->config["Login"]));
         } else {
-            d->accountName->setText(i18n("Not configured!"));
+            d->accountName->setText(i18n("Not configured yet!"));
             d->newMailCount->setText("");
         }
     }
