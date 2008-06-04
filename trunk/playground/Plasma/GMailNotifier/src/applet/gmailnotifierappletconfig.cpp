@@ -75,52 +75,142 @@ void GMailNotifierAppletConfig::on_btnAddModify_clicked()
     QString itemText;
     if (ui.leDisplay->text().isEmpty()) {
         itemText = QString("%1@gmail.com")
-                       .arg(ui.leLogin->text().toLower().trimmed());
+                       .arg(ui.leLogin->text());
     } else {
         itemText = QString("%1 [%2@gmail.com]")
                        .arg(ui.leDisplay->text())
-                       .arg(ui.leLogin->text().toLower().trimmed());
+                       .arg(ui.leLogin->text());
     }
 
-    QListWidgetItem *item = new QListWidgetItem();
+    int pos = accountPosition(ui.leLogin->text());
+    QListWidgetItem *item;
+    if (pos == -1) {
+        // Add
+        item = new QListWidgetItem();
+    } else {
+        // Modify
+        item = ui.listAccounts->item(pos);
+    }
+
     QVariantMap data;
     data["Login"]    = ui.leLogin->text();
     data["Password"] = ui.lePassword->text();
     data["Display"]  = ui.leDisplay->text();
     item->setText(itemText);
     item->setData(Qt::UserRole, data);
-    ui.listAccounts->addItem(item);
+
+    if (pos == -1) {
+        ui.listAccounts->addItem(item);
+        setUpDownButtonsEnabled();
+    }
+
+    ui.listAccounts->scrollToItem(item);
+
+    adaptAddModifyButtonLabel();
 } // on_btnAddModify_clicked()
+
+void GMailNotifierAppletConfig::on_btnDelete_clicked()
+{
+    ui.listAccounts->takeItem(ui.listAccounts->currentRow());
+
+    if (ui.listAccounts->count() == 0) {
+        ui.btnDelete->setEnabled(false);
+    }
+
+    ui.listAccounts->setCurrentRow(-1);
+    ui.btnDelete->setEnabled(false);
+    adaptAddModifyButtonLabel();
+    setUpDownButtonsEnabled();
+} // on_btnDelete_clicked()
+
+void GMailNotifierAppletConfig::on_btnUp_clicked()
+{
+    int pos = ui.listAccounts->currentRow();
+    QListWidgetItem *item = ui.listAccounts->takeItem(pos);
+    ui.listAccounts->insertItem(pos-1, item);
+    ui.listAccounts->setCurrentRow(pos-1);
+
+    setUpDownButtonsEnabled();
+} // on_btnUp_clicked()
+
+void GMailNotifierAppletConfig::on_btnDown_clicked()
+{
+    int pos = ui.listAccounts->currentRow();
+    QListWidgetItem *item = ui.listAccounts->takeItem(pos);
+    ui.listAccounts->insertItem(pos+1, item);
+    ui.listAccounts->setCurrentRow(pos+1);
+
+    setUpDownButtonsEnabled();
+} // on_btnDown_clicked()
+
+void GMailNotifierAppletConfig::on_listAccounts_itemPressed(QListWidgetItem *item)
+{
+    QVariantMap data(item->data(Qt::UserRole).toMap());
+    ui.leLogin->setText(data["Login"].toString());
+    ui.lePassword->setText(data["Password"].toString());
+    ui.leDisplay->setText(data["Display"].toString());
+
+    ui.btnDelete->setEnabled(true);
+    setUpDownButtonsEnabled();
+} // on_listAccounts_itemPressed()
 
 void GMailNotifierAppletConfig::setAddModifyButtonEnabled()
 {
-    bool enabled = (!ui.leLogin->text().isEmpty() && !ui.lePassword->text().isEmpty());
+    bool enabled = (!ui.leLogin->text().isEmpty() &&
+                    !ui.lePassword->text().isEmpty());
     ui.btnAddModify->setEnabled(enabled);
 } // setAddModifyButtonEnabled()
 
+void GMailNotifierAppletConfig::setUpDownButtonsEnabled()
+{
+    bool enabled = (ui.listAccounts->count() >= 2 &&
+                    ui.listAccounts->currentRow() != -1);
+
+    bool upEnabled = (enabled && ui.listAccounts->currentRow() != 0);
+    bool downEnabled = (enabled &&
+                        ui.listAccounts->currentRow() + 1 != ui.listAccounts->count());
+
+    ui.btnUp->setEnabled(upEnabled);
+    ui.btnDown->setEnabled(downEnabled);
+} // setUpDownButtonsEnabled()
+
 void GMailNotifierAppletConfig::adaptAddModifyButtonLabel()
 {
-    if (ui.leLogin->text().isEmpty()) {
+    if (ui.leLogin->text().isEmpty() || ui.lePassword->text().isEmpty()) {
         return;
     }
 
-    bool existsFlag = false;
+    QString buttonText;
+    if (accountPosition(ui.leLogin->text()) != -1) {
+        buttonText = i18n("Modify");
+    } else {
+        buttonText = i18n("Add");
+    }
+
+    if (buttonText != ui.btnAddModify->text().remove('&')) {
+        ui.btnAddModify->setText(buttonText);
+    }
+} // adaptAddModifyButtonLabel()
+
+
+/*
+** private
+*/
+int GMailNotifierAppletConfig::accountPosition(const QString &email)
+{
     int i=0;
+    int pos=-1;
     while(i < ui.listAccounts->count()) {
         QListWidgetItem *item(ui.listAccounts->item(i));
-        if (ui.leLogin->text() == item->data(Qt::UserRole).toMap()["Login"]) {
-            existsFlag = true;
+        if (email == item->data(Qt::UserRole).toMap()["Login"]) {
+            pos = i;
             break;
         }
         ++i;
     }
 
-    if (existsFlag) {
-        ui.btnAddModify->setText("Modify");
-    } else {
-        ui.btnAddModify->setText("Add");
-    }
-} // adaptAddModifyButtonLabel()
+    return pos;
+} // accountPosition()
 
 
 #include "gmailnotifierappletconfig.moc"

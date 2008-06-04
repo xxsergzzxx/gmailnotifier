@@ -40,10 +40,17 @@ private Q_SLOTS:
     void on_leLogin_textChanged(const QString &text);
     void on_lePassword_textChanged(const QString &text);
     void on_btnAddModify_clicked();
+    void on_btnDelete_clicked();
+    void on_btnUp_clicked();
+    void on_btnDown_clicked();
+    void on_listAccounts_itemPressed(QListWidgetItem *item);
     void setAddModifyButtonEnabled();
+    void setUpDownButtonsEnabled();
     void adaptAddModifyButtonLabel();
 
 private:
+    int accountPosition(const QString &email);
+
     Ui::GMailNotifierAppletConfig ui;
 
     class Private;
