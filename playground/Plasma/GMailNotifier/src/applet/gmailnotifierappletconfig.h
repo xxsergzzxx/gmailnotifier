@@ -36,14 +36,12 @@ public:
     GMailNotifierAppletConfig(QWidget *parent = 0);
     ~GMailNotifierAppletConfig();
 
-    void setBackground(const QString &background);
-    QString background() const;
-    void setLogin(const QString &login);
-    QString login() const;
-    void setPassword(const QString &password);
-    QString password() const;
-    void setDisplayName(const QString &displayName);
-    QString displayName() const;
+private Q_SLOTS:
+    void on_leLogin_textChanged(const QString &text);
+    void on_lePassword_textChanged(const QString &text);
+    void on_btnAddModify_clicked();
+    void setAddModifyButtonEnabled();
+    void adaptAddModifyButtonLabel();
 
 private:
     Ui::GMailNotifierAppletConfig ui;

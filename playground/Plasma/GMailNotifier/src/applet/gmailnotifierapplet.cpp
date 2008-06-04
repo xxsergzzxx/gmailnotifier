@@ -92,7 +92,7 @@ GMailNotifierApplet::GMailNotifierApplet(QObject *parent, const QVariantList &ar
     d->newMailCount->setText("---");
     d->mailboxLayout->insertItem(0, d->accountName);
     d->mailboxLayout->insertStretch(1);
-    d->mailboxLayout->setItemSpacing(1, 20);
+//    d->mailboxLayout->setItemSpacing(1, 20);
     d->mailboxLayout->insertItem(2, d->newMailCount);
 
     Plasma::Applet::setAspectRatioMode(Plasma::IgnoreAspectRatio);
@@ -123,6 +123,11 @@ void GMailNotifierApplet::dataUpdated(const QString &source, const Plasma::DataE
 {
     Q_UNUSED(source)
 
+    if (data.contains("Error")) {
+        d->accountName->setText(data["error"].toString());
+        d->newMailCount->setText(QString());
+        return;
+    }
     d->newMailCount->setText(data["fullcount"].toString());
 } // dataUpdated()
 
@@ -140,10 +145,12 @@ void GMailNotifierApplet::createConfigurationInterface(KConfigDialog *parent)
     connect(parent, SIGNAL(applyClicked()), this, SLOT(configAccepted()));
     connect(parent, SIGNAL(okClicked()), this, SLOT(configAccepted()));
 
+    /*
     d->configDialog->setBackground(d->config["Background"]);
     d->configDialog->setLogin(d->config["Login"]);
     d->configDialog->setPassword(KStringHandler::obscure(d->config["Password"]));
     d->configDialog->setDisplayName(d->config["DisplayName"]);
+    */
 } // createConfigurationInterface()
 
 
@@ -152,10 +159,12 @@ void GMailNotifierApplet::createConfigurationInterface(KConfigDialog *parent)
 */
 void GMailNotifierApplet::configAccepted()
 {
+    /*
     config().writeEntry("Background", d->configDialog->background());
     config().writeEntry("Login", d->configDialog->login());
     config().writeEntry("Password", KStringHandler::obscure(d->configDialog->password()));
     config().writeEntry("DisplayName", d->configDialog->displayName());
+    */
 
     KConfigGroup cg = config();
     save(cg);
@@ -173,6 +182,12 @@ void GMailNotifierApplet::constraintsEvent(Plasma::Constraints constraints)
 */
 void GMailNotifierApplet::readConfig()
 {
+    /*
+    QList<QVariant> list;
+    list << 1 << 3 << 5 << 34;
+    config().writeEntry("TEST", list);
+    */
+    qDebug() << config().readEntry("TEST");
     d->config["Background"] = config().readEntry("Background", "Default");
     d->config["Login"] = config().readEntry("Login", QString());
     QString password = config().readEntry("Password", QString());
@@ -192,7 +207,7 @@ void GMailNotifierApplet::readConfig()
 
     setBackground(d->config["Background"]);
 
-    d->engine->connectSource(QString("%1:%2").arg(d->config["Login"]).arg(d->config["Password"]), this);
+//    d->engine->connectSource(QString("%1:%2").arg(d->config["Login"]).arg(d->config["Password"]), this);
 
 } // readConfig()
 
@@ -206,9 +221,7 @@ void GMailNotifierApplet::setBackground(const QString &background)
         hint = TranslucentBackground;
     } else if (background == "Shadowed") {
         hint = ShadowedBackground;
-    } else if (background == "None") {
-        hint = NoBackground;
-    } else {
+    } else { // Default
         hint = DefaultBackground;
     }
 

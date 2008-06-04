@@ -115,10 +115,11 @@ void GMailNotifierEngine::httpRequestFinished(const int &requestId, const bool &
         return;
     }
     if (error) {
-        QVariantList errorInfos;
-        errorInfos << d->http->lastResponse().statusCode();
-        errorInfos << d->http->errorString();
-        setData(d->request, "Error", errorInfos);
+//        QVariantList errorInfos;
+//        errorInfos << d->http->lastResponse().statusCode();
+//        errorInfos << d->http->errorString();
+//        setData(d->request, "error", errorInfos);
+        setData(d->request, "error", d->http->errorString());
         d->httpReqId = 0;
         return;
     }
