@@ -5,18 +5,170 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>476</width>
-    <height>239</height>
+    <width>434</width>
+    <height>418</height>
    </rect>
   </property>
   <property name="windowTitle" >
    <string>Form</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout_3" >
-   <item row="0" column="0" >
+  <layout class="QGridLayout" name="gridLayout_4" >
+   <item row="0" column="0" colspan="2" >
+    <widget class="QGroupBox" name="groupBox" >
+     <property name="title" >
+      <string>Accounts</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_3" >
+      <item row="0" column="0" >
+       <layout class="QGridLayout" name="gridLayout" >
+        <item row="0" column="1" >
+         <widget class="KPushButton" name="btnAddModify" >
+          <property name="enabled" >
+           <bool>false</bool>
+          </property>
+          <property name="sizePolicy" >
+           <sizepolicy vsizetype="Minimum" hsizetype="Minimum" >
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="text" >
+           <string>Add</string>
+          </property>
+         </widget>
+        </item>
+        <item rowspan="3" row="1" column="0" >
+         <widget class="KListWidget" name="listAccounts" />
+        </item>
+        <item row="1" column="1" >
+         <widget class="KPushButton" name="btnDelete" >
+          <property name="enabled" >
+           <bool>false</bool>
+          </property>
+          <property name="text" >
+           <string>Delete</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="1" >
+         <widget class="KPushButton" name="btnUp" >
+          <property name="enabled" >
+           <bool>false</bool>
+          </property>
+          <property name="text" >
+           <string>Up</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="1" >
+         <widget class="KPushButton" name="btnDown" >
+          <property name="enabled" >
+           <bool>false</bool>
+          </property>
+          <property name="text" >
+           <string>Down</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="0" >
+         <layout class="QGridLayout" name="gridLayout_2" >
+          <item rowspan="2" row="0" column="0" >
+           <widget class="QLabel" name="lblLogin" >
+            <property name="text" >
+             <string>Login:</string>
+            </property>
+            <property name="buddy" >
+             <cstring>leLogin</cstring>
+            </property>
+           </widget>
+          </item>
+          <item rowspan="2" row="0" column="1" colspan="2" >
+           <widget class="KLineEdit" name="leLogin" >
+            <property name="showClearButton" stdset="0" >
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0" >
+           <widget class="QLabel" name="lblPassword" >
+            <property name="text" >
+             <string>Password:</string>
+            </property>
+            <property name="buddy" >
+             <cstring>lePassword</cstring>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1" colspan="3" >
+           <widget class="KLineEdit" name="lePassword" >
+            <property name="showClearButton" stdset="0" >
+             <bool>true</bool>
+            </property>
+            <property name="passwordMode" >
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0" >
+           <widget class="QLabel" name="lblDisplay" >
+            <property name="text" >
+             <string>Display (optional):</string>
+            </property>
+            <property name="buddy" >
+             <cstring>leDisplay</cstring>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="1" colspan="3" >
+           <widget class="KLineEdit" name="leDisplay" >
+            <property name="showClearButton" stdset="0" >
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item rowspan="2" row="0" column="3" >
+           <widget class="QLabel" name="lblGMaildotcom" >
+            <property name="enabled" >
+             <bool>false</bool>
+            </property>
+            <property name="text" >
+             <string>@gmail.com</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="1" column="0" colspan="2" >
+    <spacer name="verticalSpacer_2" >
+     <property name="orientation" >
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeType" >
+      <enum>QSizePolicy::Fixed</enum>
+     </property>
+     <property name="sizeHint" stdset="0" >
+      <size>
+       <width>20</width>
+       <height>10</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item row="2" column="0" colspan="2" >
     <layout class="QHBoxLayout" name="horizontalLayout" >
+     <property name="leftMargin" >
+      <number>4</number>
+     </property>
+     <property name="rightMargin" >
+      <number>4</number>
+     </property>
      <item>
-      <widget class="QLabel" name="labelBackground" >
+      <widget class="QLabel" name="lblBackground" >
        <property name="sizePolicy" >
         <sizepolicy vsizetype="Preferred" hsizetype="Minimum" >
          <horstretch>0</horstretch>
@@ -40,89 +192,8 @@
      </item>
     </layout>
    </item>
-   <item row="2" column="0" >
-    <widget class="QGroupBox" name="groupAccount" >
-     <property name="title" >
-      <string>Account</string>
-     </property>
-     <layout class="QGridLayout" name="gridLayout_2" >
-      <item row="0" column="0" >
-       <layout class="QGridLayout" name="gridLayout" >
-        <item row="0" column="1" >
-         <widget class="KLineEdit" name="leditLogin" >
-          <property name="showClearButton" stdset="0" >
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="1" colspan="2" >
-         <widget class="KLineEdit" name="leditPassword" >
-          <property name="echoMode" >
-           <enum>QLineEdit::Password</enum>
-          </property>
-          <property name="showClearButton" stdset="0" >
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="1" colspan="2" >
-         <widget class="KLineEdit" name="leditDisplayName" >
-          <property name="showClearButton" stdset="0" >
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="0" >
-         <widget class="QLabel" name="labelLogin" >
-          <property name="text" >
-           <string>Login:</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="0" >
-         <widget class="QLabel" name="labelPassword" >
-          <property name="text" >
-           <string>Password:</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="0" >
-         <widget class="QLabel" name="labelDisplayName" >
-          <property name="text" >
-           <string>Display name (optional):</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="2" >
-         <widget class="QLabel" name="label_4" >
-          <property name="enabled" >
-           <bool>false</bool>
-          </property>
-          <property name="text" >
-           <string>@gmail.com</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item row="3" column="0" >
-    <spacer name="verticalSpacer" >
-     <property name="orientation" >
-      <enum>Qt::Vertical</enum>
-     </property>
-     <property name="sizeHint" stdset="0" >
-      <size>
-       <width>20</width>
-       <height>51</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
-   <item row="1" column="0" >
-    <spacer name="verticalSpacer_2" >
+   <item row="3" column="1" >
+    <spacer name="verticalSpacer_3" >
      <property name="orientation" >
       <enum>Qt::Vertical</enum>
      </property>
@@ -133,6 +204,32 @@
       <size>
        <width>20</width>
        <height>10</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item row="4" column="0" >
+    <widget class="QCheckBox" name="cbDisplayLogo" >
+     <property name="enabled" >
+      <bool>true</bool>
+     </property>
+     <property name="text" >
+      <string>Display GMail logo</string>
+     </property>
+     <property name="checked" >
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="0" colspan="2" >
+    <spacer name="verticalSpacer" >
+     <property name="orientation" >
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0" >
+      <size>
+       <width>20</width>
+       <height>40</height>
       </size>
      </property>
     </spacer>
@@ -149,6 +246,16 @@
    <class>KLineEdit</class>
    <extends>QLineEdit</extends>
    <header>klineedit.h</header>
+  </customwidget>
+  <customwidget>
+   <class>KListWidget</class>
+   <extends>QListWidget</extends>
+   <header>klistwidget.h</header>
+  </customwidget>
+  <customwidget>
+   <class>KPushButton</class>
+   <extends>QPushButton</extends>
+   <header>kpushbutton.h</header>
   </customwidget>
  </customwidgets>
  <resources/>
