@@ -47,11 +47,12 @@ private Q_SLOTS:
     void configAccepted();
 
 private:
+    void readConfig();
+    void setBackground();
+    void setLayout();
+
     class Private;
     Private * const d;
-
-    void readConfig();
-    void setBackground(const QString &background);
 };
 
 

@@ -21,9 +21,6 @@
 // Own
 #include "gmailnotifierappletconfig.h"
 
-// KDE
-#include <KStringHandler>
-
 // Qt
 #include <QtCore/QDebug>
 
@@ -45,9 +42,9 @@ GMailNotifierAppletConfig::GMailNotifierAppletConfig(QWidget *parent)
 {
     ui.setupUi(this);
 
-    // Background Hints
     QStringList backgroundHints;
-    backgroundHints << "Default" << "Standard" << "Translucent" << "Shadowed";
+    //backgroundHints << "Default" << "Standard" << "Translucent" << "Shadowed" << "None";
+    backgroundHints << "Standard" << "Translucent";
     ui.comboBackground->addItems(backgroundHints);
 } // ctor()
 
@@ -56,20 +53,34 @@ GMailNotifierAppletConfig::~GMailNotifierAppletConfig()
     delete d;
 } // dtor()
 
-void GMailNotifierAppletConfig::exportConfig()
+void GMailNotifierAppletConfig::importConfig(const QVariantMap &data)
+{
+    int pos = ui.comboBackground->findText(data["Background"].toString(), Qt::MatchExactly);
+    ui.comboBackground->setCurrentIndex(pos);
+
+    ui.cbDisplayLogo->setChecked(data["DisplayLogo"].toBool());
+
+    QVariantList accounts(data["Accounts"].toList());
+    foreach (QVariant data, accounts) {
+        addItemToList(data.toMap());
+    }
+} // importConfig()
+
+QVariantMap GMailNotifierAppletConfig::exportConfig()
 {
     QVariantMap data;
-    bool state = (ui.cbDisplayLogo->checkState() == Qt::Checked) ? true : false;
-    data["DisplayLogo"] = state;
+    data["DisplayLogo"] = ui.cbDisplayLogo->isChecked();
     data["Background"] = ui.comboBackground->currentText();
 
-    QList<QVariantMap> accountList;
+    QVariantList accountList;
     for (int i=0; i<ui.listAccounts->count(); ++i) {
         QListWidgetItem *item(ui.listAccounts->item(i));
-//        QVariantMap accountInfos(item->data(Qt::UserRole));
-//        accountList << accountInfos;
+        QVariant accountInfos(item->data(Qt::UserRole));
+        accountList << accountInfos;
     }
-//    data["Accounts"] = QVariant(accountList);
+    data["Accounts"] = accountList;
+
+    return data;
 } // exportConfig()
 
 
@@ -92,51 +103,36 @@ void GMailNotifierAppletConfig::on_leLabel_textChanged(const QString &text)
 
 void GMailNotifierAppletConfig::on_lePassword_textChanged(const QString &text)
 {
-    qDebug() << KStringHandler::obscure(text);
     Q_UNUSED(text)
     setAddModifyButtonEnabled();
 } // on_lePassword_textChanged()
 
 void GMailNotifierAppletConfig::on_btnAddModify_clicked()
 {
-    QString itemText;
-    QString label = (ui.leLabel->text().isEmpty()) ? "inbox" : ui.leLabel->text();
-    if (ui.leDisplay->text().isEmpty()) {
-        itemText = QString("%1/%2").arg(ui.leLogin->text()).arg(label);
-    } else {
-        itemText = QString("%1").arg(ui.leDisplay->text());
-    }
-
-    int pos = accountPosition(ui.leLogin->text(), ui.leLabel->text());
-    QListWidgetItem *item;
-    if (pos == -1) {
-        // Add
-        item = new QListWidgetItem();
-    } else {
-        // Modify
-        item = ui.listAccounts->item(pos);
-    }
-
     QVariantMap data;
     data["Login"]    = ui.leLogin->text();
     data["Password"] = ui.lePassword->text();
     data["Label"]    = ui.leLabel->text();
     data["Display"]  = ui.leDisplay->text();
-    item->setText(itemText);
-    item->setData(Qt::UserRole, data);
 
+    int pos = accountPosition(ui.leLogin->text(), ui.leLabel->text());
     if (pos == -1) {
-        ui.listAccounts->addItem(item);
+        // Add
+        addItemToList(data);
         setUpDownButtonsEnabled();
+    } else {
+        // Modify
+        QListWidgetItem *item = ui.listAccounts->item(pos);
+        item->setText(listItemText(data));
+        item->setData(Qt::UserRole, data);
     }
-
-    ui.listAccounts->scrollToItem(item);
 
     adaptAddModifyButtonLabel();
 } // on_btnAddModify_clicked()
 
 void GMailNotifierAppletConfig::on_btnDelete_clicked()
 {
+//    ui.listAccounts->removeItemWidget(ui.listAccounts->currentItem());
     ui.listAccounts->takeItem(ui.listAccounts->currentRow());
     ui.listAccounts->setCurrentRow(-1);
     ui.btnDelete->setEnabled(false);
@@ -211,6 +207,28 @@ void GMailNotifierAppletConfig::adaptAddModifyButtonLabel()
         ui.btnAddModify->setText(buttonText);
     }
 } // adaptAddModifyButtonLabel()
+
+QString GMailNotifierAppletConfig::listItemText(const QVariantMap &data)
+{
+    QString itemText;
+    QString label = (data["Label"].toString().isEmpty()) ? "inbox" : data["Label"].toString();
+    if (data["Display"].toString().isEmpty()) {
+        itemText = QString("%1/%2").arg(data["Login"].toString()).arg(label);
+    } else {
+        itemText = QString("%1").arg(data["Display"].toString());
+    }
+
+    return itemText;
+} // listItemText()
+
+void GMailNotifierAppletConfig::addItemToList(const QVariantMap &data)
+{
+    QListWidgetItem *item = new QListWidgetItem();
+    item->setText(listItemText(data));
+    item->setData(Qt::UserRole, data);
+    ui.listAccounts->addItem(item);
+//    ui.listAccounts->scrollToItem(item);
+} // addItemToList()
 
 int GMailNotifierAppletConfig::accountPosition(const QString &login, const QString &label)
 {
