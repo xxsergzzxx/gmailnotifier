@@ -21,6 +21,9 @@
 // Own
 #include "gmailnotifierappletconfig.h"
 
+// KDE
+#include <KStringHandler>
+
 // Qt
 #include <QtCore/QDebug>
 
@@ -53,6 +56,22 @@ GMailNotifierAppletConfig::~GMailNotifierAppletConfig()
     delete d;
 } // dtor()
 
+void GMailNotifierAppletConfig::exportConfig()
+{
+    QVariantMap data;
+    bool state = (ui.cbDisplayLogo->checkState() == Qt::Checked) ? true : false;
+    data["DisplayLogo"] = state;
+    data["Background"] = ui.comboBackground->currentText();
+
+    QList<QVariantMap> accountList;
+    for (int i=0; i<ui.listAccounts->count(); ++i) {
+        QListWidgetItem *item(ui.listAccounts->item(i));
+//        QVariantMap accountInfos(item->data(Qt::UserRole));
+//        accountList << accountInfos;
+    }
+//    data["Accounts"] = QVariant(accountList);
+} // exportConfig()
+
 
 /*
 ** private slots
@@ -64,8 +83,16 @@ void GMailNotifierAppletConfig::on_leLogin_textChanged(const QString &text)
     adaptAddModifyButtonLabel();
 } // on_leLogin_textChanged()
 
+void GMailNotifierAppletConfig::on_leLabel_textChanged(const QString &text)
+{
+    Q_UNUSED(text)
+    setAddModifyButtonEnabled();
+    adaptAddModifyButtonLabel();
+} // on_leLabel_textChanged()
+
 void GMailNotifierAppletConfig::on_lePassword_textChanged(const QString &text)
 {
+    qDebug() << KStringHandler::obscure(text);
     Q_UNUSED(text)
     setAddModifyButtonEnabled();
 } // on_lePassword_textChanged()
@@ -73,16 +100,14 @@ void GMailNotifierAppletConfig::on_lePassword_textChanged(const QString &text)
 void GMailNotifierAppletConfig::on_btnAddModify_clicked()
 {
     QString itemText;
+    QString label = (ui.leLabel->text().isEmpty()) ? "inbox" : ui.leLabel->text();
     if (ui.leDisplay->text().isEmpty()) {
-        itemText = QString("%1@gmail.com")
-                       .arg(ui.leLogin->text());
+        itemText = QString("%1/%2").arg(ui.leLogin->text()).arg(label);
     } else {
-        itemText = QString("%1 [%2@gmail.com]")
-                       .arg(ui.leDisplay->text())
-                       .arg(ui.leLogin->text());
+        itemText = QString("%1").arg(ui.leDisplay->text());
     }
 
-    int pos = accountPosition(ui.leLogin->text());
+    int pos = accountPosition(ui.leLogin->text(), ui.leLabel->text());
     QListWidgetItem *item;
     if (pos == -1) {
         // Add
@@ -95,6 +120,7 @@ void GMailNotifierAppletConfig::on_btnAddModify_clicked()
     QVariantMap data;
     data["Login"]    = ui.leLogin->text();
     data["Password"] = ui.lePassword->text();
+    data["Label"]    = ui.leLabel->text();
     data["Display"]  = ui.leDisplay->text();
     item->setText(itemText);
     item->setData(Qt::UserRole, data);
@@ -112,11 +138,6 @@ void GMailNotifierAppletConfig::on_btnAddModify_clicked()
 void GMailNotifierAppletConfig::on_btnDelete_clicked()
 {
     ui.listAccounts->takeItem(ui.listAccounts->currentRow());
-
-    if (ui.listAccounts->count() == 0) {
-        ui.btnDelete->setEnabled(false);
-    }
-
     ui.listAccounts->setCurrentRow(-1);
     ui.btnDelete->setEnabled(false);
     adaptAddModifyButtonLabel();
@@ -125,20 +146,14 @@ void GMailNotifierAppletConfig::on_btnDelete_clicked()
 
 void GMailNotifierAppletConfig::on_btnUp_clicked()
 {
-    int pos = ui.listAccounts->currentRow();
-    QListWidgetItem *item = ui.listAccounts->takeItem(pos);
-    ui.listAccounts->insertItem(pos-1, item);
-    ui.listAccounts->setCurrentRow(pos-1);
+    moveItem(-1);
 
     setUpDownButtonsEnabled();
 } // on_btnUp_clicked()
 
 void GMailNotifierAppletConfig::on_btnDown_clicked()
 {
-    int pos = ui.listAccounts->currentRow();
-    QListWidgetItem *item = ui.listAccounts->takeItem(pos);
-    ui.listAccounts->insertItem(pos+1, item);
-    ui.listAccounts->setCurrentRow(pos+1);
+    moveItem(+1);
 
     setUpDownButtonsEnabled();
 } // on_btnDown_clicked()
@@ -148,12 +163,17 @@ void GMailNotifierAppletConfig::on_listAccounts_itemPressed(QListWidgetItem *ite
     QVariantMap data(item->data(Qt::UserRole).toMap());
     ui.leLogin->setText(data["Login"].toString());
     ui.lePassword->setText(data["Password"].toString());
+    ui.leLabel->setText(data["Label"].toString());
     ui.leDisplay->setText(data["Display"].toString());
 
     ui.btnDelete->setEnabled(true);
     setUpDownButtonsEnabled();
 } // on_listAccounts_itemPressed()
 
+
+/*
+** private
+*/
 void GMailNotifierAppletConfig::setAddModifyButtonEnabled()
 {
     bool enabled = (!ui.leLogin->text().isEmpty() &&
@@ -181,7 +201,7 @@ void GMailNotifierAppletConfig::adaptAddModifyButtonLabel()
     }
 
     QString buttonText;
-    if (accountPosition(ui.leLogin->text()) != -1) {
+    if (accountPosition(ui.leLogin->text(), ui.leLabel->text()) != -1) {
         buttonText = i18n("Modify");
     } else {
         buttonText = i18n("Add");
@@ -192,17 +212,14 @@ void GMailNotifierAppletConfig::adaptAddModifyButtonLabel()
     }
 } // adaptAddModifyButtonLabel()
 
-
-/*
-** private
-*/
-int GMailNotifierAppletConfig::accountPosition(const QString &email)
+int GMailNotifierAppletConfig::accountPosition(const QString &login, const QString &label)
 {
     int i=0;
     int pos=-1;
     while(i < ui.listAccounts->count()) {
         QListWidgetItem *item(ui.listAccounts->item(i));
-        if (email == item->data(Qt::UserRole).toMap()["Login"]) {
+        QVariantMap data(item->data(Qt::UserRole).toMap());
+        if (login == data["Login"] && label == data["Label"]) {
             pos = i;
             break;
         }
@@ -211,6 +228,14 @@ int GMailNotifierAppletConfig::accountPosition(const QString &email)
 
     return pos;
 } // accountPosition()
+
+void GMailNotifierAppletConfig::moveItem(const int &shift)
+{
+    int pos = ui.listAccounts->currentRow();
+    QListWidgetItem *item = ui.listAccounts->takeItem(pos);
+    ui.listAccounts->insertItem(pos+shift, item);
+    ui.listAccounts->setCurrentRow(pos+shift);
+} // moveItem()
 
 
 #include "gmailnotifierappletconfig.moc"

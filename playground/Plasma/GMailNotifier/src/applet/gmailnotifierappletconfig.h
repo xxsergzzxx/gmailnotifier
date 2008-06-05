@@ -36,20 +36,24 @@ public:
     GMailNotifierAppletConfig(QWidget *parent = 0);
     ~GMailNotifierAppletConfig();
 
+    void exportConfig();
+
 private Q_SLOTS:
     void on_leLogin_textChanged(const QString &text);
+    void on_leLabel_textChanged(const QString &text);
     void on_lePassword_textChanged(const QString &text);
     void on_btnAddModify_clicked();
     void on_btnDelete_clicked();
     void on_btnUp_clicked();
     void on_btnDown_clicked();
     void on_listAccounts_itemPressed(QListWidgetItem *item);
+
+private:
     void setAddModifyButtonEnabled();
     void setUpDownButtonsEnabled();
     void adaptAddModifyButtonLabel();
-
-private:
-    int accountPosition(const QString &email);
+    int accountPosition(const QString &login, const QString &label);
+    void moveItem(const int &shift);
 
     Ui::GMailNotifierAppletConfig ui;
 

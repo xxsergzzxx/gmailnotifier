@@ -187,7 +187,7 @@ void GMailNotifierApplet::readConfig()
     list << 1 << 3 << 5 << 34;
     config().writeEntry("TEST", list);
     */
-    qDebug() << config().readEntry("TEST");
+    qDebug() << config().readEntry("TEST", QList<QVariant>());
     d->config["Background"] = config().readEntry("Background", "Default");
     d->config["Login"] = config().readEntry("Login", QString());
     QString password = config().readEntry("Password", QString());
