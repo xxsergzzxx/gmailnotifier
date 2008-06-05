@@ -36,7 +36,8 @@ public:
     GMailNotifierAppletConfig(QWidget *parent = 0);
     ~GMailNotifierAppletConfig();
 
-    void exportConfig();
+    void importConfig(const QVariantMap &data);
+    QVariantMap exportConfig();
 
 private Q_SLOTS:
     void on_leLogin_textChanged(const QString &text);
@@ -52,6 +53,8 @@ private:
     void setAddModifyButtonEnabled();
     void setUpDownButtonsEnabled();
     void adaptAddModifyButtonLabel();
+    QString listItemText(const QVariantMap &data);
+    void addItemToList(const QVariantMap &data);
     int accountPosition(const QString &login, const QString &label);
     void moveItem(const int &shift);
 
