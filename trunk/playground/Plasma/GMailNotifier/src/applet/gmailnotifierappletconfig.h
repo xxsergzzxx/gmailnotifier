@@ -59,9 +59,6 @@ private:
     void moveItem(const int &shift);
 
     Ui::GMailNotifierAppletConfig ui;
-
-    class Private;
-    Private * const d;
 };
 
 

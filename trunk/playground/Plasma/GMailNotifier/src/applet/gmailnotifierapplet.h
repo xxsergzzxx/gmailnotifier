@@ -21,9 +21,20 @@
 #define __GMAILNOTIFIER_APPLET_H__
 
 
+// Own
+#include "gmailnotifierappletconfig.h"
+
 // Plasma
 #include <Plasma/Applet>
 #include <Plasma/DataEngine>
+#include <Plasma/Label>
+
+// KDE
+#include <KDE/KConfigDialog>
+
+// Qt
+#include <QtGui/QGraphicsGridLayout>
+#include <QtGui/QGraphicsLinearLayout>
 
 
 class GMailNotifierApplet : public Plasma::Applet
@@ -51,8 +62,16 @@ private:
     void setBackground();
     void setLayout();
 
-    class Private;
-    Private * const d;
+
+    QString                    m_cfgBackground;
+    bool                       m_cfgDisplayLogo;
+    QVariantList               m_cfgAccounts;
+
+    Plasma::DataEngine        *m_engine;
+
+    GMailNotifierAppletConfig *m_configDialog;
+    QGraphicsLinearLayout     *m_layoutMain;
+    QGraphicsGridLayout       *m_layoutContents;
 };
 
 
