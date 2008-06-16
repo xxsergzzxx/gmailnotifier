@@ -154,6 +154,7 @@ void GMailNotifierAppletConfig::on_listAccounts_itemPressed(QListWidgetItem *ite
 
     ui.btnDelete->setEnabled(true);
     setUpDownButtonsEnabled();
+    adaptAddModifyButtonLabel();
 } // on_listAccounts_itemPressed()
 
 
