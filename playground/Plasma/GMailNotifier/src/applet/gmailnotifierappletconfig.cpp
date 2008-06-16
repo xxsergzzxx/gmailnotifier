@@ -25,20 +25,11 @@
 #include <QtCore/QDebug>
 
 
-class GMailNotifierAppletConfig::Private
-{
-public:
-    Private() {}
-    ~Private() {}
-}; // Private()
-
-
 /*
 ** public
 */
 GMailNotifierAppletConfig::GMailNotifierAppletConfig(QWidget *parent)
     : QWidget(parent)
-    , d(new Private)
 {
     ui.setupUi(this);
 
@@ -50,7 +41,6 @@ GMailNotifierAppletConfig::GMailNotifierAppletConfig(QWidget *parent)
 
 GMailNotifierAppletConfig::~GMailNotifierAppletConfig()
 {
-    delete d;
 } // dtor()
 
 void GMailNotifierAppletConfig::importConfig(const QVariantMap &data)
