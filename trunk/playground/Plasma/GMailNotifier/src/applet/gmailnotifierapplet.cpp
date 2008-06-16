@@ -206,19 +206,18 @@ void GMailNotifierApplet::setLayout()
     if (!m_layoutContents) {
         m_layoutContents = new QGraphicsGridLayout;
         m_layoutMain->addItem(m_layoutContents);
-        m_layoutMain->addStretch();
+        m_layoutMain->addStretch(0xFF);
     }
 
     // GMail Logo
-    Plasma::Label *imgGMailLogo = new Plasma::Label(this);
     if (m_cfgDisplayLogo) {
+        Plasma::Label *imgGMailLogo = new Plasma::Label(this);
         imgGMailLogo->setImage(":/images/gmail_logo.png");
-    } else {
-        imgGMailLogo->setText("");
+        QLabel *logo = imgGMailLogo->nativeWidget();
+        logo->setAlignment(Qt::AlignCenter);
+        m_layoutContents->addItem(imgGMailLogo, 0, 0, 1, 2);
+        m_layoutContents->setRowSpacing(0, 15);
     }
-    QLabel *logo = imgGMailLogo->nativeWidget();
-    logo->setAlignment(Qt::AlignCenter);
-    m_layoutContents->addItem(imgGMailLogo, 0, 0, 1, 2);
 
 
     // Accounts
