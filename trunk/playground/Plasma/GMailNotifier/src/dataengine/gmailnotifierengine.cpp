@@ -29,10 +29,11 @@
 class GMailNotifierEngine::Private
 {
 public:
-    QString  request;
-       QUrl  url;
-      QHttp *http;
-        int  httpReqId;
+    QVariantMap  passwords;
+        QString  request;
+           QUrl  url;
+          QHttp *http;
+            int  httpReqId;
 
     Private()
         : http(new QHttp)
@@ -62,41 +63,50 @@ GMailNotifierEngine::~GMailNotifierEngine()
     delete d;
 } // dtor()
 
+QVariantMap GMailNotifierEngine::passwords() const
+{
+    return d->passwords;
+} // passwords()
+
+void GMailNotifierEngine::setPasswords(const QVariantMap &passwords)
+{
+    d->passwords = passwords;
+} // setPasswords()
+
 
 /*
 ** Protected
 */
 void GMailNotifierEngine::init()
 {
-    // 5 mins ought to be enough for anyone :)
-    setMinimumPollingInterval( 1000 * 60 * 5 );
+    // 5 mins ought to be enough for anybody :)
+    //setMinimumPollingInterval( 1000 * 60 * 5 );
 } // init()
 
 bool GMailNotifierEngine::sourceRequestEvent(const QString &request)
 {
-    // We expect a request like "username:password"
-    QChar sep(':');
+    // We expect a request like "username/label"
+    QChar sep('/');
     request.trimmed();
     kDebug() << request;
     if (request.startsWith(sep) || request.endsWith(sep) || request.count(sep) != 1) {
-        kDebug() << "Bad request! \"username:password\" expected.";
+        kDebug() << "Bad request! \"username/label\" expected.";
         return false;
     }
 
     int sepPos = request.indexOf(sep);
     QString username = request.left(sepPos);
-    QString password = request.right(request.size()-(sepPos+1));
+    QString label    = request.right(request.size()-(sepPos+1));
 
-    // Prevent multiple requests for now
-    kDebug() << d->httpReqId;
-    if (d->httpReqId) {
-        kDebug() << "Pending request, cannot execute now!";
+
+    if (d->passwords.isEmpty()) {
+        setData(request, "error", "No passwords set!");
         return false;
     } else {
         kDebug() << "Requesting data...";
         d->request = request;
         d->http->setHost(d->url.host(), QHttp::ConnectionModeHttps, d->url.port());
-        d->http->setUser(username, password);
+        d->http->setUser(username, d->passwords[username].toString());
         d->httpReqId = d->http->get(d->url.path());
     }
 

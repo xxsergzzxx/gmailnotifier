@@ -23,14 +23,22 @@
 // Plasma
 #include <Plasma/DataEngine>
 
+// Qt
+#include <QObject>
+
 
 class GMailNotifierEngine : public Plasma::DataEngine
 {
     Q_OBJECT
+    Q_PROPERTY(QVariantMap passwords READ passwords WRITE setPasswords)
+
 
 public:
     GMailNotifierEngine(QObject *parent, const QVariantList &args);
     ~GMailNotifierEngine();
+
+    QVariantMap passwords() const;
+    void setPasswords(const QVariantMap &passwords);
 
 protected:
     void init();
