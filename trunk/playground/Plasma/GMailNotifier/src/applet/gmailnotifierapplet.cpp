@@ -90,9 +90,10 @@ void GMailNotifierApplet::createConfigurationInterface(KConfigDialog *parent)
     connect(parent, SIGNAL(okClicked()), this, SLOT(configAccepted()));
 
     QVariantMap data;
-    data["Background"]  = m_cfgBackground;
-    data["DisplayLogo"] = m_cfgDisplayLogo;
-    data["Accounts"]    = m_cfgAccounts;
+    data["Background"]      = m_cfgBackground;
+    data["DisplayLogo"]     = m_cfgDisplayLogo;
+    data["PollingInterval"] = m_cfgPollingInterval;
+    data["Accounts"]        = m_cfgAccounts;
     m_configDialog->importConfig(data);
 } // createConfigurationInterface()
 
@@ -106,6 +107,7 @@ void GMailNotifierApplet::configAccepted()
     QVariantMap data = m_configDialog->exportConfig();
     config().writeEntry("Background", data["Background"]);
     config().writeEntry("DisplayLogo", data["DisplayLogo"]);
+    config().writeEntry("PollingInterval", data["PollingInterval"]);
 
     config().writeEntry("Accounts", data["Accounts"].toList().count());
     QVariantList accounts(data["Accounts"].toList());
@@ -138,9 +140,10 @@ void GMailNotifierApplet::constraintsEvent(Plasma::Constraints constraints)
 void GMailNotifierApplet::readConfig()
 {
     kDebug();
-    m_cfgBackground  = config().readEntry("Background", "Standard");
-    m_cfgDisplayLogo = config().readEntry("DisplayLogo", true);
-    int accounts   = config().readEntry("Accounts", 0);
+    m_cfgBackground      = config().readEntry("Background", "Standard");
+    m_cfgDisplayLogo     = config().readEntry("DisplayLogo", true);
+    m_cfgPollingInterval = config().readEntry("PollingInterval", 5);
+    int accounts         = config().readEntry("Accounts", 0);
 
     m_cfgAccounts.clear();
     for (int i=1; i <= accounts; ++i) {

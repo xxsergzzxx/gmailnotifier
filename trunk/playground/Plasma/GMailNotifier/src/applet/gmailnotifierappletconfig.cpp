@@ -45,10 +45,12 @@ GMailNotifierAppletConfig::~GMailNotifierAppletConfig()
 
 void GMailNotifierAppletConfig::importConfig(const QVariantMap &data)
 {
+    ui.cbDisplayLogo->setChecked(data["DisplayLogo"].toBool());
+
     int pos = ui.comboBackground->findText(data["Background"].toString(), Qt::MatchExactly);
     ui.comboBackground->setCurrentIndex(pos);
 
-    ui.cbDisplayLogo->setChecked(data["DisplayLogo"].toBool());
+    ui.spinPollingInterval->setValue(data["PollingInterval"].toInt());
 
     QVariantList accounts(data["Accounts"].toList());
     foreach (QVariant data, accounts) {
@@ -61,6 +63,7 @@ QVariantMap GMailNotifierAppletConfig::exportConfig()
     QVariantMap data;
     data["DisplayLogo"] = ui.cbDisplayLogo->isChecked();
     data["Background"] = ui.comboBackground->currentText();
+    data["PollingInterval"] = ui.spinPollingInterval->value();
 
     QVariantList accountList;
     for (int i=0; i<ui.listAccounts->count(); ++i) {
