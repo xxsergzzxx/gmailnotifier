@@ -5,8 +5,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>479</width>
-    <height>389</height>
+    <width>446</width>
+    <height>423</height>
    </rect>
   </property>
   <property name="windowTitle" >
@@ -37,6 +37,12 @@
           </property>
           <property name="text" >
            <string>Add</string>
+          </property>
+          <property name="autoDefault" >
+           <bool>true</bool>
+          </property>
+          <property name="default" >
+           <bool>true</bool>
           </property>
          </widget>
         </item>
@@ -210,42 +216,6 @@
      </property>
     </spacer>
    </item>
-   <item row="2" column="0" >
-    <layout class="QHBoxLayout" name="horizontalLayout" >
-     <property name="leftMargin" >
-      <number>4</number>
-     </property>
-     <property name="rightMargin" >
-      <number>4</number>
-     </property>
-     <item>
-      <widget class="QLabel" name="lblBackground" >
-       <property name="sizePolicy" >
-        <sizepolicy vsizetype="Preferred" hsizetype="Minimum" >
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="text" >
-        <string>Background:</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="KComboBox" name="comboBackground" >
-       <property name="sizePolicy" >
-        <sizepolicy vsizetype="Fixed" hsizetype="Expanding" >
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="toolTip" >
-        <string>Applet background</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </item>
    <item row="3" column="0" >
     <spacer name="verticalSpacer_3" >
      <property name="orientation" >
@@ -291,6 +261,56 @@
      </property>
     </spacer>
    </item>
+   <item row="2" column="0" >
+    <layout class="QFormLayout" name="formLayout" >
+     <item row="0" column="0" >
+      <widget class="QLabel" name="lblPollingInterval" >
+       <property name="text" >
+        <string>Polling interval:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1" >
+      <widget class="KIntSpinBox" name="spinPollingInterval" >
+       <property name="suffix" >
+        <string> mins</string>
+       </property>
+       <property name="minimum" >
+        <number>5</number>
+       </property>
+       <property name="maximum" >
+        <number>9999</number>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0" >
+      <widget class="QLabel" name="lblBackground" >
+       <property name="sizePolicy" >
+        <sizepolicy vsizetype="Preferred" hsizetype="Minimum" >
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text" >
+        <string>Background:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1" >
+      <widget class="KComboBox" name="comboBackground" >
+       <property name="sizePolicy" >
+        <sizepolicy vsizetype="Fixed" hsizetype="Expanding" >
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="toolTip" >
+        <string>Applet background</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
   </layout>
  </widget>
  <customwidgets>
@@ -298,6 +318,11 @@
    <class>KComboBox</class>
    <extends>QComboBox</extends>
    <header>kcombobox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>KIntSpinBox</class>
+   <extends>QSpinBox</extends>
+   <header>knuminput.h</header>
   </customwidget>
   <customwidget>
    <class>KLineEdit</class>
@@ -325,7 +350,6 @@
   <tabstop>btnDelete</tabstop>
   <tabstop>btnUp</tabstop>
   <tabstop>btnDown</tabstop>
-  <tabstop>comboBackground</tabstop>
   <tabstop>cbDisplayLogo</tabstop>
  </tabstops>
  <resources/>

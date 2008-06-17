@@ -29,6 +29,7 @@ GMailNotifierApplet::GMailNotifierApplet(QObject *parent, const QVariantList &ar
     , m_engine(0), m_configDialog(0)
     , m_layoutMain(0), m_layoutContents(0)
 {
+    kDebug();
     m_engine = Plasma::Applet::dataEngine("gmailnotifier");
     if (!m_engine->isValid()) {
         Plasma::Applet::setFailedToLaunch(true, i18n("Failed to open the data engine!"));
@@ -41,6 +42,7 @@ GMailNotifierApplet::GMailNotifierApplet(QObject *parent, const QVariantList &ar
 
 GMailNotifierApplet::~GMailNotifierApplet()
 {
+    kDebug();
 } // dtor()
 
 void GMailNotifierApplet::init()
@@ -57,6 +59,7 @@ void GMailNotifierApplet::init()
 */
 void GMailNotifierApplet::dataUpdated(const QString &source, const Plasma::DataEngine::Data &data)
 {
+    kDebug();
     Q_UNUSED(source)
     Q_UNUSED(data)
 
@@ -76,6 +79,7 @@ void GMailNotifierApplet::dataUpdated(const QString &source, const Plasma::DataE
 */
 void GMailNotifierApplet::createConfigurationInterface(KConfigDialog *parent)
 {
+    kDebug();
     m_configDialog = new GMailNotifierAppletConfig(parent);
     //parent->setButtons(KDialog::Ok | KDialog::Cancel | KDialog::Apply);
     parent->setButtons(KDialog::Ok | KDialog::Cancel);
@@ -98,6 +102,7 @@ void GMailNotifierApplet::createConfigurationInterface(KConfigDialog *parent)
 */
 void GMailNotifierApplet::configAccepted()
 {
+    kDebug();
     QVariantMap data = m_configDialog->exportConfig();
     config().writeEntry("Background", data["Background"]);
     config().writeEntry("DisplayLogo", data["DisplayLogo"]);
@@ -132,6 +137,7 @@ void GMailNotifierApplet::constraintsEvent(Plasma::Constraints constraints)
 */
 void GMailNotifierApplet::readConfig()
 {
+    kDebug();
     m_cfgBackground  = config().readEntry("Background", "Standard");
     m_cfgDisplayLogo = config().readEntry("DisplayLogo", true);
     int accounts   = config().readEntry("Accounts", 0);
@@ -147,25 +153,11 @@ void GMailNotifierApplet::readConfig()
 
         m_cfgAccounts << data;
     }
-
-    /*
-    if (!m_config["DisplayName"].isEmpty()) {
-        m_accountName->setText(m_config["DisplayName"]);
-    } else {
-        if (!m_config["Login"].isEmpty() || !m_config["Password"].isEmpty()) {
-            m_accountName->setText(QString("%1@gmail.com").arg(m_config["Login"]));
-        } else {
-            m_accountName->setText(i18n("Not configured yet!"));
-            m_newMailCount->setText("");
-        }
-    }
-
-    setBackground(m_cfgBackground);
-    */
 } // readConfig()
 
 void GMailNotifierApplet::setBackground()
 {
+    kDebug();
     Plasma::Applet::BackgroundHints hint;
 
     if (m_cfgBackground == "Standard") {
@@ -185,6 +177,7 @@ void GMailNotifierApplet::setBackground()
 
 void GMailNotifierApplet::setLayout()
 {
+    kDebug();
     // Cleanup
     if (m_layoutContents) {
         int i = m_layoutContents->count()-1;
@@ -219,7 +212,6 @@ void GMailNotifierApplet::setLayout()
         m_layoutContents->setRowSpacing(0, 15);
     }
 
-
     // Accounts
     if (!m_cfgAccounts.count()) {
         Plasma::Label *warning = new Plasma::Label(this);
@@ -249,16 +241,11 @@ void GMailNotifierApplet::setLayout()
             QLabel *label = accountCount->nativeWidget();
             label->setAlignment(Qt::AlignRight);
             accountName->setText(display);
-            accountCount->setText("999");
+            accountCount->setText("----");
             m_layoutContents->addItem(accountName, i+1, 0);
             m_layoutContents->addItem(accountCount, i+1, 1);
         }
     }
-
-    /*
-    m_layoutMain->activate();
-    m_layoutContents->activate();
-    */
 } // setLayout()
 
 
