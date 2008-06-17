@@ -65,6 +65,7 @@ private:
 
     QString                    m_cfgBackground;
     bool                       m_cfgDisplayLogo;
+    int                        m_cfgPollingInterval;
     QVariantList               m_cfgAccounts;
 
     Plasma::DataEngine        *m_engine;
