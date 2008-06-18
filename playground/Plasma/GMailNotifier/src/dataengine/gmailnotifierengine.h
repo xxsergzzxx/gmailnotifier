@@ -23,9 +23,6 @@
 // Plasma
 #include <Plasma/DataEngine>
 
-// Qt
-#include <QObject>
-
 
 class GMailNotifierEngine : public Plasma::DataEngine
 {

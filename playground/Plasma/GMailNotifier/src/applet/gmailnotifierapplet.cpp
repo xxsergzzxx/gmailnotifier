@@ -20,6 +20,9 @@
 // Own
 #include "gmailnotifierapplet.h"
 
+// KDE
+#include <KDE/KStringHandler>
+
 
 /*
 ** Public
@@ -51,6 +54,15 @@ void GMailNotifierApplet::init()
     readConfig();
     setBackground();
     setLayout();
+    setPasswords();
+
+    // Request data...
+    foreach (QVariant account, m_cfgAccounts) {
+        QVariantMap data(account.toMap());
+        QString label = (data["Label"].toString().isEmpty()) ? "inbox" : data["Label"].toString();
+        QString request = QString("%1:%2").arg(data["Login"].toString()).arg(label);
+        m_engine->connectSource(request, this);
+    }
 } // init()
 
 
@@ -60,17 +72,13 @@ void GMailNotifierApplet::init()
 void GMailNotifierApplet::dataUpdated(const QString &source, const Plasma::DataEngine::Data &data)
 {
     kDebug();
-    Q_UNUSED(source)
-    Q_UNUSED(data)
 
-    /*
     if (data.contains("Error")) {
-        m_accountName->setText(data["error"].toString());
-        m_newMailCount->setText(QString());
+        m_count[source]->setText("Err.");
         return;
     }
-    m_newMailCount->setText(data["fullcount"].toString());
-    */
+
+    m_count[source]->setText(data["fullcount"].toString());
 } // dataUpdated()
 
 
@@ -116,7 +124,7 @@ void GMailNotifierApplet::configAccepted()
         QVariantMap account(data.toMap());
         QString prefix = QString("Account%1_").arg(i);
         config().writeEntry(prefix+"Login", account["Login"]);
-        config().writeEntry(prefix+"Password", account["Password"]);
+        config().writeEntry(prefix+"Password", KStringHandler::obscure(account["Password"].toString()));
         config().writeEntry(prefix+"Label", account["Label"]);
         config().writeEntry(prefix+"Display", account["Display"]);
         ++i;
@@ -150,7 +158,7 @@ void GMailNotifierApplet::readConfig()
         QString prefix = QString("Account%1_").arg(i);
         QVariantMap data;
         data["Login"] = config().readEntry(prefix+"Login", QString());
-        data["Password"] = config().readEntry(prefix+"Password", QString());
+        data["Password"] = KStringHandler::obscure(config().readEntry(prefix+"Password", QString()));
         data["Label"] = config().readEntry(prefix+"Label", QString());
         data["Display"] = config().readEntry(prefix+"Display", QString());
 
@@ -215,7 +223,7 @@ void GMailNotifierApplet::setLayout()
         m_layoutContents->setRowSpacing(0, 15);
     }
 
-    // Accounts
+    // Applet Not configured
     if (!m_cfgAccounts.count()) {
         Plasma::Label *warning = new Plasma::Label(this);
         warning->setText(i18n("Not configured yet!"));
@@ -223,33 +231,51 @@ void GMailNotifierApplet::setLayout()
         label->setAlignment(Qt::AlignCenter);
         m_layoutContents->addItem(warning, 1, 0, 1, 2);
         m_layoutContents->addItem(new Plasma::Label(this), 2, 1); // Second "dummy" column
-    } else {
-        for (int i=0; i<m_cfgAccounts.count(); ++i) {
-            QVariantMap account = m_cfgAccounts.at(i).toMap();
-            QString display;
-            if (!account["Display"].toString().isEmpty()) {
-                display = account["Display"].toString();
-            } else {
-                QString label;
-                if (account["Label"].toString().isEmpty()) {
-                    label = "inbox";
-                } else {
-                    label = account["Label"].toString();
-                }
-                display = QString("%1/%2").arg(account["Login"].toString()).arg(label);
-            }
+        return;
+    }
 
-            Plasma::Label *accountName = new Plasma::Label(this);
-            Plasma::Label *accountCount = new Plasma::Label(this);
-            QLabel *label = accountCount->nativeWidget();
-            label->setAlignment(Qt::AlignRight);
-            accountName->setText(display);
-            accountCount->setText("----");
-            m_layoutContents->addItem(accountName, i+1, 0);
-            m_layoutContents->addItem(accountCount, i+1, 1);
+    // Accounts
+    for (int i=0; i<m_cfgAccounts.count(); ++i) {
+        QVariantMap account = m_cfgAccounts.at(i).toMap();
+        QString display;
+        if (!account["Display"].toString().isEmpty()) {
+            display = account["Display"].toString();
+        } else {
+            QString label;
+            if (account["Label"].toString().isEmpty()) {
+                label = "inbox";
+            } else {
+                label = account["Label"].toString();
+            }
+            display = QString("%1/%2").arg(account["Login"].toString()).arg(label);
         }
+
+        Plasma::Label *accountName = new Plasma::Label(this);
+        Plasma::Label *accountCount = new Plasma::Label(this);
+        QLabel *accountCountNW = accountCount->nativeWidget();
+        accountCountNW->setAlignment(Qt::AlignRight);
+        accountName->setText(display);
+        accountCount->setText("----");
+        m_layoutContents->addItem(accountName, i+1, 0);
+        m_layoutContents->addItem(accountCount, i+1, 1);
+
+        QString mboxLabel = (account["Label"].toString().isEmpty()) ? "inbox" : account["Label"].toString();
+        QString request = QString("%1:%2").arg(account["Login"].toString()).arg(mboxLabel);
+        m_count[request] = accountCount;
     }
 } // setLayout()
 
+void GMailNotifierApplet::setPasswords() const
+{
+    kDebug();
+    QVariantMap passwordList;
+
+    foreach (QVariant account, m_cfgAccounts) {
+        QVariantMap data(account.toMap());
+        passwordList.insert(data["Login"].toString(), data["Password"]);
+    }
+
+    m_engine->setProperty("passwords", passwordList);
+} // setPasswords()
 
 #include "gmailnotifierapplet.moc"

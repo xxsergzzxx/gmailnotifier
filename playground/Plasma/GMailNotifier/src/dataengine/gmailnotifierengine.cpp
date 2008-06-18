@@ -29,15 +29,13 @@
 class GMailNotifierEngine::Private
 {
 public:
-    QVariantMap  passwords;
-        QString  request;
-           QUrl  url;
-          QHttp *http;
-            int  httpReqId;
+                  QUrl  url;
+                 QHttp *http;
+           QVariantMap  passwordList;
+    QMap<int, QString>  pendingRequests;
 
     Private()
         : http(new QHttp)
-        , httpReqId(0)
     {
         // ATOM feed base URL
         url.setUrl("https://mail.google.com:443/mail/feed/atom/", QUrl::StrictMode);
@@ -53,6 +51,7 @@ GMailNotifierEngine::GMailNotifierEngine(QObject *parent, const QVariantList &ar
     : Plasma::DataEngine(parent, args)
     , d(new Private)
 {
+    kDebug();
     connect(d->http, SIGNAL(requestFinished(int, bool)),
             this, SLOT(httpRequestFinished(int, bool)));
 } // ctor()
@@ -60,17 +59,20 @@ GMailNotifierEngine::GMailNotifierEngine(QObject *parent, const QVariantList &ar
 
 GMailNotifierEngine::~GMailNotifierEngine()
 {
+    kDebug();
     delete d;
 } // dtor()
 
 QVariantMap GMailNotifierEngine::passwords() const
 {
-    return d->passwords;
+    kDebug();
+    return d->passwordList;
 } // passwords()
 
 void GMailNotifierEngine::setPasswords(const QVariantMap &passwords)
 {
-    d->passwords = passwords;
+    kDebug();
+    d->passwordList = passwords;
 } // setPasswords()
 
 
@@ -79,37 +81,44 @@ void GMailNotifierEngine::setPasswords(const QVariantMap &passwords)
 */
 void GMailNotifierEngine::init()
 {
+    kDebug();
     // 5 mins ought to be enough for anybody :)
     //setMinimumPollingInterval( 1000 * 60 * 5 );
 } // init()
 
 bool GMailNotifierEngine::sourceRequestEvent(const QString &request)
 {
-    // We expect a request like "username/label"
-    QChar sep('/');
-    request.trimmed();
-    kDebug() << request;
-    if (request.startsWith(sep) || request.endsWith(sep) || request.count(sep) != 1) {
-        kDebug() << "Bad request! \"username/label\" expected.";
-        return false;
-    }
-
-    int sepPos = request.indexOf(sep);
-    QString username = request.left(sepPos);
-    QString label    = request.right(request.size()-(sepPos+1));
-
-
-    if (d->passwords.isEmpty()) {
+    kDebug();
+    // No need to continue if the password list is empty...
+    if (d->passwordList.isEmpty()) {
         setData(request, "error", "No passwords set!");
         return false;
-    } else {
-        kDebug() << "Requesting data...";
-        d->request = request;
-        d->http->setHost(d->url.host(), QHttp::ConnectionModeHttps, d->url.port());
-        d->http->setUser(username, d->passwords[username].toString());
-        d->httpReqId = d->http->get(d->url.path());
     }
 
+    // We expect a request like "username:label"
+    QChar sep(':');
+    request.trimmed();
+    if (request.startsWith(sep) || request.endsWith(sep) || request.count(sep) != 1) {
+        kDebug() << "Bad request! \"username:label\" expected.";
+        return false;
+    }
+
+    QStringList splittedRequest = request.split(sep);
+    QString username(splittedRequest[0]);
+    QString label(splittedRequest[1]);
+
+    kDebug() << "Requesting data..." << username << label;
+    QString path;
+    if (label == "inbox") {
+        path = d->url.path();
+    } else {
+        path = d->url.path() + label;
+    }
+    d->http->setHost(d->url.host(), QHttp::ConnectionModeHttps, d->url.port());
+    d->http->setUser(username, d->passwordList[username].toString());
+    int reqId = d->http->get(path);
+
+    d->pendingRequests.insert(reqId, request);
     setData(request, Plasma::DataEngine::Data());
 
     return true;
@@ -121,7 +130,8 @@ bool GMailNotifierEngine::sourceRequestEvent(const QString &request)
 */
 void GMailNotifierEngine::httpRequestFinished(const int &requestId, const bool &error)
 {
-    if (requestId != d->httpReqId) {
+    kDebug();
+    if (!d->pendingRequests.contains(requestId)) {
         return;
     }
     if (error) {
@@ -129,15 +139,15 @@ void GMailNotifierEngine::httpRequestFinished(const int &requestId, const bool &
 //        errorInfos << d->http->lastResponse().statusCode();
 //        errorInfos << d->http->errorString();
 //        setData(d->request, "error", errorInfos);
-        setData(d->request, "error", d->http->errorString());
-        d->httpReqId = 0;
+        setData(d->pendingRequests[requestId], "error", d->http->errorString());
+        d->pendingRequests.remove(requestId);
         return;
     }
 
     Plasma::DataEngine::Data results;
     results = GMailAtomFeedParser::parseFeed(d->http->readAll());
-    setData(d->request, results);
-    d->httpReqId = 0;
+    setData(d->pendingRequests[requestId], results);
+    d->pendingRequests.remove(requestId);
 
 } // httpRequestFinished()
 
