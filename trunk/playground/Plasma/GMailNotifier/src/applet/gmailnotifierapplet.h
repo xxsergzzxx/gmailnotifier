@@ -61,14 +61,17 @@ private:
     void readConfig();
     void setBackground();
     void setLayout();
+    void setPasswords() const;
 
+
+    Plasma::DataEngine        *m_engine;
 
     QString                    m_cfgBackground;
     bool                       m_cfgDisplayLogo;
     int                        m_cfgPollingInterval;
     QVariantList               m_cfgAccounts;
 
-    Plasma::DataEngine        *m_engine;
+    QMap<QString, Plasma::Label*> m_count;
 
     GMailNotifierAppletConfig *m_configDialog;
     QGraphicsLinearLayout     *m_layoutMain;
