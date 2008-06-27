@@ -26,7 +26,7 @@
 #include <QtNetwork/QHttp>
 
 
-class GMailNotifierEngine::Private
+class GmailNotifierEngine::Private
 {
 public:
                   QUrl  url;
@@ -47,7 +47,7 @@ public:
 /*
 ** Public
 */
-GMailNotifierEngine::GMailNotifierEngine(QObject *parent, const QVariantList &args)
+GmailNotifierEngine::GmailNotifierEngine(QObject *parent, const QVariantList &args)
     : Plasma::DataEngine(parent, args)
     , d(new Private)
 {
@@ -57,19 +57,19 @@ GMailNotifierEngine::GMailNotifierEngine(QObject *parent, const QVariantList &ar
 } // ctor()
 
 
-GMailNotifierEngine::~GMailNotifierEngine()
+GmailNotifierEngine::~GmailNotifierEngine()
 {
     kDebug();
     delete d;
 } // dtor()
 
-QVariantMap GMailNotifierEngine::passwords() const
+QVariantMap GmailNotifierEngine::passwords() const
 {
     kDebug();
     return d->passwordList;
 } // passwords()
 
-void GMailNotifierEngine::setPasswords(const QVariantMap &passwords)
+void GmailNotifierEngine::setPasswords(const QVariantMap &passwords)
 {
     kDebug();
     d->passwordList = passwords;
@@ -79,14 +79,14 @@ void GMailNotifierEngine::setPasswords(const QVariantMap &passwords)
 /*
 ** Protected
 */
-void GMailNotifierEngine::init()
+void GmailNotifierEngine::init()
 {
     kDebug();
     // 5 mins ought to be enough for anybody :)
     //setMinimumPollingInterval( 1000 * 60 * 5 );
 } // init()
 
-bool GMailNotifierEngine::sourceRequestEvent(const QString &request)
+bool GmailNotifierEngine::sourceRequestEvent(const QString &request)
 {
     kDebug();
     // No need to continue if the password list is empty...
@@ -128,7 +128,7 @@ bool GMailNotifierEngine::sourceRequestEvent(const QString &request)
 /*
 ** Private Q_SLOTS
 */
-void GMailNotifierEngine::httpRequestFinished(const int &requestId, const bool &error)
+void GmailNotifierEngine::httpRequestFinished(const int &requestId, const bool &error)
 {
     kDebug();
     if (!d->pendingRequests.contains(requestId)) {
@@ -145,7 +145,7 @@ void GMailNotifierEngine::httpRequestFinished(const int &requestId, const bool &
     }
 
     Plasma::DataEngine::Data results;
-    results = GMailAtomFeedParser::parseFeed(d->http->readAll());
+    results = GmailAtomFeedParser::parseFeed(d->http->readAll());
     setData(d->pendingRequests[requestId], results);
     d->pendingRequests.remove(requestId);
 

@@ -27,7 +27,7 @@
 /*
 ** Public
 */
-GMailNotifierApplet::GMailNotifierApplet(QObject *parent, const QVariantList &args)
+GmailNotifierApplet::GmailNotifierApplet(QObject *parent, const QVariantList &args)
     : Plasma::Applet(parent, args)
     , m_engine(0), m_configDialog(0)
     , m_layoutMain(0), m_layoutContents(0)
@@ -43,12 +43,12 @@ GMailNotifierApplet::GMailNotifierApplet(QObject *parent, const QVariantList &ar
     Plasma::Applet::setHasConfigurationInterface(true);
 } // ctor()
 
-GMailNotifierApplet::~GMailNotifierApplet()
+GmailNotifierApplet::~GmailNotifierApplet()
 {
     kDebug();
 } // dtor()
 
-void GMailNotifierApplet::init()
+void GmailNotifierApplet::init()
 {
     kDebug();
     readConfig();
@@ -69,7 +69,7 @@ void GMailNotifierApplet::init()
 /*
 ** Public slots
 */
-void GMailNotifierApplet::dataUpdated(const QString &source, const Plasma::DataEngine::Data &data)
+void GmailNotifierApplet::dataUpdated(const QString &source, const Plasma::DataEngine::Data &data)
 {
     kDebug();
 
@@ -85,10 +85,10 @@ void GMailNotifierApplet::dataUpdated(const QString &source, const Plasma::DataE
 /*
 ** Protected
 */
-void GMailNotifierApplet::createConfigurationInterface(KConfigDialog *parent)
+void GmailNotifierApplet::createConfigurationInterface(KConfigDialog *parent)
 {
     kDebug();
-    m_configDialog = new GMailNotifierAppletConfig(parent);
+    m_configDialog = new GmailNotifierAppletConfig(parent);
     //parent->setButtons(KDialog::Ok | KDialog::Cancel | KDialog::Apply);
     parent->setButtons(KDialog::Ok | KDialog::Cancel);
     parent->addPage(m_configDialog, parent->windowTitle(), icon());
@@ -109,7 +109,7 @@ void GMailNotifierApplet::createConfigurationInterface(KConfigDialog *parent)
 /*
 ** Private slots
 */
-void GMailNotifierApplet::configAccepted()
+void GmailNotifierApplet::configAccepted()
 {
     kDebug();
     QVariantMap data = m_configDialog->exportConfig();
@@ -136,7 +136,7 @@ void GMailNotifierApplet::configAccepted()
     init();
 } // configAccepted()
 
-void GMailNotifierApplet::constraintsEvent(Plasma::Constraints constraints)
+void GmailNotifierApplet::constraintsEvent(Plasma::Constraints constraints)
 {
     kDebug() << "constraintsEvent()" << constraints;
 } // constraintsEvent()
@@ -145,7 +145,7 @@ void GMailNotifierApplet::constraintsEvent(Plasma::Constraints constraints)
 /*
 ** Private
 */
-void GMailNotifierApplet::readConfig()
+void GmailNotifierApplet::readConfig()
 {
     kDebug();
     m_cfgBackground      = config().readEntry("Background", "Standard");
@@ -166,7 +166,7 @@ void GMailNotifierApplet::readConfig()
     }
 } // readConfig()
 
-void GMailNotifierApplet::setBackground()
+void GmailNotifierApplet::setBackground()
 {
     kDebug();
     Plasma::Applet::BackgroundHints hint;
@@ -186,7 +186,7 @@ void GMailNotifierApplet::setBackground()
     Plasma::Applet::setBackgroundHints(hint);
 } // setBackground()
 
-void GMailNotifierApplet::setLayout()
+void GmailNotifierApplet::setLayout()
 {
     kDebug();
     // Cleanup
@@ -213,13 +213,13 @@ void GMailNotifierApplet::setLayout()
         m_layoutMain->addStretch(0xFF);
     }
 
-    // GMail Logo
+    // Gmail Logo
     if (m_cfgDisplayLogo) {
-        Plasma::Label *imgGMailLogo = new Plasma::Label(this);
-        imgGMailLogo->setImage(":/images/gmail_logo.png");
-        QLabel *logo = imgGMailLogo->nativeWidget();
+        Plasma::Label *imgGmailLogo = new Plasma::Label(this);
+        imgGmailLogo->setImage(":/images/gmail_logo.png");
+        QLabel *logo = imgGmailLogo->nativeWidget();
         logo->setAlignment(Qt::AlignCenter);
-        m_layoutContents->addItem(imgGMailLogo, 0, 0, 1, 2);
+        m_layoutContents->addItem(imgGmailLogo, 0, 0, 1, 2);
         m_layoutContents->setRowSpacing(0, 15);
     }
 
@@ -265,7 +265,7 @@ void GMailNotifierApplet::setLayout()
     }
 } // setLayout()
 
-void GMailNotifierApplet::setPasswords() const
+void GmailNotifierApplet::setPasswords() const
 {
     kDebug();
     QVariantMap passwordList;

@@ -1,6 +1,6 @@
 <ui version="4.0" >
- <class>GMailNotifierAppletConfig</class>
- <widget class="QWidget" name="GMailNotifierAppletConfig" >
+ <class>GmailNotifierAppletConfig</class>
+ <widget class="QWidget" name="GmailNotifierAppletConfig" >
   <property name="geometry" >
    <rect>
     <x>0</x>
@@ -71,7 +71,7 @@
           <item rowspan="2" row="0" column="1" colspan="2" >
            <widget class="KLineEdit" name="leLogin" >
             <property name="toolTip" >
-             <string>GMail login name</string>
+             <string>Gmail login name</string>
             </property>
             <property name="whatsThis" >
              <string>whatsThis</string>
@@ -94,7 +94,7 @@
           <item row="2" column="1" colspan="3" >
            <widget class="KLineEdit" name="lePassword" >
             <property name="toolTip" >
-             <string>GMail password</string>
+             <string>Gmail password</string>
             </property>
             <property name="showClearButton" stdset="0" >
              <bool>true</bool>
@@ -125,7 +125,7 @@
            </widget>
           </item>
           <item rowspan="2" row="0" column="3" >
-           <widget class="QLabel" name="lblGMaildotcom" >
+           <widget class="QLabel" name="lblGmaildotcom" >
             <property name="enabled" >
              <bool>false</bool>
             </property>
@@ -147,7 +147,7 @@
           <item row="3" column="1" colspan="3" >
            <widget class="KLineEdit" name="leLabel" >
             <property name="toolTip" >
-             <string>GMail label (leave empty for inbox)</string>
+             <string>Gmail label (leave empty for inbox)</string>
             </property>
             <property name="showClearButton" stdset="0" >
              <bool>true</bool>
@@ -238,10 +238,10 @@
       <bool>true</bool>
      </property>
      <property name="toolTip" >
-      <string>Show/hide the GMail logo in the applet</string>
+      <string>Show/hide the Gmail logo in the applet</string>
      </property>
      <property name="text" >
-      <string>Display GMail logo</string>
+      <string>Display Gmail logo</string>
      </property>
      <property name="checked" >
       <bool>true</bool>

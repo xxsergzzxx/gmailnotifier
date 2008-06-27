@@ -27,11 +27,11 @@ class QByteArray;
 class QDomNode;
 
 
-class GMailAtomFeedParser
+class GmailAtomFeedParser
 {
 public:
-    GMailAtomFeedParser() {};
-    ~GMailAtomFeedParser() {};
+    GmailAtomFeedParser() {};
+    ~GmailAtomFeedParser() {};
 
     static Plasma::DataEngine::Data parseFeed(const QByteArray &feed);
 

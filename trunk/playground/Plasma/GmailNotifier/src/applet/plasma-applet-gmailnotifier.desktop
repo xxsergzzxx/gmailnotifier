@@ -1,6 +1,6 @@
 [Desktop Entry]
-Name=GMail Notifier
-Comment=A GMail notifier plasmoid
+Name=Gmail Notifier
+Comment=A Gmail notifier plasmoid
 Type=Service
 X-KDE-ServiceTypes=Plasma/Applet
 X-KDE-Library=plasma_applet_gmailnotifier

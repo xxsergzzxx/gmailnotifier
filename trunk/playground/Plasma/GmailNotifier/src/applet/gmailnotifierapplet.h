@@ -37,13 +37,13 @@
 #include <QtGui/QGraphicsLinearLayout>
 
 
-class GMailNotifierApplet : public Plasma::Applet
+class GmailNotifierApplet : public Plasma::Applet
 {
     Q_OBJECT
 
 public:
-    GMailNotifierApplet(QObject *parent, const QVariantList &args);
-    ~GMailNotifierApplet();
+    GmailNotifierApplet(QObject *parent, const QVariantList &args);
+    ~GmailNotifierApplet();
 
     void init();
 
@@ -73,13 +73,13 @@ private:
 
     QMap<QString, Plasma::Label*> m_count;
 
-    GMailNotifierAppletConfig *m_configDialog;
+    GmailNotifierAppletConfig *m_configDialog;
     QGraphicsLinearLayout     *m_layoutMain;
     QGraphicsGridLayout       *m_layoutContents;
 };
 
 
-K_EXPORT_PLASMA_APPLET(gmailnotifier, GMailNotifierApplet)
+K_EXPORT_PLASMA_APPLET(gmailnotifier, GmailNotifierApplet)
 
 
 #endif // __GMAILNOTIFIER_APPLET_H__

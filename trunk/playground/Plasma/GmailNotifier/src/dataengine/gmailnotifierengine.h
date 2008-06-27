@@ -24,15 +24,15 @@
 #include <Plasma/DataEngine>
 
 
-class GMailNotifierEngine : public Plasma::DataEngine
+class GmailNotifierEngine : public Plasma::DataEngine
 {
     Q_OBJECT
     Q_PROPERTY(QVariantMap passwords READ passwords WRITE setPasswords)
 
 
 public:
-    GMailNotifierEngine(QObject *parent, const QVariantList &args);
-    ~GMailNotifierEngine();
+    GmailNotifierEngine(QObject *parent, const QVariantList &args);
+    ~GmailNotifierEngine();
 
     QVariantMap passwords() const;
     void setPasswords(const QVariantMap &passwords);
@@ -50,7 +50,7 @@ private:
 };
 
 
-K_EXPORT_PLASMA_DATAENGINE(gmailnotifierengine, GMailNotifierEngine)
+K_EXPORT_PLASMA_DATAENGINE(gmailnotifierengine, GmailNotifierEngine)
 
 
 #endif // __GMAILNOTIFIER_DATAENGINE_H__
