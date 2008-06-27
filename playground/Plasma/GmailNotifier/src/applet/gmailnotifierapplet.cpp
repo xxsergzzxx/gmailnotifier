@@ -61,7 +61,7 @@ void GmailNotifierApplet::init()
         QVariantMap data(account.toMap());
         QString label = (data["Label"].toString().isEmpty()) ? "inbox" : data["Label"].toString();
         QString request = QString("%1:%2").arg(data["Login"].toString()).arg(label);
-        m_engine->connectSource(request, this);
+        m_engine->connectSource(request, this, (m_cfgPollingInterval*1000*60), Plasma::NoAlignment);
     }
 } // init()
 
@@ -79,6 +79,7 @@ void GmailNotifierApplet::dataUpdated(const QString &source, const Plasma::DataE
     }
 
     m_count[source]->setText(data["fullcount"].toString());
+    qDebug() << source << data["fullcount"].toString();
 } // dataUpdated()
 
 
@@ -255,7 +256,7 @@ void GmailNotifierApplet::setLayout()
         QLabel *accountCountNW = accountCount->nativeWidget();
         accountCountNW->setAlignment(Qt::AlignRight);
         accountName->setText(display);
-        accountCount->setText("----");
+        accountCount->setText("-----");
         m_layoutContents->addItem(accountName, i+1, 0);
         m_layoutContents->addItem(accountCount, i+1, 1);
 

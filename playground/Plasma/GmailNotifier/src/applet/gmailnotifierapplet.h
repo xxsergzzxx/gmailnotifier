@@ -64,12 +64,12 @@ private:
     void setPasswords() const;
 
 
-    Plasma::DataEngine        *m_engine;
+    Plasma::DataEngine *m_engine;
 
-    QString                    m_cfgBackground;
-    bool                       m_cfgDisplayLogo;
-    int                        m_cfgPollingInterval;
-    QVariantList               m_cfgAccounts;
+    QString       m_cfgBackground;
+    bool          m_cfgDisplayLogo;
+    uint          m_cfgPollingInterval;
+    QVariantList  m_cfgAccounts;
 
     QMap<QString, Plasma::Label*> m_count;
 
