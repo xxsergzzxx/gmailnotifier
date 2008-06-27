@@ -40,6 +40,8 @@ public:
 protected:
     void init();
     bool sourceRequestEvent(const QString &request);
+    bool updateSourceEvent(const QString &request);
+    bool requestData(const QString &request);
 
 private Q_SLOTS:
     void httpRequestFinished(const int &requestId, const bool &error);

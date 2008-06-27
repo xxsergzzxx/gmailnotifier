@@ -22,6 +22,7 @@
 #include "gmailatomfeedparser.h"
 
 // Qt
+#include <QtCore/QTime> //REMOVEME
 #include <QtCore/QUrl>
 #include <QtNetwork/QHttp>
 
@@ -40,7 +41,12 @@ public:
         // ATOM feed base URL
         url.setUrl("https://mail.google.com:443/mail/feed/atom/", QUrl::StrictMode);
     }
-    ~Private() {}
+    ~Private()
+    {
+        if (http->hasPendingRequests()) {
+            http->abort();
+        }
+    }
 }; // Private()
 
 
@@ -83,12 +89,27 @@ void GmailNotifierEngine::init()
 {
     kDebug();
     // 5 mins ought to be enough for anybody :)
-    //setMinimumPollingInterval( 1000 * 60 * 5 );
+    setMinimumPollingInterval( 1000 * 60 * 5 );
 } // init()
 
 bool GmailNotifierEngine::sourceRequestEvent(const QString &request)
 {
     kDebug();
+    qDebug() << request << QTime::currentTime();
+    return requestData(request);
+} // sourceRequestEvent()
+
+bool GmailNotifierEngine::updateSourceEvent(const QString &request)
+{
+    kDebug();
+    qDebug() << request << QTime::currentTime();
+    return requestData(request);
+} // updateSourceEvent()
+
+bool GmailNotifierEngine::requestData(const QString &request)
+{
+    kDebug();
+
     // No need to continue if the password list is empty...
     if (d->passwordList.isEmpty()) {
         setData(request, "error", "No passwords set!");
@@ -121,8 +142,10 @@ bool GmailNotifierEngine::sourceRequestEvent(const QString &request)
     d->pendingRequests.insert(reqId, request);
     setData(request, Plasma::DataEngine::Data());
 
+    qDebug() << sources();
+
     return true;
-} // sourceRequestEvent()
+} // requestData()
 
 
 /*
@@ -135,10 +158,6 @@ void GmailNotifierEngine::httpRequestFinished(const int &requestId, const bool &
         return;
     }
     if (error) {
-//        QVariantList errorInfos;
-//        errorInfos << d->http->lastResponse().statusCode();
-//        errorInfos << d->http->errorString();
-//        setData(d->request, "error", errorInfos);
         setData(d->pendingRequests[requestId], "error", d->http->errorString());
         d->pendingRequests.remove(requestId);
         return;
@@ -148,7 +167,6 @@ void GmailNotifierEngine::httpRequestFinished(const int &requestId, const bool &
     results = GmailAtomFeedParser::parseFeed(d->http->readAll());
     setData(d->pendingRequests[requestId], results);
     d->pendingRequests.remove(requestId);
-
 } // httpRequestFinished()
 
 
