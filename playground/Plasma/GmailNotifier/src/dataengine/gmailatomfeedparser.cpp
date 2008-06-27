@@ -29,12 +29,12 @@
 #include <QtXml/QDomNode>
 
 
-Plasma::DataEngine::Data GMailAtomFeedParser::parseFeed(const QByteArray &feed)
+Plasma::DataEngine::Data GmailAtomFeedParser::parseFeed(const QByteArray &feed)
 {
     Plasma::DataEngine::Data data;
     QList<QVariant>          entries;
 
-    QDomDocument doc("GMailATOMFeed");
+    QDomDocument doc("GmailATOMFeed");
     doc.setContent(feed);
 
     QDomElement de = doc.documentElement();
@@ -76,7 +76,7 @@ Plasma::DataEngine::Data GMailAtomFeedParser::parseFeed(const QByteArray &feed)
 } // parseFeed()
 
 
-QVariantMap GMailAtomFeedParser::parseEntry(const QDomNode &node)
+QVariantMap GmailAtomFeedParser::parseEntry(const QDomNode &node)
 {
     QVariantMap mail;
 

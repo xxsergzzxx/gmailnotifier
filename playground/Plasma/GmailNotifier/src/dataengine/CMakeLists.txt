@@ -1,4 +1,4 @@
-project(plasma-dataengine-GMailNotifier)
+project(plasma-dataengine-GmailNotifier)
 
 set(gmailnotifier_dataengine_SRCS
     gmailnotifierengine.cpp

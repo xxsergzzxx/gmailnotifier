@@ -28,13 +28,13 @@
 #include <QtGui/QWidget>
 
 
-class GMailNotifierAppletConfig : public QWidget
+class GmailNotifierAppletConfig : public QWidget
 {
     Q_OBJECT
 
 public:
-    GMailNotifierAppletConfig(QWidget *parent = 0);
-    ~GMailNotifierAppletConfig();
+    GmailNotifierAppletConfig(QWidget *parent = 0);
+    ~GmailNotifierAppletConfig();
 
     void importConfig(const QVariantMap &data);
     QVariantMap exportConfig();
@@ -58,7 +58,7 @@ private:
     int accountPosition(const QString &login, const QString &label);
     void moveItem(const int &shift);
 
-    Ui::GMailNotifierAppletConfig ui;
+    Ui::GmailNotifierAppletConfig ui;
 };
 
 

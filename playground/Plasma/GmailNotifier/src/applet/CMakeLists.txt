@@ -1,4 +1,4 @@
-project(plasma-applet-GMailNotifier)
+project(plasma-applet-GmailNotifier)
 
 set(gmailnotifier_applet_SRCS
     gmailnotifierapplet.cpp

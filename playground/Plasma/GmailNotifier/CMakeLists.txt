@@ -1,4 +1,4 @@
-project(GMailNotifier-plasmoid)
+project(GmailNotifier-plasmoid)
 
 find_package(KDE4 REQUIRED)
 find_package(Plasma REQUIRED)
