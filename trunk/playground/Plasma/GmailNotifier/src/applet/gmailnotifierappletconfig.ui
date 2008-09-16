@@ -6,7 +6,7 @@
     <x>0</x>
     <y>0</y>
     <width>446</width>
-    <height>423</height>
+    <height>409</height>
    </rect>
   </property>
   <property name="windowTitle" >
@@ -249,7 +249,7 @@
     </widget>
    </item>
    <item row="5" column="0" >
-    <spacer name="verticalSpacer" >
+    <spacer name="verticalSpacer_1" >
      <property name="orientation" >
       <enum>Qt::Vertical</enum>
      </property>
@@ -262,24 +262,11 @@
     </spacer>
    </item>
    <item row="2" column="0" >
-    <layout class="QFormLayout" name="formLayout" >
+    <layout class="QGridLayout" name="gridLayout_1" >
      <item row="0" column="0" >
       <widget class="QLabel" name="lblPollingInterval" >
        <property name="text" >
         <string>Polling interval:</string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="1" >
-      <widget class="KIntSpinBox" name="spinPollingInterval" >
-       <property name="suffix" >
-        <string> mins</string>
-       </property>
-       <property name="minimum" >
-        <number>5</number>
-       </property>
-       <property name="maximum" >
-        <number>9999</number>
        </property>
       </widget>
      </item>
@@ -293,6 +280,19 @@
        </property>
        <property name="text" >
         <string>Background:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1" >
+      <widget class="KIntSpinBox" name="spinPollingInterval" >
+       <property name="suffix" >
+        <string> mins</string>
+       </property>
+       <property name="minimum" >
+        <number>5</number>
+       </property>
+       <property name="maximum" >
+        <number>9999</number>
        </property>
       </widget>
      </item>
