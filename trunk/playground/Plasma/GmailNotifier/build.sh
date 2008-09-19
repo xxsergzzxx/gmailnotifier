@@ -13,7 +13,8 @@ msg "Running CMake..."
 cmake .. -DCMAKE_INSTALL_PREFIX=${KDEDIR:=$KDE4PREFIX} -DCMAKE_BUILD_TYPE=Debugfull
 
 msg "Compiling..."
-make
+JOBS=$((`grep -c '^processor' /proc/cpuinfo` + 1))
+make -j$JOBS
 
 msg "Installing..."
 if [ ${KDE4PREFIX:0:${#HOME}} == $HOME ]; then
