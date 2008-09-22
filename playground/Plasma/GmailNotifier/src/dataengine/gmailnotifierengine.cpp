@@ -21,16 +21,17 @@
 #include "gmailnotifierengine.h"
 #include "gmailatomfeedparser.h"
 
+// KDE
+#include <KDE/KUrl>
+
 // Qt
-#include <QtCore/QTime> //REMOVEME
-#include <QtCore/QUrl>
 #include <QtNetwork/QHttp>
 
 
 class GmailNotifierEngine::Private
 {
 public:
-                  QUrl  url;
+                  KUrl  url;
                  QHttp *http;
            QVariantMap  passwordList;
     QMap<int, QString>  pendingRequests;
@@ -95,14 +96,12 @@ void GmailNotifierEngine::init()
 bool GmailNotifierEngine::sourceRequestEvent(const QString &request)
 {
     kDebug();
-    qDebug() << request << QTime::currentTime();
     return requestData(request);
 } // sourceRequestEvent()
 
 bool GmailNotifierEngine::updateSourceEvent(const QString &request)
 {
     kDebug();
-    qDebug() << request << QTime::currentTime();
     return requestData(request);
 } // updateSourceEvent()
 
