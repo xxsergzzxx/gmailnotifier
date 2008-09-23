@@ -23,6 +23,13 @@
 // Plasma
 #include <Plasma/DataEngine>
 
+// KDE
+class KJob;
+namespace KIO
+{
+    class Job;
+}
+
 
 class GmailNotifierEngine : public Plasma::DataEngine
 {
@@ -44,7 +51,8 @@ protected:
     bool requestData(const QString &request);
 
 private Q_SLOTS:
-    void httpRequestFinished(const int &requestId, const bool &error);
+    void recv(KIO::Job *job, const QByteArray &data);
+    void result(KJob *job);
 
 private:
     class Private;
