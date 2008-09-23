@@ -139,7 +139,8 @@ void GmailNotifierApplet::configAccepted()
 
 void GmailNotifierApplet::constraintsEvent(Plasma::Constraints constraints)
 {
-    kDebug() << "constraintsEvent()" << constraints;
+    kDebug() << "constraintsEvent()" << constraints << formFactor();
+    kDebug() << boundingRect();
 } // constraintsEvent()
 
 
