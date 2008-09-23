@@ -22,31 +22,26 @@
 #include "gmailatomfeedparser.h"
 
 // KDE
+#include <KDE/KJob>
 #include <KDE/KUrl>
-
-// Qt
-#include <QtNetwork/QHttp>
+#include <KDE/KIO/Job>
 
 
 class GmailNotifierEngine::Private
 {
 public:
-                  KUrl  url;
-                 QHttp *http;
-           QVariantMap  passwordList;
-    QMap<int, QString>  pendingRequests;
+    QVariantMap passwordList;
+    KUrl baseUrl;
+    QHash<KJob *, QString> jobs;
+    QHash<KJob *, QByteArray> jobData;
 
     Private()
-        : http(new QHttp)
     {
         // ATOM feed base URL
-        url.setUrl("https://mail.google.com:443/mail/feed/atom/", QUrl::StrictMode);
+        baseUrl.setUrl("https://mail.google.com:443/mail/feed/atom/", QUrl::StrictMode);
     }
     ~Private()
     {
-        if (http->hasPendingRequests()) {
-            http->abort();
-        }
     }
 }; // Private()
 
@@ -59,8 +54,6 @@ GmailNotifierEngine::GmailNotifierEngine(QObject *parent, const QVariantList &ar
     , d(new Private)
 {
     kDebug();
-    connect(d->http, SIGNAL(requestFinished(int, bool)),
-            this, SLOT(httpRequestFinished(int, bool)));
 } // ctor()
 
 
@@ -89,14 +82,14 @@ void GmailNotifierEngine::setPasswords(const QVariantMap &passwords)
 void GmailNotifierEngine::init()
 {
     kDebug();
-    // 5 mins ought to be enough for anybody :)
-    setMinimumPollingInterval( 1000 * 60 * 5 );
+    // 1 min ought to be enough for anybody :)
+    setMinimumPollingInterval(1000 * 60 * 1);
 } // init()
 
 bool GmailNotifierEngine::sourceRequestEvent(const QString &request)
 {
     kDebug();
-    return requestData(request);
+    return updateSourceEvent(request);
 } // sourceRequestEvent()
 
 bool GmailNotifierEngine::updateSourceEvent(const QString &request)
@@ -128,20 +121,21 @@ bool GmailNotifierEngine::requestData(const QString &request)
     QString label(splittedRequest[1]);
 
     kDebug() << "Requesting data..." << username << label;
-    QString path;
-    if (label == "inbox") {
-        path = d->url.path();
-    } else {
-        path = d->url.path() + label;
+
+    KUrl url(d->baseUrl);
+    if (label != "inbox") {
+        url.setPath(url.path()+label);
     }
-    d->http->setHost(d->url.host(), QHttp::ConnectionModeHttps, d->url.port());
-    d->http->setUser(username, d->passwordList[username].toString());
-    int reqId = d->http->get(path);
+    url.setUserName(username);
+    url.setPassword(d->passwordList[username].toString());
 
-    d->pendingRequests.insert(reqId, request);
+    KIO::Job *job = KIO::get(url, KIO::Reload, KIO::HideProgressInfo);
+    d->jobs[job] = request;
+    connect(job, SIGNAL(data(KIO::Job*, const QByteArray&)),
+            this, SLOT(recv(KIO::Job*, const QByteArray&)));
+    connect(job, SIGNAL(result(KJob*)), this, SLOT(result(KJob*)));
+
     setData(request, Plasma::DataEngine::Data());
-
-    qDebug() << sources();
 
     return true;
 } // requestData()
@@ -150,23 +144,29 @@ bool GmailNotifierEngine::requestData(const QString &request)
 /*
 ** Private Q_SLOTS
 */
-void GmailNotifierEngine::httpRequestFinished(const int &requestId, const bool &error)
+
+void GmailNotifierEngine::recv(KIO::Job *job, const QByteArray &data)
 {
     kDebug();
-    if (!d->pendingRequests.contains(requestId)) {
-        return;
-    }
-    if (error) {
-        setData(d->pendingRequests[requestId], "error", d->http->errorString());
-        d->pendingRequests.remove(requestId);
+    d->jobData[job] += data;
+} // recv()
+
+void GmailNotifierEngine::result(KJob *job)
+{
+    kDebug();
+    if (!d->jobs.contains(job)) {
         return;
     }
 
-    Plasma::DataEngine::Data results;
-    results = GmailAtomFeedParser::parseFeed(d->http->readAll());
-    setData(d->pendingRequests[requestId], results);
-    d->pendingRequests.remove(requestId);
-} // httpRequestFinished()
+    if (job->error()) {
+        kDebug() << "An error occured!";
+    } else {
+        setData(d->jobs[job], GmailAtomFeedParser::parseFeed(d->jobData[job]));
+    }
+
+    d->jobs.remove(job);
+    d->jobData.remove(job);
+} // result()
 
 
 #include "gmailnotifierengine.moc"
