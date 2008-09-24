@@ -26,39 +26,13 @@
 // KDE
 #include <KDE/KDebug>
 
-// Qt
-#include <QtGui/QLabel>
-#include <QtGui/QGridLayout>
-#include <QtGui/QVBoxLayout>
-
-
-class GmailNotifierDialog::Private
-{
-public:
-    Private()
-        : widget(0)
-        , lblLogo(0)
-        , layoutMain(0)
-        , layoutMails(0)
-    {
-    }
-    ~Private()
-    {
-    }
-
-    QWidget *widget;
-    QLabel *lblLogo;
-    QVBoxLayout *layoutMain;
-    QGridLayout *layoutMails;
-}; // Private
-
 
 /*
 ** Public
 */
 GmailNotifierDialog::GmailNotifierDialog(DialogArea area, QObject *parent)
     : QObject(parent)
-    , d(new Private)
+    , m_widget(0), m_lblLogo(0), m_layoutMain(0), m_layoutMails(0)
 {
     kDebug();
     buildDialog(area);
@@ -67,25 +41,24 @@ GmailNotifierDialog::GmailNotifierDialog(DialogArea area, QObject *parent)
 GmailNotifierDialog::~GmailNotifierDialog()
 {
     kDebug();
-    delete d;
 } // dtor()
 
 QWidget * GmailNotifierDialog::dialog()
 {
     kDebug();
-    return d->widget;
+    return m_widget;
 } // dialog()
 
 void GmailNotifierDialog::show()
 {
     kDebug();
-    d->widget->show();
+    m_widget->show();
 } // show()
 
 void GmailNotifierDialog::hide()
 {
     kDebug();
-    d->widget->hide();
+    m_widget->hide();
 } // hide;
 
 /*
@@ -96,45 +69,45 @@ void GmailNotifierDialog::buildDialog(DialogArea area)
     kDebug();
     switch (area) {
     case DesktopArea:
-        d->widget = new QWidget();
-//        d->widget->setBackgroundRole(QPalette::Window);
-        d->widget->setAttribute(Qt::WA_NoSystemBackground);
+        m_widget = new QWidget();
+//        m_widget->setBackgroundRole(QPalette::Window);
+        m_widget->setAttribute(Qt::WA_NoSystemBackground);
         break;
     case PanelArea:
-        d->widget = new Plasma::Dialog();
-        d->widget->setWindowFlags(Qt::Popup);
+        m_widget = new Plasma::Dialog();
+        m_widget->setWindowFlags(Qt::Popup);
         break;
     }
 
     // Main layout
-    d->layoutMain = new QVBoxLayout(d->widget);
-    d->layoutMain->setSpacing(0);
-    d->layoutMain->setMargin(10);
-    d->lblLogo = new QLabel(d->widget);
-    d->lblLogo->setPixmap(QPixmap(":/images/gmail_logo.png"));
-    d->lblLogo->setAlignment(Qt::AlignCenter);
-    d->layoutMain->addWidget(d->lblLogo);
+    m_layoutMain = new QVBoxLayout(m_widget);
+    m_layoutMain->setSpacing(0);
+    m_layoutMain->setMargin(10);
+    m_lblLogo = new QLabel(m_widget);
+    m_lblLogo->setPixmap(QPixmap(":/images/gmail_logo.png"));
+    m_lblLogo->setAlignment(Qt::AlignCenter);
+    m_layoutMain->addWidget(m_lblLogo);
 
-    d->layoutMain->addSpacerItem(new QSpacerItem(0, 10, QSizePolicy::Expanding, QSizePolicy::Fixed));
+    m_layoutMain->addSpacerItem(new QSpacerItem(0, 10, QSizePolicy::Expanding, QSizePolicy::Fixed));
 
-    d->layoutMails = new QGridLayout(d->widget);
-    d->layoutMails->setSpacing(5);
-    d->layoutMails->setMargin(0);
+    m_layoutMails = new QGridLayout(m_widget);
+    m_layoutMails->setSpacing(5);
+    m_layoutMails->setMargin(0);
 
     for (int i=0; i<=10; ++i) {
-        QLabel *lblL = new QLabel(d->widget);
-        QLabel *lblR = new QLabel(d->widget);
+        QLabel *lblL = new QLabel(m_widget);
+        QLabel *lblR = new QLabel(m_widget);
 
         lblL->setText(QString("<font color=\"white\">Label_Left_%1</font>").arg(i));
         lblR->setText(QString("<font color=\"white\">Label_Right_%1</font>").arg(i));
 
-        d->layoutMails->addWidget(lblL, i, 0, Qt::AlignLeft | Qt::AlignVCenter);
-        d->layoutMails->addWidget(lblR, i, 1, Qt::AlignRight | Qt::AlignVCenter);
+        m_layoutMails->addWidget(lblL, i, 0, Qt::AlignLeft | Qt::AlignVCenter);
+        m_layoutMails->addWidget(lblR, i, 1, Qt::AlignRight | Qt::AlignVCenter);
     }
 
-    d->layoutMain->addItem(d->layoutMails);
+    m_layoutMain->addItem(m_layoutMails);
 
-    d->layoutMain->addSpacerItem(new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding));
+    m_layoutMain->addSpacerItem(new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding));
 } // buildDialog()
 
 
