@@ -2,7 +2,8 @@ project(plasma-applet-GmailNotifier)
 
 set(gmailnotifier_applet_SRCS
     gmailnotifierapplet.cpp
-    gmailnotifierappletconfig.cpp)
+    gmailnotifierappletconfig.cpp
+    gmailnotifierdialog.cpp)
 
 qt4_add_resources(gmailnotifier_applet_SRCS gmailnotifierapplet.qrc)
 
