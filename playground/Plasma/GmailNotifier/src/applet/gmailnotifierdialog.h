@@ -22,39 +22,37 @@
 ** and are (C) Alexis Ménard
 */
 
-#ifndef __GMAILNOTIFIER_APPLET_H__
-#define __GMAILNOTIFIER_APPLET_H__
+
+#ifndef __GMAILNOTIFIERDIALOG_H__
+#define __GMAILNOTIFIERDIALOG_H__
+
+#include <QtCore/QObject>
 
 
-// Plasma
-#include <Plasma/Applet>
-
-
-class GmailNotifierApplet : public Plasma::Applet
+class GmailNotifierDialog : public QObject
 {
     Q_OBJECT
 
 public:
-    GmailNotifierApplet(QObject *parent, const QVariantList &args);
-    ~GmailNotifierApplet();
+    enum DialogArea
+    {
+        DesktopArea,
+        PanelArea
+    };
 
-    void init();
+    GmailNotifierDialog(DialogArea area, QObject *parent=0);
+    ~GmailNotifierDialog();
 
-protected:
-    void constraintsEvent(Plasma::Constraints constraints);
-
-protected Q_SLOTS:
-    void onClickNotifier();
+    QWidget * dialog();
+    void show();
+    void hide();
 
 private:
     class Private;
     Private * const d;
 
-    void drawIcon(const QString &text="");
+    void buildDialog(DialogArea area);
 };
 
 
-K_EXPORT_PLASMA_APPLET(gmailnotifier, GmailNotifierApplet)
-
-
-#endif // __GMAILNOTIFIER_APPLET_H__
+#endif // __GMAILNOTIFIERDIALOG_H__

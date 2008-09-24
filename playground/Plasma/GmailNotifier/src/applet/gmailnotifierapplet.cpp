@@ -19,10 +19,16 @@
 
 // Own
 #include "gmailnotifierapplet.h"
+#include "gmailnotifierdialog.h"
 
 // Plasma
 #include <Plasma/DataEngine>
 #include <Plasma/Icon>
+
+// Qt
+#include <QtGui/QGraphicsLinearLayout>
+#include <QtGui/QGraphicsProxyWidget>
+#include <QtGui/QPainter>
 
 
 class GmailNotifierApplet::Private
@@ -31,6 +37,9 @@ public:
     Private()
         : icon(0)
         , engine(0)
+        , dialog(0)
+        , proxy(0)
+        , layout(0)
     {
     }
     ~Private()
@@ -39,6 +48,9 @@ public:
 
     Plasma::Icon *icon;
     Plasma::DataEngine *engine;
+    GmailNotifierDialog *dialog;
+    QGraphicsProxyWidget *proxy;
+    QGraphicsLinearLayout *layout;
 }; // Private
 
 
@@ -50,6 +62,8 @@ GmailNotifierApplet::GmailNotifierApplet(QObject *parent, const QVariantList &ar
     , d(new Private)
 {
     kDebug();
+
+    // Connect to the dataengine
     d->engine = Plasma::Applet::dataEngine("gmailnotifier");
     if (!d->engine->isValid()) {
         Plasma::Applet::setFailedToLaunch(true, i18n("Failed to open the data engine!"));
@@ -66,6 +80,17 @@ GmailNotifierApplet::~GmailNotifierApplet()
     delete d;
 } // dtor()
 
+void GmailNotifierApplet::init()
+{
+    kDebug();
+
+    // Main layout, used both in desktop and panel mode
+    d->layout = new QGraphicsLinearLayout(this);
+    d->layout->setContentsMargins(0, 0, 0, 0);
+    d->layout->setSpacing(0);
+    Plasma::Applet::setLayout(d->layout);
+} // init()
+
 
 /*
 ** Protected
@@ -74,35 +99,93 @@ void GmailNotifierApplet::constraintsEvent(Plasma::Constraints constraints)
 {
     kDebug();
 
-    Q_UNUSED(constraints);
+    bool isSizeConstrained = (formFactor() == Plasma::Horizontal ||
+                              formFactor() == Plasma::Vertical);
+    if (constraints & Plasma::FormFactorConstraint) {
+        if (isSizeConstrained) {
+            if (!d->dialog) {
+                d->dialog = new GmailNotifierDialog(GmailNotifierDialog::PanelArea, this);
+            }
+            kDebug() << d->dialog;
+            setBackgroundHints(NoBackground);
+            if (d->proxy) {
+                d->layout->removeItem(d->proxy);
+                delete d->proxy;
+                d->proxy=0;
+            }
+            drawIcon();
+        }
+        else {
+            delete d->icon;
+            d->icon = 0;
 
-    switch (formFactor()) {
-    case Plasma::Planar:
-    case Plasma::MediaCenter:
-        kDebug() << "Planar/MediaCenter";
-        break;
-    case Plasma::Horizontal:
-    case Plasma::Vertical:
-        kDebug() << "Horizontal/Vertical";
+            if (!d->dialog) {
+                d->dialog = new GmailNotifierDialog(GmailNotifierDialog::DesktopArea, this);
+            }
+            d->proxy = new QGraphicsProxyWidget(this);
+            d->proxy->setWidget(d->dialog->dialog());
+            d->layout->addItem(d->proxy);
+            resize(d->dialog->dialog()->size() + QSize(60,60));
+            Plasma::Applet::setMinimumSize(d->dialog->dialog()->minimumSizeHint());
+        }
+    }
+
+    if (d->icon && constraints & Plasma::SizeConstraint) {
         drawIcon();
-        break;
     }
 } // constraintsEvent()
 
 
 /*
-** Private
+** Protected Q_SLOTS
 */
-void GmailNotifierApplet::drawIcon()
+void GmailNotifierApplet::onClickNotifier()
 {
     kDebug();
 
+    if (d->dialog->dialog()->isVisible()) {
+        d->dialog->hide();
+    } else {
+        d->dialog->dialog()->move(popupPosition(d->dialog->dialog()->sizeHint()));
+        d->dialog->show();
+    }    
+} // onClickNotifier()
+
+
+/*
+** Private
+*/
+void GmailNotifierApplet::drawIcon(const QString &text)
+{
+    kDebug();
+
+    // Remove any previously created icon
     if (d->icon) {
+        d->layout->removeItem(d->icon);
         delete d->icon;
         d->icon = 0;
     }
-    d->icon = new Plasma::Icon(QIcon(":/images/gmailnotifier_icon.png"), QString(), this);
+
+    QPixmap srcImg(":/images/gmailnotifier_icon.png");
+    QPixmap img = srcImg.scaled((int)geometry().width(),
+                                (int)geometry().height(),
+                                Qt::KeepAspectRatio,
+                                Qt::SmoothTransformation);
+
+    if (!text.isEmpty()) {
+        QPainter p(&img);
+        QFont font(p.font());
+        font.setBold(true);
+        p.setFont(font);
+        p.drawText(QRectF(0, img.height()/2, img.width(), img.height()/2), Qt::AlignCenter, text);
+    }
+
+    d->icon = new Plasma::Icon(img, QString(), this);
+    connect(d->icon, SIGNAL(clicked()), this, SLOT(onClickNotifier()));
     d->icon->resize(geometry().size());
+
+    Plasma::Applet::setAspectRatioMode(Plasma::ConstrainedSquare);
+    d->layout->addItem(d->icon);
 } // drawIcon()
 
 
