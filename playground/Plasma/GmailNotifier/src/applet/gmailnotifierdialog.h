@@ -26,7 +26,12 @@
 #ifndef __GMAILNOTIFIERDIALOG_H__
 #define __GMAILNOTIFIERDIALOG_H__
 
+
+// Qt
 #include <QtCore/QObject>
+#include <QtGui/QLabel>
+#include <QtGui/QGridLayout>
+#include <QtGui/QVBoxLayout>
 
 
 class GmailNotifierDialog : public QObject
@@ -48,10 +53,12 @@ public:
     void hide();
 
 private:
-    class Private;
-    Private * const d;
-
     void buildDialog(DialogArea area);
+
+    QWidget     *m_widget;
+    QLabel      *m_lblLogo;
+    QVBoxLayout *m_layoutMain;
+    QGridLayout *m_layoutMails;
 };
 
 

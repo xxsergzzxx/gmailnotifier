@@ -26,8 +26,16 @@
 #define __GMAILNOTIFIER_APPLET_H__
 
 
+// Own
+#include "gmailnotifierdialog.h"
+
 // Plasma
 #include <Plasma/Applet>
+#include <Plasma/Icon>
+
+// Qt
+#include <QtGui/QGraphicsLinearLayout>
+#include <QtGui/QGraphicsProxyWidget>
 
 
 class GmailNotifierApplet : public Plasma::Applet
@@ -47,10 +55,13 @@ protected Q_SLOTS:
     void onClickNotifier();
 
 private:
-    class Private;
-    Private * const d;
-
     void drawIcon(const QString &text="");
+
+    Plasma::Icon          *m_icon;
+    Plasma::DataEngine    *m_engine;
+    GmailNotifierDialog   *m_dialog;
+    QGraphicsProxyWidget  *m_proxy;
+    QGraphicsLinearLayout *m_layout;
 };
 
 

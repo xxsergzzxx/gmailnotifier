@@ -19,39 +19,12 @@
 
 // Own
 #include "gmailnotifierapplet.h"
-#include "gmailnotifierdialog.h"
 
 // Plasma
 #include <Plasma/DataEngine>
-#include <Plasma/Icon>
 
 // Qt
-#include <QtGui/QGraphicsLinearLayout>
-#include <QtGui/QGraphicsProxyWidget>
 #include <QtGui/QPainter>
-
-
-class GmailNotifierApplet::Private
-{
-public:
-    Private()
-        : icon(0)
-        , engine(0)
-        , dialog(0)
-        , proxy(0)
-        , layout(0)
-    {
-    }
-    ~Private()
-    {
-    }
-
-    Plasma::Icon *icon;
-    Plasma::DataEngine *engine;
-    GmailNotifierDialog *dialog;
-    QGraphicsProxyWidget *proxy;
-    QGraphicsLinearLayout *layout;
-}; // Private
 
 
 /*
@@ -59,13 +32,13 @@ public:
 */
 GmailNotifierApplet::GmailNotifierApplet(QObject *parent, const QVariantList &args)
     : Plasma::Applet(parent, args)
-    , d(new Private)
+    , m_icon(0), m_engine(0), m_dialog(0), m_proxy(0), m_layout(0)
 {
     kDebug();
 
     // Connect to the dataengine
-    d->engine = Plasma::Applet::dataEngine("gmailnotifier");
-    if (!d->engine->isValid()) {
+    m_engine = Plasma::Applet::dataEngine("gmailnotifier");
+    if (!m_engine->isValid()) {
         Plasma::Applet::setFailedToLaunch(true, i18n("Failed to open the data engine!"));
         return;
     }
@@ -77,7 +50,6 @@ GmailNotifierApplet::GmailNotifierApplet(QObject *parent, const QVariantList &ar
 GmailNotifierApplet::~GmailNotifierApplet()
 {
     kDebug();
-    delete d;
 } // dtor()
 
 void GmailNotifierApplet::init()
@@ -85,10 +57,10 @@ void GmailNotifierApplet::init()
     kDebug();
 
     // Main layout, used both in desktop and panel mode
-    d->layout = new QGraphicsLinearLayout(this);
-    d->layout->setContentsMargins(0, 0, 0, 0);
-    d->layout->setSpacing(0);
-    Plasma::Applet::setLayout(d->layout);
+    m_layout = new QGraphicsLinearLayout(this);
+    m_layout->setContentsMargins(0, 0, 0, 0);
+    m_layout->setSpacing(0);
+    Plasma::Applet::setLayout(m_layout);
 } // init()
 
 
@@ -103,38 +75,38 @@ void GmailNotifierApplet::constraintsEvent(Plasma::Constraints constraints)
                               formFactor() == Plasma::Vertical);
     if (constraints & Plasma::FormFactorConstraint) {
         if (isSizeConstrained) {
-            if (!d->dialog) {
-                d->dialog = new GmailNotifierDialog(GmailNotifierDialog::PanelArea, this);
+            if (!m_dialog) {
+                m_dialog = new GmailNotifierDialog(GmailNotifierDialog::PanelArea, this);
             }
-            kDebug() << d->dialog;
+            kDebug() << m_dialog;
             setBackgroundHints(NoBackground);
-            if (d->proxy) {
-                d->layout->removeItem(d->proxy);
-                delete d->proxy;
-                d->proxy=0;
+            if (m_proxy) {
+                m_layout->removeItem(m_proxy);
+                delete m_proxy;
+                m_proxy=0;
             }
             drawIcon("123");
         }
         else {
-            if (d->icon) {
-                d->layout->removeItem(d->icon);
-                delete d->icon;
-                d->icon = 0;
+            if (m_icon) {
+                m_layout->removeItem(m_icon);
+                delete m_icon;
+                m_icon = 0;
             }
 
-            if (!d->dialog) {
-                d->dialog = new GmailNotifierDialog(GmailNotifierDialog::DesktopArea, this);
+            if (!m_dialog) {
+                m_dialog = new GmailNotifierDialog(GmailNotifierDialog::DesktopArea, this);
             }
-            d->proxy = new QGraphicsProxyWidget(this);
-            d->proxy->setWidget(d->dialog->dialog());
-            d->layout->addItem(d->proxy);
+            m_proxy = new QGraphicsProxyWidget(this);
+            m_proxy->setWidget(m_dialog->dialog());
+            m_layout->addItem(m_proxy);
 
-            resize(d->dialog->dialog()->size()/* + QSize(100, 100) */);
-            Plasma::Applet::setMinimumSize(d->dialog->dialog()->minimumSizeHint() + QSize(30, 30));
+            resize(m_dialog->dialog()->size()/* + QSize(100, 100) */);
+            Plasma::Applet::setMinimumSize(m_dialog->dialog()->minimumSizeHint() + QSize(30, 30));
         }
     }
 
-    if (d->icon && constraints & Plasma::SizeConstraint) {
+    if (m_icon && constraints & Plasma::SizeConstraint) {
         drawIcon("123");
     }
 } // constraintsEvent()
@@ -147,11 +119,11 @@ void GmailNotifierApplet::onClickNotifier()
 {
     kDebug();
 
-    if (d->dialog->dialog()->isVisible()) {
-        d->dialog->hide();
+    if (m_dialog->dialog()->isVisible()) {
+        m_dialog->hide();
     } else {
-        d->dialog->dialog()->move(popupPosition(d->dialog->dialog()->sizeHint()));
-        d->dialog->show();
+        m_dialog->dialog()->move(popupPosition(m_dialog->dialog()->sizeHint()));
+        m_dialog->show();
     }    
 } // onClickNotifier()
 
@@ -164,10 +136,10 @@ void GmailNotifierApplet::drawIcon(const QString &text)
     kDebug() << text;
 
     // Remove any previously created icon
-    if (d->icon) {
-        d->layout->removeItem(d->icon);
-        delete d->icon;
-        d->icon = 0;
+    if (m_icon) {
+        m_layout->removeItem(m_icon);
+        delete m_icon;
+        m_icon = 0;
     }
 
     QPixmap srcImg(":/images/gmailnotifier_icon.png");
@@ -181,15 +153,16 @@ void GmailNotifierApplet::drawIcon(const QString &text)
         QFont font(p.font());
         font.setBold(true);
         p.setFont(font);
+        p.setPen(QColor("#0057AE"));
         p.drawText(QRectF(0, img.height()/2, img.width(), img.height()/2), Qt::AlignCenter, text);
     }
 
-    d->icon = new Plasma::Icon(img, QString(), this);
-    connect(d->icon, SIGNAL(clicked()), this, SLOT(onClickNotifier()));
-    d->icon->resize(geometry().size());
+    m_icon = new Plasma::Icon(img, QString(), this);
+    connect(m_icon, SIGNAL(clicked()), this, SLOT(onClickNotifier()));
+    m_icon->resize(geometry().size());
 
     Plasma::Applet::setAspectRatioMode(Plasma::ConstrainedSquare);
-    d->layout->addItem(d->icon);
+    m_layout->addItem(m_icon);
 } // drawIcon()
 
 
