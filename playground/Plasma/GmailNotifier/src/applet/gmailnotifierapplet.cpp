@@ -75,17 +75,15 @@ void GmailNotifierApplet::constraintsEvent(Plasma::Constraints constraints)
                               formFactor() == Plasma::Vertical);
     if (constraints & Plasma::FormFactorConstraint) {
         if (isSizeConstrained) {
-            if (!m_dialog) {
-                m_dialog = new GmailNotifierDialog(GmailNotifierDialog::PanelArea, this);
-            }
-            kDebug() << m_dialog;
-            setBackgroundHints(NoBackground);
             if (m_proxy) {
                 m_layout->removeItem(m_proxy);
                 delete m_proxy;
                 m_proxy=0;
             }
-            drawIcon("123");
+            m_dialog = new GmailNotifierDialog(GmailNotifierDialog::PanelArea, this);
+            kDebug() << m_dialog;
+            setBackgroundHints(NoBackground);
+            drawIcon();
         }
         else {
             if (m_icon) {
@@ -93,10 +91,7 @@ void GmailNotifierApplet::constraintsEvent(Plasma::Constraints constraints)
                 delete m_icon;
                 m_icon = 0;
             }
-
-            if (!m_dialog) {
-                m_dialog = new GmailNotifierDialog(GmailNotifierDialog::DesktopArea, this);
-            }
+            m_dialog = new GmailNotifierDialog(GmailNotifierDialog::DesktopArea, this);
             m_proxy = new QGraphicsProxyWidget(this);
             m_proxy->setWidget(m_dialog->dialog());
             m_layout->addItem(m_proxy);
@@ -107,7 +102,7 @@ void GmailNotifierApplet::constraintsEvent(Plasma::Constraints constraints)
     }
 
     if (m_icon && constraints & Plasma::SizeConstraint) {
-        drawIcon("123");
+        drawIcon();
     }
 } // constraintsEvent()
 
