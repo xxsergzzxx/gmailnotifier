@@ -113,11 +113,14 @@ void GmailNotifierApplet::constraintsEvent(Plasma::Constraints constraints)
                 delete d->proxy;
                 d->proxy=0;
             }
-            drawIcon();
+            drawIcon("123");
         }
         else {
-            delete d->icon;
-            d->icon = 0;
+            if (d->icon) {
+                d->layout->removeItem(d->icon);
+                delete d->icon;
+                d->icon = 0;
+            }
 
             if (!d->dialog) {
                 d->dialog = new GmailNotifierDialog(GmailNotifierDialog::DesktopArea, this);
@@ -125,13 +128,14 @@ void GmailNotifierApplet::constraintsEvent(Plasma::Constraints constraints)
             d->proxy = new QGraphicsProxyWidget(this);
             d->proxy->setWidget(d->dialog->dialog());
             d->layout->addItem(d->proxy);
-            resize(d->dialog->dialog()->size() + QSize(60,60));
-            Plasma::Applet::setMinimumSize(d->dialog->dialog()->minimumSizeHint());
+
+            resize(d->dialog->dialog()->size()/* + QSize(100, 100) */);
+            Plasma::Applet::setMinimumSize(d->dialog->dialog()->minimumSizeHint() + QSize(30, 30));
         }
     }
 
     if (d->icon && constraints & Plasma::SizeConstraint) {
-        drawIcon();
+        drawIcon("123");
     }
 } // constraintsEvent()
 
@@ -157,7 +161,7 @@ void GmailNotifierApplet::onClickNotifier()
 */
 void GmailNotifierApplet::drawIcon(const QString &text)
 {
-    kDebug();
+    kDebug() << text;
 
     // Remove any previously created icon
     if (d->icon) {

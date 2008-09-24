@@ -28,6 +28,8 @@
 
 // Qt
 #include <QtGui/QLabel>
+#include <QtGui/QGridLayout>
+#include <QtGui/QVBoxLayout>
 
 
 class GmailNotifierDialog::Private
@@ -35,6 +37,9 @@ class GmailNotifierDialog::Private
 public:
     Private()
         : widget(0)
+        , lblLogo(0)
+        , layoutMain(0)
+        , layoutMails(0)
     {
     }
     ~Private()
@@ -42,7 +47,9 @@ public:
     }
 
     QWidget *widget;
-    QLabel *label;
+    QLabel *lblLogo;
+    QVBoxLayout *layoutMain;
+    QGridLayout *layoutMails;
 }; // Private
 
 
@@ -90,16 +97,44 @@ void GmailNotifierDialog::buildDialog(DialogArea area)
     switch (area) {
     case DesktopArea:
         d->widget = new QWidget();
-//        d->widget->setBackgroundRole(QPalette::Shadow);
+//        d->widget->setBackgroundRole(QPalette::Window);
+        d->widget->setAttribute(Qt::WA_NoSystemBackground);
         break;
     case PanelArea:
         d->widget = new Plasma::Dialog();
-//        d->widget->setWindowFlags(Qt::Popup);
+        d->widget->setWindowFlags(Qt::Popup);
         break;
     }
 
-    d->label = new QLabel("TAISTE", d->widget);
-    kDebug() << d->label->text();
+    // Main layout
+    d->layoutMain = new QVBoxLayout(d->widget);
+    d->layoutMain->setSpacing(0);
+    d->layoutMain->setMargin(10);
+    d->lblLogo = new QLabel(d->widget);
+    d->lblLogo->setPixmap(QPixmap(":/images/gmail_logo.png"));
+    d->lblLogo->setAlignment(Qt::AlignCenter);
+    d->layoutMain->addWidget(d->lblLogo);
+
+    d->layoutMain->addSpacerItem(new QSpacerItem(0, 10, QSizePolicy::Expanding, QSizePolicy::Fixed));
+
+    d->layoutMails = new QGridLayout(d->widget);
+    d->layoutMails->setSpacing(5);
+    d->layoutMails->setMargin(0);
+
+    for (int i=0; i<=10; ++i) {
+        QLabel *lblL = new QLabel(d->widget);
+        QLabel *lblR = new QLabel(d->widget);
+
+        lblL->setText(QString("<font color=\"white\">Label_Left_%1</font>").arg(i));
+        lblR->setText(QString("<font color=\"white\">Label_Right_%1</font>").arg(i));
+
+        d->layoutMails->addWidget(lblL, i, 0, Qt::AlignLeft | Qt::AlignVCenter);
+        d->layoutMails->addWidget(lblR, i, 1, Qt::AlignRight | Qt::AlignVCenter);
+    }
+
+    d->layoutMain->addItem(d->layoutMails);
+
+    d->layoutMain->addSpacerItem(new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding));
 } // buildDialog()
 
 
