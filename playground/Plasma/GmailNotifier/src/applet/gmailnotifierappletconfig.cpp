@@ -21,8 +21,8 @@
 // Own
 #include "gmailnotifierappletconfig.h"
 
-// Qt
-#include <QtCore/QDebug>
+// KDE
+#include <KDE/KDebug>
 
 
 /*
@@ -31,6 +31,7 @@
 GmailNotifierAppletConfig::GmailNotifierAppletConfig(QWidget *parent)
     : QWidget(parent)
 {
+    kDebug();
     ui.setupUi(this);
 
     QStringList backgroundHints;
@@ -41,10 +42,12 @@ GmailNotifierAppletConfig::GmailNotifierAppletConfig(QWidget *parent)
 
 GmailNotifierAppletConfig::~GmailNotifierAppletConfig()
 {
+    kDebug();
 } // dtor()
 
 void GmailNotifierAppletConfig::importConfig(const QVariantMap &data)
 {
+    kDebug();
     ui.cbDisplayLogo->setChecked(data["DisplayLogo"].toBool());
 
     int pos = ui.comboBackground->findText(data["Background"].toString(), Qt::MatchExactly);
@@ -60,6 +63,7 @@ void GmailNotifierAppletConfig::importConfig(const QVariantMap &data)
 
 QVariantMap GmailNotifierAppletConfig::exportConfig()
 {
+    kDebug();
     QVariantMap data;
     data["DisplayLogo"] = ui.cbDisplayLogo->isChecked();
     data["Background"] = ui.comboBackground->currentText();
@@ -82,6 +86,7 @@ QVariantMap GmailNotifierAppletConfig::exportConfig()
 */
 void GmailNotifierAppletConfig::on_leLogin_textChanged(const QString &text)
 {
+    kDebug();
     Q_UNUSED(text)
     setAddModifyButtonEnabled();
     adaptAddModifyButtonLabel();
@@ -89,6 +94,7 @@ void GmailNotifierAppletConfig::on_leLogin_textChanged(const QString &text)
 
 void GmailNotifierAppletConfig::on_leLabel_textChanged(const QString &text)
 {
+    kDebug();
     Q_UNUSED(text)
     setAddModifyButtonEnabled();
     adaptAddModifyButtonLabel();
@@ -96,12 +102,14 @@ void GmailNotifierAppletConfig::on_leLabel_textChanged(const QString &text)
 
 void GmailNotifierAppletConfig::on_lePassword_textChanged(const QString &text)
 {
+    kDebug();
     Q_UNUSED(text)
     setAddModifyButtonEnabled();
 } // on_lePassword_textChanged()
 
 void GmailNotifierAppletConfig::on_btnAddModify_clicked()
 {
+    kDebug();
     QVariantMap data;
     data["Login"]    = ui.leLogin->text();
     data["Password"] = ui.lePassword->text();
@@ -125,6 +133,7 @@ void GmailNotifierAppletConfig::on_btnAddModify_clicked()
 
 void GmailNotifierAppletConfig::on_btnDelete_clicked()
 {
+    kDebug();
 //    ui.listAccounts->removeItemWidget(ui.listAccounts->currentItem());
     ui.listAccounts->takeItem(ui.listAccounts->currentRow());
     ui.listAccounts->setCurrentRow(-1);
@@ -135,6 +144,7 @@ void GmailNotifierAppletConfig::on_btnDelete_clicked()
 
 void GmailNotifierAppletConfig::on_btnUp_clicked()
 {
+    kDebug();
     moveItem(-1);
 
     setUpDownButtonsEnabled();
@@ -142,6 +152,7 @@ void GmailNotifierAppletConfig::on_btnUp_clicked()
 
 void GmailNotifierAppletConfig::on_btnDown_clicked()
 {
+    kDebug();
     moveItem(+1);
 
     setUpDownButtonsEnabled();
@@ -149,6 +160,7 @@ void GmailNotifierAppletConfig::on_btnDown_clicked()
 
 void GmailNotifierAppletConfig::on_listAccounts_itemPressed(QListWidgetItem *item)
 {
+    kDebug();
     QVariantMap data(item->data(Qt::UserRole).toMap());
     ui.leLogin->setText(data["Login"].toString());
     ui.lePassword->setText(data["Password"].toString());
@@ -166,6 +178,7 @@ void GmailNotifierAppletConfig::on_listAccounts_itemPressed(QListWidgetItem *ite
 */
 void GmailNotifierAppletConfig::setAddModifyButtonEnabled()
 {
+    kDebug();
     bool enabled = (!ui.leLogin->text().isEmpty() &&
                     !ui.lePassword->text().isEmpty());
     ui.btnAddModify->setEnabled(enabled);
@@ -173,6 +186,7 @@ void GmailNotifierAppletConfig::setAddModifyButtonEnabled()
 
 void GmailNotifierAppletConfig::setUpDownButtonsEnabled()
 {
+    kDebug();
     bool enabled = (ui.listAccounts->count() >= 2 &&
                     ui.listAccounts->currentRow() != -1);
 
@@ -186,6 +200,7 @@ void GmailNotifierAppletConfig::setUpDownButtonsEnabled()
 
 void GmailNotifierAppletConfig::adaptAddModifyButtonLabel()
 {
+    kDebug();
     if (ui.leLogin->text().isEmpty() || ui.lePassword->text().isEmpty()) {
         return;
     }
@@ -204,6 +219,7 @@ void GmailNotifierAppletConfig::adaptAddModifyButtonLabel()
 
 QString GmailNotifierAppletConfig::listItemText(const QVariantMap &data)
 {
+    kDebug();
     QString itemText;
     QString label = (data["Label"].toString().isEmpty()) ? "inbox" : data["Label"].toString();
     if (data["Display"].toString().isEmpty()) {
@@ -217,6 +233,7 @@ QString GmailNotifierAppletConfig::listItemText(const QVariantMap &data)
 
 void GmailNotifierAppletConfig::addItemToList(const QVariantMap &data)
 {
+    kDebug();
     QListWidgetItem *item = new QListWidgetItem();
     item->setText(listItemText(data));
     item->setData(Qt::UserRole, data);
@@ -226,6 +243,7 @@ void GmailNotifierAppletConfig::addItemToList(const QVariantMap &data)
 
 int GmailNotifierAppletConfig::accountPosition(const QString &login, const QString &label)
 {
+    kDebug();
     int i=0;
     int pos=-1;
     while(i < ui.listAccounts->count()) {
@@ -243,6 +261,7 @@ int GmailNotifierAppletConfig::accountPosition(const QString &login, const QStri
 
 void GmailNotifierAppletConfig::moveItem(const int &shift)
 {
+    kDebug();
     int pos = ui.listAccounts->currentRow();
     QListWidgetItem *item = ui.listAccounts->takeItem(pos);
     ui.listAccounts->insertItem(pos+shift, item);

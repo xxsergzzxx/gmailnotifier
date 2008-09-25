@@ -43,11 +43,11 @@ GmailNotifierDialog::~GmailNotifierDialog()
     kDebug();
 } // dtor()
 
-QWidget * GmailNotifierDialog::dialog()
+QWidget * GmailNotifierDialog::widget()
 {
     kDebug();
     return m_widget;
-} // dialog()
+} // widget()
 
 void GmailNotifierDialog::show()
 {

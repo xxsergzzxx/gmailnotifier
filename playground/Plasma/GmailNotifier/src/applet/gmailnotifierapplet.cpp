@@ -23,6 +23,10 @@
 // Plasma
 #include <Plasma/DataEngine>
 
+// KDE
+#include <KDE/KConfigDialog>
+#include <KDE/KStringHandler>
+
 // Qt
 #include <QtGui/QPainter>
 
@@ -32,7 +36,8 @@
 */
 GmailNotifierApplet::GmailNotifierApplet(QObject *parent, const QVariantList &args)
     : Plasma::Applet(parent, args)
-    , m_icon(0), m_engine(0), m_dialog(0), m_proxy(0), m_layout(0)
+    , m_engine(0), m_dialog(0), m_configDialog(0)
+    , m_icon(0), m_proxy(0), m_layout(0)
 {
     kDebug();
 
@@ -55,6 +60,8 @@ GmailNotifierApplet::~GmailNotifierApplet()
 void GmailNotifierApplet::init()
 {
     kDebug();
+
+    readConfig();
 
     // Main layout, used both in desktop and panel mode
     m_layout = new QGraphicsLinearLayout(this);
@@ -93,11 +100,11 @@ void GmailNotifierApplet::constraintsEvent(Plasma::Constraints constraints)
             }
             m_dialog = new GmailNotifierDialog(GmailNotifierDialog::DesktopArea, this);
             m_proxy = new QGraphicsProxyWidget(this);
-            m_proxy->setWidget(m_dialog->dialog());
+            m_proxy->setWidget(m_dialog->widget());
             m_layout->addItem(m_proxy);
 
-            resize(m_dialog->dialog()->size()/* + QSize(100, 100) */);
-            Plasma::Applet::setMinimumSize(m_dialog->dialog()->minimumSizeHint() + QSize(30, 30));
+            resize(m_dialog->widget()->size()/* + QSize(100, 100) */);
+            Plasma::Applet::setMinimumSize(m_dialog->widget()->minimumSizeHint() + QSize(30, 30));
         }
     }
 
@@ -106,29 +113,95 @@ void GmailNotifierApplet::constraintsEvent(Plasma::Constraints constraints)
     }
 } // constraintsEvent()
 
+void GmailNotifierApplet::createConfigurationInterface(KConfigDialog *parent)
+{
+    kDebug();
+    m_configDialog = new GmailNotifierAppletConfig(parent);
+    //parent->setButtons(KDialog::Ok | KDialog::Cancel | KDialog::Apply);
+    parent->setButtons(KDialog::Ok | KDialog::Cancel);
+    parent->addPage(m_configDialog, parent->windowTitle(), icon());
+    parent->setDefaultButton(KDialog::Ok);
+    parent->showButtonSeparator(true);
+    //connect(parent, SIGNAL(applyClicked()), this, SLOT(configAccepted()));
+    connect(parent, SIGNAL(okClicked()), this, SLOT(configAccepted()));
+
+    QVariantMap data;
+    data["Background"]      = m_cfgBackground;
+    data["DisplayLogo"]     = m_cfgDisplayLogo;
+    data["PollingInterval"] = m_cfgPollingInterval;
+    data["Accounts"]        = m_cfgAccounts;
+    m_configDialog->importConfig(data);
+} // createConfigurationInterface()
+
 
 /*
-** Protected Q_SLOTS
+** Private Q_SLOTS
 */
 void GmailNotifierApplet::onClickNotifier()
 {
     kDebug();
 
-    if (m_dialog->dialog()->isVisible()) {
+    if (m_dialog->widget()->isVisible()) {
         m_dialog->hide();
     } else {
-        m_dialog->dialog()->move(popupPosition(m_dialog->dialog()->sizeHint()));
+        m_dialog->widget()->move(popupPosition(m_dialog->widget()->sizeHint()));
         m_dialog->show();
     }    
 } // onClickNotifier()
+
+void GmailNotifierApplet::configAccepted()
+{
+    kDebug();
+    QVariantMap data = m_configDialog->exportConfig();
+    config().writeEntry("Background", data["Background"]);
+    config().writeEntry("DisplayLogo", data["DisplayLogo"]);
+    config().writeEntry("PollingInterval", data["PollingInterval"]);
+
+    config().writeEntry("Accounts", data["Accounts"].toList().count());
+    QVariantList accounts(data["Accounts"].toList());
+    int i=1;
+    foreach(QVariant data, accounts) {
+        QVariantMap account(data.toMap());
+        QString prefix = QString("Account%1_").arg(i);
+        config().writeEntry(prefix+"Login", account["Login"]);
+        config().writeEntry(prefix+"Password", KStringHandler::obscure(account["Password"].toString()));
+        config().writeEntry(prefix+"Label", account["Label"]);
+        config().writeEntry(prefix+"Display", account["Display"]);
+        ++i;
+    }
+
+    KConfigGroup cg = config();
+    Plasma::Applet::save(cg);
+} // configAccepted()
 
 
 /*
 ** Private
 */
+void GmailNotifierApplet::readConfig()
+{
+    kDebug();
+    m_cfgBackground      = config().readEntry("Background", "Standard");
+    m_cfgDisplayLogo     = config().readEntry("DisplayLogo", true);
+    m_cfgPollingInterval = config().readEntry("PollingInterval", 5);
+    int accounts         = config().readEntry("Accounts", 0);
+
+    m_cfgAccounts.clear();
+    for (int i=1; i <= accounts; ++i) {
+        QString prefix = QString("Account%1_").arg(i);
+        QVariantMap data;
+        data["Login"] = config().readEntry(prefix+"Login", QString());
+        data["Password"] = KStringHandler::obscure(config().readEntry(prefix+"Password", QString()));
+        data["Label"] = config().readEntry(prefix+"Label", QString());
+        data["Display"] = config().readEntry(prefix+"Display", QString());
+
+        m_cfgAccounts << data;
+    }
+} // readConfig()
+
 void GmailNotifierApplet::drawIcon(const QString &text)
 {
-    kDebug() << text;
+    kDebug();
 
     // Remove any previously created icon
     if (m_icon) {
