@@ -79,6 +79,15 @@ void GmailNotifierDialog::buildDialog(DialogArea area)
         break;
     }
 
+    // Use white colored text
+    // FIXME: Colors are flashing! Is that a(nother) nVidia bug ?
+    /*
+    QPalette palette(m_widget->palette());
+    QBrush brush(QColor(Qt::white));
+    palette.setBrush(QPalette::Active, QPalette::WindowText, brush);
+    m_widget->setPalette(palette);
+    */
+
     // Main layout
     m_layoutMain = new QVBoxLayout(m_widget);
     m_layoutMain->setSpacing(0);
@@ -92,14 +101,15 @@ void GmailNotifierDialog::buildDialog(DialogArea area)
 
     m_layoutMails = new QGridLayout(m_widget);
     m_layoutMails->setSpacing(5);
+    m_layoutMails->setHorizontalSpacing(30);
     m_layoutMails->setMargin(0);
 
-    for (int i=0; i<=10; ++i) {
+    for (int i=0; i<=5; ++i) {
         QLabel *lblL = new QLabel(m_widget);
         QLabel *lblR = new QLabel(m_widget);
 
-        lblL->setText(QString("<font color=\"white\">Label_Left_%1</font>").arg(i));
-        lblR->setText(QString("<font color=\"white\">Label_Right_%1</font>").arg(i));
+        lblL->setText(QString("<font color=\"white\">account/label_%1</font>").arg(i));
+        lblR->setText(QString("<font color=\"white\">%1</font>").arg(random()%1000));
 
         m_layoutMails->addWidget(lblL, i, 0, Qt::AlignLeft | Qt::AlignVCenter);
         m_layoutMails->addWidget(lblR, i, 1, Qt::AlignRight | Qt::AlignVCenter);

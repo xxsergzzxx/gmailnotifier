@@ -61,6 +61,7 @@ void GmailNotifierApplet::init()
 {
     kDebug();
 
+    // Read config
     readConfig();
 
     // Main layout, used both in desktop and panel mode
@@ -104,7 +105,7 @@ void GmailNotifierApplet::constraintsEvent(Plasma::Constraints constraints)
             m_layout->addItem(m_proxy);
 
             resize(m_dialog->widget()->size()/* + QSize(100, 100) */);
-            Plasma::Applet::setMinimumSize(m_dialog->widget()->minimumSizeHint() + QSize(30, 30));
+            Plasma::Applet::setMinimumSize(m_dialog->widget()->minimumSizeHint() + QSize(20, 20));
         }
     }
 
@@ -117,12 +118,11 @@ void GmailNotifierApplet::createConfigurationInterface(KConfigDialog *parent)
 {
     kDebug();
     m_configDialog = new GmailNotifierAppletConfig(parent);
-    //parent->setButtons(KDialog::Ok | KDialog::Cancel | KDialog::Apply);
-    parent->setButtons(KDialog::Ok | KDialog::Cancel);
+    parent->setButtons(KDialog::Ok | KDialog::Cancel | KDialog::Apply);
     parent->addPage(m_configDialog, parent->windowTitle(), icon());
     parent->setDefaultButton(KDialog::Ok);
     parent->showButtonSeparator(true);
-    //connect(parent, SIGNAL(applyClicked()), this, SLOT(configAccepted()));
+    connect(parent, SIGNAL(applyClicked()), this, SLOT(configAccepted()));
     connect(parent, SIGNAL(okClicked()), this, SLOT(configAccepted()));
 
     QVariantMap data;
@@ -170,8 +170,12 @@ void GmailNotifierApplet::configAccepted()
         ++i;
     }
 
+    emit configNeedsSaving();
+    /*
     KConfigGroup cg = config();
     Plasma::Applet::save(cg);
+    readConfig();
+    */
 } // configAccepted()
 
 
@@ -197,6 +201,7 @@ void GmailNotifierApplet::readConfig()
 
         m_cfgAccounts << data;
     }
+    kDebug();
 } // readConfig()
 
 void GmailNotifierApplet::drawIcon(const QString &text)
