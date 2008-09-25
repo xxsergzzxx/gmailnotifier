@@ -48,7 +48,7 @@ public:
     GmailNotifierDialog(DialogArea area, QObject *parent=0);
     ~GmailNotifierDialog();
 
-    QWidget * dialog();
+    QWidget * widget();
     void show();
     void hide();
 

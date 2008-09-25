@@ -28,6 +28,7 @@
 
 // Own
 #include "gmailnotifierdialog.h"
+#include "gmailnotifierappletconfig.h"
 
 // Plasma
 #include <Plasma/Applet>
@@ -50,16 +51,27 @@ public:
 
 protected:
     void constraintsEvent(Plasma::Constraints constraints);
+    void createConfigurationInterface(KConfigDialog *parent);
 
-protected Q_SLOTS:
+private Q_SLOTS:
     void onClickNotifier();
+    void configAccepted();
 
 private:
+    void readConfig();
     void drawIcon(const QString &text="");
 
-    Plasma::Icon          *m_icon;
     Plasma::DataEngine    *m_engine;
+
+    QString       m_cfgBackground;
+    bool          m_cfgDisplayLogo;
+    uint          m_cfgPollingInterval;
+    QVariantList  m_cfgAccounts;
+
     GmailNotifierDialog   *m_dialog;
+    GmailNotifierAppletConfig *m_configDialog;
+
+    Plasma::Icon          *m_icon;
     QGraphicsProxyWidget  *m_proxy;
     QGraphicsLinearLayout *m_layout;
 };
