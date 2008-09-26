@@ -88,6 +88,7 @@ KConfigGroup GmailNotifierAppletConfig::config()
     m_cg.writeEntry("DisplayLogo", ui.cbDisplayLogo->isChecked());
     m_cg.writeEntry("PollingInterval", ui.spinPollingInterval->value());
 
+    int cnt=0;
     for (int i=0; i<ui.listAccounts->count(); ++i) {
         QListWidgetItem *item(ui.listAccounts->item(i));
         QVariantMap account(item->data(Qt::UserRole).toMap());
@@ -96,6 +97,27 @@ KConfigGroup GmailNotifierAppletConfig::config()
         m_cg.writeEntry(prefix+"Password", KStringHandler::obscure(account["Password"].toString()));
         m_cg.writeEntry(prefix+"Label", account["Label"].toString());
         m_cg.writeEntry(prefix+"Display", account["Display"].toString());
+        cnt = i;
+    }
+
+    ++cnt;
+
+    // Make sure we delete any remaining previously created entries
+    bool loop = true;
+    while (loop == true) {
+        QString prefix = QString("Account%1_").arg(cnt);
+        QString login = m_cg.readEntry(prefix+"Login", QString());
+        // No (more?) accounts
+        if (login.isEmpty()) {
+            loop = false;
+            break;
+        }
+        m_cg.deleteEntry(prefix+"Login");
+        m_cg.deleteEntry(prefix+"Password");
+        m_cg.deleteEntry(prefix+"Label");
+        m_cg.deleteEntry(prefix+"Display");
+
+        ++cnt;
     }
 
     return m_cg;
