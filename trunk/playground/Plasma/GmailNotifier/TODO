@@ -1,1 +1,2 @@
 - Use KWallet to store passwords
+- Fix the possible security hole while sending passwords to the dataengine

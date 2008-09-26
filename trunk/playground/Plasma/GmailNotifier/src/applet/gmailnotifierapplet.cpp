@@ -28,6 +28,7 @@
 
 // Qt
 #include <QtGui/QPainter>
+#include <QtCore/QTime>
 
 
 /*
@@ -60,15 +61,34 @@ void GmailNotifierApplet::init()
 {
     kDebug();
 
-    // Read config
-    readConfig();
-
     // Main layout, used both in desktop and panel mode
     m_layout = new QGraphicsLinearLayout(this);
     m_layout->setContentsMargins(0, 0, 0, 0);
     m_layout->setSpacing(0);
     Plasma::Applet::setLayout(m_layout);
+
+    // Read config
+    initApplet();
 } // init()
+
+
+/*
+** Public Q_SLOTS
+*/
+void GmailNotifierApplet::dataUpdated(const QString &source, const Plasma::DataEngine::Data &data)
+{
+    kDebug();
+
+    kDebug() << QTime::currentTime();
+
+    if (data.contains("Error")) {
+        kDebug() << "ERROR";
+//        m_count[source]->setText("Err.");
+        return;
+    }
+
+    kDebug() << source << data;
+} // dataUpdated()
 
 
 /*
@@ -88,7 +108,6 @@ void GmailNotifierApplet::constraintsEvent(Plasma::Constraints constraints)
                 m_proxy=0;
             }
             m_dialog = new GmailNotifierDialog(GmailNotifierDialog::PanelArea, this);
-            kDebug() << m_dialog;
             setBackgroundHints(NoBackground);
             drawIcon();
         }
@@ -147,15 +166,86 @@ void GmailNotifierApplet::configAccepted()
 
     KConfigGroup cg(m_configDialog->config());
     Plasma::Applet::save(cg);
+
+    // Reinit applet
+    initApplet();
 } // configAccepted()
 
 
 /*
 ** Private
 */
-void GmailNotifierApplet::readConfig()
+void GmailNotifierApplet::initApplet()
 {
     kDebug();
+
+    // Read account informations
+    QList<QMap<QString, QString> > accountList;
+    bool loop = true;
+    int cnt = 0;
+    while (loop == true) {
+        QString prefix = QString("Account%1_").arg(cnt);
+        QString login = config().readEntry(prefix+"Login", QString());
+        // No (more?) accounts
+        if (login.isEmpty()) {
+            loop = false;
+            break;
+        }
+        QMap<QString, QString> account;
+        account["Login"] = login;
+        account["Password"] = config().readEntry(prefix+"Password", QString());
+        account["Label"] = config().readEntry(prefix+"Label", QString());
+        account["Display"] = config().readEntry(prefix+"Display", QString());
+
+        accountList.append(account);
+
+        ++cnt;
+    }
+
+    // Set applet background
+    bool isSizeConstrained = (formFactor() == Plasma::Horizontal ||
+                              formFactor() == Plasma::Vertical);
+
+    // Do not change background when in "panel" Form Factor
+    if (!isSizeConstrained) {
+        QString background(config().readEntry("Background", "Standard"));
+        Plasma::Applet::BackgroundHints hint;
+        if (background == "Standard") {
+            hint = StandardBackground;
+        } else if (background == "Translucent") {
+            hint = TranslucentBackground;
+        } else if (background == "Shadowed") {
+            hint = ShadowedBackground;
+        } else if (background == "None") {
+            hint = NoBackground;
+        } else { // Default
+            hint = DefaultBackground;
+        }
+        Plasma::Applet::setBackgroundHints(hint);
+    }
+
+    // Send passwords to the data engine
+    // FIXME: Possible security hole here !!!
+    QVariantMap passwordList;
+    QList<QMap<QString, QString> >::ConstIterator it;
+    for (it = accountList.constBegin(); it != accountList.constEnd(); ++it) {
+        passwordList.insert(it->value("Login"), it->value("Password"));
+    }
+    m_engine->setProperty("passwords", passwordList);
+
+
+    // Request data
+    for (it = accountList.constBegin(); it != accountList.constEnd(); ++it) {
+        QString label = (it->value("Label").isEmpty()) ? "inbox" : it->value("Label");
+        QString request = QString("%1:%2").arg(it->value("Login")).arg(label);
+        kDebug() << "Polling Interval" << config().readEntry("PollingInterval", 5);
+        m_engine->connectSource(request,
+                                this,
+                                (1000*60*config().readEntry("PollingInterval", 5)),
+                                Plasma::NoAlignment);
+    }
+
+
     /*
     m_cfgBackground      = config().readEntry("Background", "Standard");
     m_cfgDisplayLogo     = config().readEntry("DisplayLogo", true);
@@ -175,7 +265,7 @@ void GmailNotifierApplet::readConfig()
     }
     kDebug();
     */
-} // readConfig()
+} // initApplet()
 
 void GmailNotifierApplet::drawIcon(const QString &text)
 {
