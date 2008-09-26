@@ -48,7 +48,6 @@ protected:
     void init();
     bool sourceRequestEvent(const QString &request);
     bool updateSourceEvent(const QString &request);
-    bool requestData(const QString &request);
 
 private Q_SLOTS:
     void recv(KIO::Job *job, const QByteArray &data);

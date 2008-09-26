@@ -49,6 +49,9 @@ public:
 
     void init();
 
+public Q_SLOTS:
+    void dataUpdated(const QString &source, const Plasma::DataEngine::Data &data);
+
 protected:
     void constraintsEvent(Plasma::Constraints constraints);
     void createConfigurationInterface(KConfigDialog *parent);
@@ -58,7 +61,7 @@ private Q_SLOTS:
     void configAccepted();
 
 private:
-    void readConfig();
+    void initApplet();
     void drawIcon(const QString &text="");
 
     Plasma::DataEngine *m_engine;

@@ -25,6 +25,7 @@
 #include <KDE/KJob>
 #include <KDE/KUrl>
 #include <KDE/KIO/Job>
+#include <KDE/KStringHandler>
 
 
 class GmailNotifierEngine::Private
@@ -95,12 +96,6 @@ bool GmailNotifierEngine::sourceRequestEvent(const QString &request)
 bool GmailNotifierEngine::updateSourceEvent(const QString &request)
 {
     kDebug();
-    return requestData(request);
-} // updateSourceEvent()
-
-bool GmailNotifierEngine::requestData(const QString &request)
-{
-    kDebug();
 
     // No need to continue if the password list is empty...
     if (d->passwordList.isEmpty()) {
@@ -112,6 +107,7 @@ bool GmailNotifierEngine::requestData(const QString &request)
     QChar sep(':');
     request.trimmed();
     if (request.startsWith(sep) || request.endsWith(sep) || request.count(sep) != 1) {
+        setData(request, "error", "Bad request! \"username:label\" expected.");
         kDebug() << "Bad request! \"username:label\" expected.";
         return false;
     }
@@ -127,7 +123,7 @@ bool GmailNotifierEngine::requestData(const QString &request)
         url.setPath(url.path()+label);
     }
     url.setUserName(username);
-    url.setPassword(d->passwordList[username].toString());
+    url.setPassword(KStringHandler::obscure(d->passwordList[username].toString()));
 
     KIO::Job *job = KIO::get(url, KIO::Reload, KIO::HideProgressInfo);
     d->jobs[job] = request;
@@ -138,7 +134,7 @@ bool GmailNotifierEngine::requestData(const QString &request)
     setData(request, Plasma::DataEngine::Data());
 
     return true;
-} // requestData()
+} // updateSourceEvent()
 
 
 /*
@@ -159,8 +155,10 @@ void GmailNotifierEngine::result(KJob *job)
     }
 
     if (job->error()) {
-        kDebug() << "An error occured!";
+        kDebug() << job->errorText();
+        setData(d->jobs[job], "error", job->errorText());
     } else {
+        setData(d->jobs[job], "error", "");
         setData(d->jobs[job], GmailAtomFeedParser::parseFeed(d->jobData[job]));
     }
 
