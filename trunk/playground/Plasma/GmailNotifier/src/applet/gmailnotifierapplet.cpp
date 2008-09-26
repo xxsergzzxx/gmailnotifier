@@ -25,7 +25,6 @@
 
 // KDE
 #include <KDE/KConfigDialog>
-#include <KDE/KStringHandler>
 
 // Qt
 #include <QtGui/QPainter>
@@ -104,7 +103,7 @@ void GmailNotifierApplet::constraintsEvent(Plasma::Constraints constraints)
             m_proxy->setWidget(m_dialog->widget());
             m_layout->addItem(m_proxy);
 
-            resize(m_dialog->widget()->size()/* + QSize(100, 100) */);
+            Plasma::Applet::resize(m_dialog->widget()->size()/* + QSize(100, 100) */);
             Plasma::Applet::setMinimumSize(m_dialog->widget()->minimumSizeHint() + QSize(20, 20));
         }
     }
@@ -117,20 +116,13 @@ void GmailNotifierApplet::constraintsEvent(Plasma::Constraints constraints)
 void GmailNotifierApplet::createConfigurationInterface(KConfigDialog *parent)
 {
     kDebug();
-    m_configDialog = new GmailNotifierAppletConfig(parent);
+    m_configDialog = new GmailNotifierAppletConfig(Plasma::Applet::config(), parent);
     parent->setButtons(KDialog::Ok | KDialog::Cancel | KDialog::Apply);
     parent->addPage(m_configDialog, parent->windowTitle(), icon());
     parent->setDefaultButton(KDialog::Ok);
     parent->showButtonSeparator(true);
     connect(parent, SIGNAL(applyClicked()), this, SLOT(configAccepted()));
     connect(parent, SIGNAL(okClicked()), this, SLOT(configAccepted()));
-
-    QVariantMap data;
-    data["Background"]      = m_cfgBackground;
-    data["DisplayLogo"]     = m_cfgDisplayLogo;
-    data["PollingInterval"] = m_cfgPollingInterval;
-    data["Accounts"]        = m_cfgAccounts;
-    m_configDialog->importConfig(data);
 } // createConfigurationInterface()
 
 
@@ -152,30 +144,9 @@ void GmailNotifierApplet::onClickNotifier()
 void GmailNotifierApplet::configAccepted()
 {
     kDebug();
-    QVariantMap data = m_configDialog->exportConfig();
-    config().writeEntry("Background", data["Background"]);
-    config().writeEntry("DisplayLogo", data["DisplayLogo"]);
-    config().writeEntry("PollingInterval", data["PollingInterval"]);
 
-    config().writeEntry("Accounts", data["Accounts"].toList().count());
-    QVariantList accounts(data["Accounts"].toList());
-    int i=1;
-    foreach(QVariant data, accounts) {
-        QVariantMap account(data.toMap());
-        QString prefix = QString("Account%1_").arg(i);
-        config().writeEntry(prefix+"Login", account["Login"]);
-        config().writeEntry(prefix+"Password", KStringHandler::obscure(account["Password"].toString()));
-        config().writeEntry(prefix+"Label", account["Label"]);
-        config().writeEntry(prefix+"Display", account["Display"]);
-        ++i;
-    }
-
-    emit configNeedsSaving();
-    /*
-    KConfigGroup cg = config();
+    KConfigGroup cg(m_configDialog->config());
     Plasma::Applet::save(cg);
-    readConfig();
-    */
 } // configAccepted()
 
 
@@ -185,6 +156,7 @@ void GmailNotifierApplet::configAccepted()
 void GmailNotifierApplet::readConfig()
 {
     kDebug();
+    /*
     m_cfgBackground      = config().readEntry("Background", "Standard");
     m_cfgDisplayLogo     = config().readEntry("DisplayLogo", true);
     m_cfgPollingInterval = config().readEntry("PollingInterval", 5);
@@ -202,6 +174,7 @@ void GmailNotifierApplet::readConfig()
         m_cfgAccounts << data;
     }
     kDebug();
+    */
 } // readConfig()
 
 void GmailNotifierApplet::drawIcon(const QString &text)

@@ -23,21 +23,57 @@
 
 // KDE
 #include <KDE/KDebug>
+#include <KDE/KStringHandler>
 
 
 /*
 ** public
 */
-GmailNotifierAppletConfig::GmailNotifierAppletConfig(QWidget *parent)
+GmailNotifierAppletConfig::GmailNotifierAppletConfig(KConfigGroup cg, QWidget *parent)
     : QWidget(parent)
 {
     kDebug();
+
+    m_cg = cg;
+
     ui.setupUi(this);
 
+    // Display logo
+    ui.cbDisplayLogo->setChecked(m_cg.readEntry("DisplayLogo", true));
+
+    // Polling Interval
+    ui.spinPollingInterval->setValue(m_cg.readEntry("PollingInterval", 5));
+
+    // Background
     QStringList backgroundHints;
     //backgroundHints << "Default" << "Standard" << "Translucent" << "Shadowed" << "None";
     backgroundHints << "Standard" << "Translucent";
     ui.comboBackground->addItems(backgroundHints);
+    
+    int pos = ui.comboBackground->findText(m_cg.readEntry("Background", "Standard"), Qt::MatchExactly);
+    ui.comboBackground->setCurrentIndex(pos);
+
+    // Accounts
+    bool loop = true;
+    int cnt=0;
+    while (loop == true) {
+        QString prefix = QString("Account%1_").arg(cnt);
+        QString login = m_cg.readEntry(prefix+"Login", QString());
+        // No (more?) accounts
+        if (login.isEmpty()) {
+            loop = false;
+            break;
+        }
+        QMap<QString, QString> account;
+        account["Login"] = login;
+        account["Password"] = KStringHandler::obscure(m_cg.readEntry(prefix+"Password", QString()));
+        account["Label"] = m_cg.readEntry(prefix+"Label", QString());
+        account["Display"] = m_cg.readEntry(prefix+"Display", QString());
+
+        addItemToList(account);
+
+        ++cnt;
+    }
 } // ctor()
 
 GmailNotifierAppletConfig::~GmailNotifierAppletConfig()
@@ -45,40 +81,25 @@ GmailNotifierAppletConfig::~GmailNotifierAppletConfig()
     kDebug();
 } // dtor()
 
-void GmailNotifierAppletConfig::importConfig(const QVariantMap &data)
+KConfigGroup GmailNotifierAppletConfig::config()
 {
     kDebug();
-    ui.cbDisplayLogo->setChecked(data["DisplayLogo"].toBool());
+    m_cg.writeEntry("Background", ui.comboBackground->currentText());
+    m_cg.writeEntry("DisplayLogo", ui.cbDisplayLogo->isChecked());
+    m_cg.writeEntry("PollingInterval", ui.spinPollingInterval->value());
 
-    int pos = ui.comboBackground->findText(data["Background"].toString(), Qt::MatchExactly);
-    ui.comboBackground->setCurrentIndex(pos);
-
-    ui.spinPollingInterval->setValue(data["PollingInterval"].toInt());
-
-    QVariantList accounts(data["Accounts"].toList());
-    foreach (QVariant data, accounts) {
-        addItemToList(data.toMap());
-    }
-} // importConfig()
-
-QVariantMap GmailNotifierAppletConfig::exportConfig()
-{
-    kDebug();
-    QVariantMap data;
-    data["DisplayLogo"] = ui.cbDisplayLogo->isChecked();
-    data["Background"] = ui.comboBackground->currentText();
-    data["PollingInterval"] = ui.spinPollingInterval->value();
-
-    QVariantList accountList;
     for (int i=0; i<ui.listAccounts->count(); ++i) {
         QListWidgetItem *item(ui.listAccounts->item(i));
-        QVariant accountInfos(item->data(Qt::UserRole));
-        accountList << accountInfos;
+        QVariantMap account(item->data(Qt::UserRole).toMap());
+        QString prefix = QString("Account%1_").arg(i);
+        m_cg.writeEntry(prefix+"Login", account["Login"].toString());
+        m_cg.writeEntry(prefix+"Password", KStringHandler::obscure(account["Password"].toString()));
+        m_cg.writeEntry(prefix+"Label", account["Label"].toString());
+        m_cg.writeEntry(prefix+"Display", account["Display"].toString());
     }
-    data["Accounts"] = accountList;
 
-    return data;
-} // exportConfig()
+    return m_cg;
+} // config()
 
 
 /*
@@ -110,7 +131,7 @@ void GmailNotifierAppletConfig::on_lePassword_textChanged(const QString &text)
 void GmailNotifierAppletConfig::on_btnAddModify_clicked()
 {
     kDebug();
-    QVariantMap data;
+    QMap<QString, QString> data;
     data["Login"]    = ui.leLogin->text();
     data["Password"] = ui.lePassword->text();
     data["Label"]    = ui.leLabel->text();
@@ -125,7 +146,7 @@ void GmailNotifierAppletConfig::on_btnAddModify_clicked()
         // Modify
         QListWidgetItem *item = ui.listAccounts->item(pos);
         item->setText(listItemText(data));
-        item->setData(Qt::UserRole, data);
+        item->setData(Qt::UserRole, QSM2QVM(data));
     }
 
     adaptAddModifyButtonLabel();
@@ -217,26 +238,26 @@ void GmailNotifierAppletConfig::adaptAddModifyButtonLabel()
     }
 } // adaptAddModifyButtonLabel()
 
-QString GmailNotifierAppletConfig::listItemText(const QVariantMap &data)
+QString GmailNotifierAppletConfig::listItemText(const QMap<QString, QString> &data)
 {
     kDebug();
     QString itemText;
-    QString label = (data["Label"].toString().isEmpty()) ? "inbox" : data["Label"].toString();
-    if (data["Display"].toString().isEmpty()) {
-        itemText = QString("%1/%2").arg(data["Login"].toString()).arg(label);
+    QString label = (data["Label"].isEmpty()) ? "inbox" : data["Label"];
+    if (data["Display"].isEmpty()) {
+        itemText = QString("%1/%2").arg(data["Login"]).arg(label);
     } else {
-        itemText = QString("%1").arg(data["Display"].toString());
+        itemText = QString("%1").arg(data["Display"]);
     }
 
     return itemText;
 } // listItemText()
 
-void GmailNotifierAppletConfig::addItemToList(const QVariantMap &data)
+void GmailNotifierAppletConfig::addItemToList(const QMap<QString, QString> &data)
 {
     kDebug();
     QListWidgetItem *item = new QListWidgetItem();
     item->setText(listItemText(data));
-    item->setData(Qt::UserRole, data);
+    item->setData(Qt::UserRole, QSM2QVM(data));
     ui.listAccounts->addItem(item);
 //    ui.listAccounts->scrollToItem(item);
 } // addItemToList()
@@ -267,6 +288,28 @@ void GmailNotifierAppletConfig::moveItem(const int &shift)
     ui.listAccounts->insertItem(pos+shift, item);
     ui.listAccounts->setCurrentRow(pos+shift);
 } // moveItem()
+
+QVariantMap GmailNotifierAppletConfig::QSM2QVM(const QMap<QString, QString> &data)
+{
+    kDebug();
+    QVariantMap map;
+    foreach(QString key, data.keys()) {
+        map[key] = QVariant(data[key]);
+    }
+
+    return map;
+} // QSM2QVM()
+
+QMap<QString, QString> GmailNotifierAppletConfig::QVM2QSM(const QVariantMap &data)
+{
+    kDebug();
+    QMap<QString, QString> map;
+    foreach(QString key, data.keys()) {
+        map[key] = data[key].toString();
+    }
+
+    return map;
+} // QVM2QSM();
 
 
 #include "gmailnotifierappletconfig.moc"
