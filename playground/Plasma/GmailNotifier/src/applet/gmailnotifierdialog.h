@@ -48,15 +48,15 @@ public:
     GmailNotifierDialog(DialogArea area, QObject *parent=0);
     ~GmailNotifierDialog();
 
-    QWidget * widget();
+    QWidget* widget();
     void show();
     void hide();
 
 private:
     void buildDialog(DialogArea area);
 
-    QWidget     *m_widget;
-    QLabel      *m_lblLogo;
+    QWidget *m_widget;
+    QLabel *m_lblLogo;
     QVBoxLayout *m_layoutMain;
     QGridLayout *m_layoutMails;
 };

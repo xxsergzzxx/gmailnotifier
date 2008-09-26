@@ -61,18 +61,18 @@ private:
     void readConfig();
     void drawIcon(const QString &text="");
 
-    Plasma::DataEngine    *m_engine;
+    Plasma::DataEngine *m_engine;
 
-    QString       m_cfgBackground;
-    bool          m_cfgDisplayLogo;
-    uint          m_cfgPollingInterval;
-    QVariantList  m_cfgAccounts;
+    QString m_cfgBackground;
+    bool m_cfgDisplayLogo;
+    uint m_cfgPollingInterval;
+    QVariantList m_cfgAccounts;
 
-    GmailNotifierDialog   *m_dialog;
+    GmailNotifierDialog *m_dialog;
     GmailNotifierAppletConfig *m_configDialog;
 
-    Plasma::Icon          *m_icon;
-    QGraphicsProxyWidget  *m_proxy;
+    Plasma::Icon *m_icon;
+    QGraphicsProxyWidget *m_proxy;
     QGraphicsLinearLayout *m_layout;
 };
 
