@@ -88,6 +88,10 @@ void GmailNotifierApplet::dataUpdated(const QString &source, const Plasma::DataE
     }
 
     kDebug() << source << data;
+
+    m_totalUnreadMailCount[source] = data["fullcount"].toUInt();
+
+    drawIcon();
 } // dataUpdated()
 
 
@@ -109,6 +113,7 @@ void GmailNotifierApplet::constraintsEvent(Plasma::Constraints constraints)
             }
             m_dialog = new GmailNotifierDialog(GmailNotifierDialog::PanelArea, this);
             setBackgroundHints(NoBackground);
+            m_icon = new Plasma::Icon(this);
             drawIcon();
         }
         else {
@@ -127,7 +132,7 @@ void GmailNotifierApplet::constraintsEvent(Plasma::Constraints constraints)
         }
     }
 
-    if (m_icon && constraints & Plasma::SizeConstraint) {
+    if (m_icon && (constraints & Plasma::SizeConstraint)) {
         drawIcon();
     }
 } // constraintsEvent()
@@ -179,29 +184,6 @@ void GmailNotifierApplet::initApplet()
 {
     kDebug();
 
-    // Read account informations
-    QList<QMap<QString, QString> > accountList;
-    bool loop = true;
-    int cnt = 0;
-    while (loop == true) {
-        QString prefix = QString("Account%1_").arg(cnt);
-        QString login = config().readEntry(prefix+"Login", QString());
-        // No (more?) accounts
-        if (login.isEmpty()) {
-            loop = false;
-            break;
-        }
-        QMap<QString, QString> account;
-        account["Login"] = login;
-        account["Password"] = config().readEntry(prefix+"Password", QString());
-        account["Label"] = config().readEntry(prefix+"Label", QString());
-        account["Display"] = config().readEntry(prefix+"Display", QString());
-
-        accountList.append(account);
-
-        ++cnt;
-    }
-
     // Set applet background
     bool isSizeConstrained = (formFactor() == Plasma::Horizontal ||
                               formFactor() == Plasma::Vertical);
@@ -224,6 +206,34 @@ void GmailNotifierApplet::initApplet()
         Plasma::Applet::setBackgroundHints(hint);
     }
 
+    if(!m_dialog) {
+        return;
+    }
+    // Read account informations
+    QList<QMap<QString, QString> > accountList;
+    bool loop = true;
+    int cnt = 0;
+    while (loop == true) {
+        QString prefix = QString("Account%1_").arg(cnt);
+        QString login = config().readEntry(prefix+"Login", QString());
+        // No (more?) accounts
+        if (login.isEmpty()) {
+            loop = false;
+            break;
+        }
+        QMap<QString, QString> account;
+        account["Login"] = login;
+        account["Password"] = config().readEntry(prefix+"Password", QString());
+        account["Label"] = config().readEntry(prefix+"Label", QString());
+        account["Display"] = config().readEntry(prefix+"Display", QString());
+        accountList.append(account);
+
+        ++cnt;
+    }
+
+    m_dialog->setAccounts(accountList);
+    m_dialog->setDisplayLogo(config().readEntry("DisplayLogo", true));
+
     // Send passwords to the data engine
     // FIXME: Possible security hole here !!!
     QVariantMap passwordList;
@@ -235,39 +245,36 @@ void GmailNotifierApplet::initApplet()
 
 
     // Request data
+    QStringList validRequests;
     for (it = accountList.constBegin(); it != accountList.constEnd(); ++it) {
         QString label = (it->value("Label").isEmpty()) ? "inbox" : it->value("Label");
         QString request = QString("%1:%2").arg(it->value("Login")).arg(label);
-        kDebug() << "Polling Interval" << config().readEntry("PollingInterval", 5);
         m_engine->connectSource(request,
                                 this,
                                 (1000*60*config().readEntry("PollingInterval", 5)),
                                 Plasma::NoAlignment);
+        validRequests << request;
     }
 
-
-    /*
-    m_cfgBackground      = config().readEntry("Background", "Standard");
-    m_cfgDisplayLogo     = config().readEntry("DisplayLogo", true);
-    m_cfgPollingInterval = config().readEntry("PollingInterval", 5);
-    int accounts         = config().readEntry("Accounts", 0);
-
-    m_cfgAccounts.clear();
-    for (int i=1; i <= accounts; ++i) {
-        QString prefix = QString("Account%1_").arg(i);
-        QVariantMap data;
-        data["Login"] = config().readEntry(prefix+"Login", QString());
-        data["Password"] = KStringHandler::obscure(config().readEntry(prefix+"Password", QString()));
-        data["Label"] = config().readEntry(prefix+"Label", QString());
-        data["Display"] = config().readEntry(prefix+"Display", QString());
-
-        m_cfgAccounts << data;
+    // Disconnect sources that aren't used anymore
+    QStringList connectedSources(m_engine->sources());
+    foreach (QString source, connectedSources) {
+        if (!validRequests.contains(source)) {
+            kDebug() << "Disconnecting unused source" << source;
+            m_engine->disconnectSource(source, this);
+            m_totalUnreadMailCount.remove(source);
+        }
     }
-    kDebug();
-    */
+
+    drawIcon();
+
+    if (!isSizeConstrained) {
+        Plasma::Applet::resize(m_dialog->widget()->size()/* + QSize(100, 100) */);
+        Plasma::Applet::setMinimumSize(m_dialog->widget()->minimumSizeHint() + QSize(20, 20));
+    }
 } // initApplet()
 
-void GmailNotifierApplet::drawIcon(const QString &text)
+void GmailNotifierApplet::drawIcon()
 {
     kDebug();
 
@@ -276,6 +283,8 @@ void GmailNotifierApplet::drawIcon(const QString &text)
         m_layout->removeItem(m_icon);
         delete m_icon;
         m_icon = 0;
+    } else {
+        return;
     }
 
     QPixmap srcImg(":/images/gmailnotifier_icon.png");
@@ -284,14 +293,19 @@ void GmailNotifierApplet::drawIcon(const QString &text)
                                 Qt::KeepAspectRatio,
                                 Qt::SmoothTransformation);
 
-    if (!text.isEmpty()) {
-        QPainter p(&img);
-        QFont font(p.font());
-        font.setBold(true);
-        p.setFont(font);
-        p.setPen(QColor("#0057AE"));
-        p.drawText(QRectF(0, img.height()/2, img.width(), img.height()/2), Qt::AlignCenter, text);
+    // Compute total number of unread mails
+    uint totalUnreadMailCount=0;
+    QMap<QString, uint>::ConstIterator it;
+    for (it = m_totalUnreadMailCount.constBegin(); it != m_totalUnreadMailCount.constEnd(); ++it) {
+        totalUnreadMailCount += it.value();
     }
+
+    QPainter p(&img);
+    QFont font(p.font());
+    font.setBold(true);
+    p.setFont(font);
+    p.setPen(QColor("#0057AE"));
+    p.drawText(QRectF(0, img.height()/2, img.width(), img.height()/2), Qt::AlignCenter, QString("%1").arg(totalUnreadMailCount));
 
     m_icon = new Plasma::Icon(img, QString(), this);
     connect(m_icon, SIGNAL(clicked()), this, SLOT(onClickNotifier()));

@@ -62,7 +62,7 @@ private Q_SLOTS:
 
 private:
     void initApplet();
-    void drawIcon(const QString &text="");
+    void drawIcon();
 
     Plasma::DataEngine *m_engine;
 
@@ -77,6 +77,8 @@ private:
     Plasma::Icon *m_icon;
     QGraphicsProxyWidget *m_proxy;
     QGraphicsLinearLayout *m_layout;
+
+    QMap<QString, uint> m_totalUnreadMailCount;
 };
 
 
