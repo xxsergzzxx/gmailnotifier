@@ -52,6 +52,9 @@ public:
     void show();
     void hide();
 
+    void setDisplayLogo(const bool &display);
+    void setAccounts(const QList<QMap<QString, QString> > &accounts);
+
 private:
     void buildDialog(DialogArea area);
 
@@ -59,6 +62,8 @@ private:
     QLabel *m_lblLogo;
     QVBoxLayout *m_layoutMain;
     QGridLayout *m_layoutMails;
+
+    bool m_displayLogo;
 };
 
 

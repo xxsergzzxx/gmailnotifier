@@ -33,6 +33,7 @@
 GmailNotifierDialog::GmailNotifierDialog(DialogArea area, QObject *parent)
     : QObject(parent)
     , m_widget(0), m_lblLogo(0), m_layoutMain(0), m_layoutMails(0)
+    , m_displayLogo(true)
 {
     kDebug();
     buildDialog(area);
@@ -59,7 +60,30 @@ void GmailNotifierDialog::hide()
 {
     kDebug();
     m_widget->hide();
-} // hide;
+} // hide()
+
+void GmailNotifierDialog::setDisplayLogo(const bool &display)
+{
+    m_displayLogo = display;
+    if (!m_lblLogo) {
+        return;
+    }
+
+    if(display) {
+        m_lblLogo->setPixmap(QPixmap(":/images/gmail_logo.png"));
+    } else {
+        m_lblLogo->setPixmap(QPixmap());
+    }
+} // setDisplayLogo()
+
+void GmailNotifierDialog::setAccounts(const QList<QMap<QString, QString> > &accounts)
+{
+    QList<QMap<QString, QString> >::ConstIterator it;
+    for (it = accounts.constBegin(); it != accounts.constEnd(); ++it) {
+        // DO SOMETHING HERE !
+    }
+} //setAccounts()
+
 
 /*
 ** Private
@@ -90,10 +114,13 @@ void GmailNotifierDialog::buildDialog(DialogArea area)
     m_layoutMain = new QVBoxLayout(m_widget);
     m_layoutMain->setSpacing(0);
     m_layoutMain->setMargin(10);
-    m_lblLogo = new QLabel(m_widget);
-    m_lblLogo->setPixmap(QPixmap(":/images/gmail_logo.png"));
-    m_lblLogo->setAlignment(Qt::AlignCenter);
-    m_layoutMain->addWidget(m_lblLogo);
+
+    if(m_displayLogo) {
+        m_lblLogo = new QLabel(m_widget);
+        m_lblLogo->setPixmap(QPixmap(":/images/gmail_logo.png"));
+        m_lblLogo->setAlignment(Qt::AlignCenter);
+        m_layoutMain->addWidget(m_lblLogo);
+    }
 
     m_layoutMain->addSpacerItem(new QSpacerItem(0, 10, QSizePolicy::Expanding, QSizePolicy::Fixed));
 
