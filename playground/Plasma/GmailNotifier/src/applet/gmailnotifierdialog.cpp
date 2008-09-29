@@ -78,9 +78,42 @@ void GmailNotifierDialog::setDisplayLogo(const bool &display)
 
 void GmailNotifierDialog::setAccounts(const QList<QMap<QString, QString> > &accounts)
 {
+    kDebug();
+
+    // Remove any previously created labels
+    /*
+    for (int i=m_layoutMails->count()-1; i>=0; --i) {
+        QLayoutItem *item = m_layoutMails->itemAt(i);
+        m_layoutMails->removeItem(item);
+        delete item;
+        item = 0;
+        kDebug() << i << m_layoutMails->count();
+    }
+    */
+
+    kDebug() << m_layoutMails->count();
+    QLayoutItem *item;
+    while ((item = m_layoutMails->takeAt(0)) != 0) {
+        delete item;
+    }
+    kDebug() << m_layoutMails->count();
+
+/*
+    while (m_layoutMails->count() > 0) {
+        QLayoutItem *item = m_layoutMails->takeAt(0);
+//        m_layoutMails->removeItem(item);
+        delete item;
+        item = 0;
+        kDebug() << m_layoutMails->count();
+    }
+    m_layoutMails->update();
+*/
+
+
     QList<QMap<QString, QString> >::ConstIterator it;
+    int row = 0;
     for (it = accounts.constBegin(); it != accounts.constEnd(); ++it) {
-        // DO SOMETHING HERE !
+        kDebug() << it->value("Login") << it->value("Label") << it->value("Display");
     }
 } //setAccounts()
 
