@@ -33,7 +33,6 @@
 GmailNotifierDialog::GmailNotifierDialog(DialogArea area, QObject *parent)
     : QObject(parent)
     , m_widget(0), m_lblLogo(0), m_layoutMain(0), m_layoutMails(0)
-    , m_displayLogo(true)
 {
     kDebug();
     buildDialog(area);
@@ -64,7 +63,6 @@ void GmailNotifierDialog::hide()
 
 void GmailNotifierDialog::setDisplayLogo(const bool &display)
 {
-    m_displayLogo = display;
     if (!m_lblLogo) {
         return;
     }
@@ -101,13 +99,13 @@ void GmailNotifierDialog::setAccounts(const QList<QMap<QString, QString> > &acco
 
         QString loginNLabel = QString("%1:%2").arg(it->value("Login")).arg(label);
 
-        QLabel *lblAccount = new QLabel(display);
+        QLabel *lblAccount = new QLabel(display, m_widget);
         lblAccount->setObjectName(QString("lblAccount_%1").arg(loginNLabel));
-        m_layoutMails->addWidget(lblAccount, row, 0);
+        m_layoutMails->addWidget(lblAccount, row, 0, Qt::AlignLeft | Qt::AlignVCenter);
 
-        QLabel *lblMailCount = new QLabel("---");
+        QLabel *lblMailCount = new QLabel("---", m_widget);
         lblMailCount->setObjectName(QString("lblMailCount_%1").arg(loginNLabel));
-        m_layoutMails->addWidget(lblMailCount, row, 1);
+        m_layoutMails->addWidget(lblMailCount, row, 1, Qt::AlignRight | Qt::AlignVCenter);
 
         ++row;
     }
@@ -120,6 +118,7 @@ void GmailNotifierDialog::updateMailCount(const QString &source, const Plasma::D
     QLabel *label = m_widget->findChild<QLabel *>("lblMailCount_"+source);
     QString content;
     if (!data["error"].toString().isEmpty()) {
+        kDebug() << "Error:" << data["error"].toString();
         content = "Err.";
     } else {
         content = data["fullcount"].toString();
@@ -155,35 +154,22 @@ void GmailNotifierDialog::buildDialog(DialogArea area)
 
     // Main layout
     m_layoutMain = new QVBoxLayout(m_widget);
+    m_layoutMain->setObjectName("QVBoxLayout m_layoutMain");
     m_layoutMain->setSpacing(0);
     m_layoutMain->setMargin(10);
 
-    if(m_displayLogo) {
-        m_lblLogo = new QLabel(m_widget);
-        m_lblLogo->setPixmap(QPixmap(":/images/gmail_logo.png"));
-        m_lblLogo->setAlignment(Qt::AlignCenter);
-        m_layoutMain->addWidget(m_lblLogo);
-    }
+    m_lblLogo = new QLabel(m_widget);
+    m_lblLogo->setPixmap(QPixmap(":/images/gmail_logo.png"));
+    m_lblLogo->setAlignment(Qt::AlignCenter);
+    m_layoutMain->addWidget(m_lblLogo);
 
     m_layoutMain->addSpacerItem(new QSpacerItem(0, 10, QSizePolicy::Expanding, QSizePolicy::Fixed));
 
     m_layoutMails = new QGridLayout();
+    m_layoutMails->setObjectName("QGridLayout m_layoutMails");
     m_layoutMails->setSpacing(5);
     m_layoutMails->setHorizontalSpacing(30);
     m_layoutMails->setMargin(0);
-
-    for (int i=0; i<=5; ++i) {
-        QLabel *lblL = new QLabel(m_widget);
-        QLabel *lblR = new QLabel(m_widget);
-
-        //lblL->setText(QString("<font color=\"white\">account/label_%1</font>").arg(i));
-        //lblR->setText(QString("<font color=\"white\">%1</font>").arg(random()%1000));
-        lblL->setText(QString("account/label_%1").arg(i));
-        lblR->setText(QString("%1").arg(random()%1000));
-
-        m_layoutMails->addWidget(lblL, i, 0, Qt::AlignLeft | Qt::AlignVCenter);
-        m_layoutMails->addWidget(lblR, i, 1, Qt::AlignRight | Qt::AlignVCenter);
-    }
 
     m_layoutMain->addLayout(m_layoutMails);
 

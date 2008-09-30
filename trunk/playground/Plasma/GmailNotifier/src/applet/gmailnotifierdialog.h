@@ -66,8 +66,6 @@ private:
     QLabel *m_lblLogo;
     QVBoxLayout *m_layoutMain;
     QGridLayout *m_layoutMails;
-
-    bool m_displayLogo;
 };
 
 
