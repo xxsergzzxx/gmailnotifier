@@ -90,6 +90,11 @@ void GmailNotifierApplet::dataUpdated(const QString &source, const Plasma::DataE
     kDebug() << source << data;
 
     m_totalUnreadMailCount[source] = data["fullcount"].toUInt();
+    m_dialog->updateMailCount(source, data);
+
+
+//    Plasma::Applet::resize(m_dialog->widget()->size()/* + QSize(100, 100) */);
+//    Plasma::Applet::setMinimumSize(m_dialog->widget()->minimumSizeHint() + QSize(20, 20));
 
     drawIcon();
 } // dataUpdated()

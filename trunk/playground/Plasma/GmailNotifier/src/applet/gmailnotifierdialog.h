@@ -27,6 +27,9 @@
 #define __GMAILNOTIFIERDIALOG_H__
 
 
+// Plasma
+#include <Plasma/DataEngine>
+
 // Qt
 #include <QtCore/QObject>
 #include <QtGui/QLabel>
@@ -54,6 +57,7 @@ public:
 
     void setDisplayLogo(const bool &display);
     void setAccounts(const QList<QMap<QString, QString> > &accounts);
+    void updateMailCount(const QString &source, const Plasma::DataEngine::Data &data);
 
 private:
     void buildDialog(DialogArea area);
