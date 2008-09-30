@@ -135,13 +135,14 @@ void GmailNotifierApplet::constraintsEvent(Plasma::Constraints constraints)
             Plasma::Applet::resize(m_dialog->widget()->size()/* + QSize(100, 100) */);
             Plasma::Applet::setMinimumSize(m_dialog->widget()->minimumSizeHint() + QSize(20, 20));
         }
+
+        initApplet();
     }
 
     if (m_icon && (constraints & Plasma::SizeConstraint)) {
         drawIcon();
     }
 
-    initApplet();
 } // constraintsEvent()
 
 void GmailNotifierApplet::createConfigurationInterface(KConfigDialog *parent)
@@ -260,17 +261,14 @@ void GmailNotifierApplet::initApplet()
         validRequests << request;
     }
 
-    // Disconnect sources that aren't used anymore
-    /*
-    QStringList connectedSources(m_engine->sources());
-    foreach (QString source, connectedSources) {
+    // Remove sources that aren't used anymore from the total counter
+    foreach (QString source, m_engine->sources()) {
         if (!validRequests.contains(source)) {
-            kDebug() << "Disconnecting unused source" << source;
-            m_engine->disconnectSource(source, this);
+            // kDebug() << "Disconnecting unused source" << source;
+            // m_engine->disconnectSource(source, this);
             m_totalUnreadMailCount.remove(source);
         }
     }
-    */
 
     if (!isSizeConstrained) {
         Plasma::Applet::resize(m_dialog->widget()->size()/* + QSize(100, 100) */);
