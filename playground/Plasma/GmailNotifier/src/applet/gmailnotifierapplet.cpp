@@ -80,15 +80,22 @@ void GmailNotifierApplet::dataUpdated(const QString &source, const Plasma::DataE
     kDebug() << QTime::currentTime();
     kDebug() << source << data;
 
+    /*
     if (data.contains("Error")) {
         kDebug() << "ERROR";
         return;
     }
+    */
 
-    m_totalUnreadMailCount[source] = data["fullcount"].toUInt();
+    if (m_validSources.contains(source)) {
+        m_totalUnreadMailCount[source] = data["fullcount"].toUInt();
+        m_dialog->updateMailCount(source, data);
+    } else {
+        kDebug() << source << "isn't a valid source!";
+    }
+
     drawIcon();
 
-    m_dialog->updateMailCount(source, data);
 } // dataUpdated()
 
 
@@ -120,8 +127,7 @@ void GmailNotifierApplet::constraintsEvent(Plasma::Constraints constraints)
             Plasma::Applet::setAspectRatioMode(Plasma::ConstrainedSquare);
 
             drawIcon();
-        }
-        else {
+        } else {
             if (m_icon) {
                 m_layout->removeItem(m_icon);
                 delete m_icon;
@@ -253,7 +259,7 @@ void GmailNotifierApplet::initApplet()
 
 
     // Request data
-    QStringList validRequests;
+    m_validSources.clear();
     for (it = accountList.constBegin(); it != accountList.constEnd(); ++it) {
         QString label = (it->value("Label").isEmpty()) ? "inbox" : it->value("Label");
         QString request = QString("%1:%2").arg(it->value("Login")).arg(label);
@@ -261,14 +267,14 @@ void GmailNotifierApplet::initApplet()
                                 this,
                                 (1000*60*config().readEntry("PollingInterval", 5)),
                                 Plasma::NoAlignment);
-        validRequests << request;
+        m_validSources << request;
     }
 
     // Remove sources that aren't used anymore from the total counter
     foreach (QString source, m_engine->sources()) {
-        if (!validRequests.contains(source)) {
-            // kDebug() << "Disconnecting unused source" << source;
-            // m_engine->disconnectSource(source, this);
+        if (!m_validSources.contains(source)) {
+            //kDebug() << "Disconnecting unused source" << source;
+            //m_engine->disconnectSource(source, this);
             m_totalUnreadMailCount.remove(source);
         }
     }

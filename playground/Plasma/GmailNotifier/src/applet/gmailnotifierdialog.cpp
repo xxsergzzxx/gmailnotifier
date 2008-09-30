@@ -115,7 +115,11 @@ void GmailNotifierDialog::updateMailCount(const QString &source, const Plasma::D
 {
     kDebug();
 
-    QLabel *label = m_widget->findChild<QLabel *>("lblMailCount_"+source);
+    QLabel *label;
+    if (!(label = m_widget->findChild<QLabel *>("lblMailCount_"+source))) {
+        kDebug() << QString("No existing QLabel for %1. Skipping...").arg(source);
+        return;
+    }
     QString content;
     if (!data["error"].toString().isEmpty()) {
         kDebug() << "Error:" << data["error"].toString();
