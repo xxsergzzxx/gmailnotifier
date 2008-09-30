@@ -85,12 +85,12 @@ void GmailNotifierDialog::setAccounts(const QList<QMap<QString, QString> > &acco
         delete item;
     }
 
-//    m_layoutMain->update();
 //    m_layoutMails->update();
-//    m_layoutMain->invalidate();
-//    m_layoutMails->invalidate();
-//    m_layoutMain->activate();
+//    m_layoutMain->update();
+    m_layoutMails->invalidate();
+    m_layoutMain->invalidate();
 //    m_layoutMails->activate();
+//    m_layoutMain->activate();
 
     // Populate...
     QList<QMap<QString, QString> >::ConstIterator it;
@@ -106,23 +106,42 @@ void GmailNotifierDialog::setAccounts(const QList<QMap<QString, QString> > &acco
 
         QString loginNLabel = QString("%1:%2").arg(it->value("Login")).arg(label);
 
-        QLabel *lblAccount = new QLabel(display, m_widget);
+        QLabel *lblAccount = new QLabel(display);
         lblAccount->setObjectName(QString("lblAccount_%1").arg(loginNLabel));
         m_layoutMails->addWidget(lblAccount, row, 0, Qt::AlignLeft | Qt::AlignVCenter);
 
-        QLabel *lblMailCount = new QLabel("---", m_widget);
+        QLabel *lblMailCount = new QLabel("---");
         lblMailCount->setObjectName(QString("lblMailCount_%1").arg(loginNLabel));
         m_layoutMails->addWidget(lblMailCount, row, 1, Qt::AlignRight | Qt::AlignVCenter);
 
         ++row;
     }
 
-//    m_layoutMain->update();
+    // TEMP
+    for (int i=0; i<m_layoutMails->count(); ++i) {
+        item = m_layoutMails->itemAt(i);
+        kDebug() << item->widget()->sizeHint() << qPrintable(QString("item_%1->widget()->sizeHint()").arg(i));
+        kDebug() << item->widget()->minimumSize() << qPrintable(QString("item_%1->widget()->minimumSize()").arg(i));
+        kDebug() << item->widget()->maximumSize() << qPrintable(QString("item_%1->widget()->maximumSize()").arg(i));
+        kDebug() << item->widget()->geometry() << qPrintable(QString("item_%1->widget()->geometry()").arg(i));
+
+        kDebug() << item->widget()->parentWidget();
+    }
+    kDebug();
+    kDebug() << m_widget;
+    kDebug() << m_layoutMain;
+    kDebug() << m_layoutMails;
+
+    kDebug() << m_widget->children();
+    kDebug() << m_layoutMain->children();
+    kDebug() << m_layoutMails->children();
+
 //    m_layoutMails->update();
-//    m_layoutMain->invalidate();
+//    m_layoutMain->update();
 //    m_layoutMails->invalidate();
-    m_layoutMain->activate();
+//    m_layoutMain->invalidate();
     m_layoutMails->activate();
+    m_layoutMain->activate();
 
     kDebug() << m_widget->size() << "m_widget->size()";
     kDebug() << m_widget->sizeHint() << "m_widget->sizeHint()";
@@ -139,8 +158,8 @@ void GmailNotifierDialog::setAccounts(const QList<QMap<QString, QString> > &acco
 //    m_layoutMails->update();
 //    m_layoutMain->invalidate();
 //    m_layoutMails->invalidate();
-    m_layoutMain->activate();
     m_layoutMails->activate();
+    m_layoutMain->activate();
 
     m_widget->adjustSize();
 
@@ -214,16 +233,20 @@ void GmailNotifierDialog::buildDialog(DialogArea area)
 
     m_layoutMain->addSpacerItem(new QSpacerItem(0, 10, QSizePolicy::Expanding, QSizePolicy::Fixed));
 
-    m_layoutMails = new QGridLayout();
+    m_layoutMails = new QGridLayout(m_widget);
     m_layoutMails->setObjectName("QGridLayout m_layoutMails");
     m_layoutMails->setSpacing(5);
     m_layoutMails->setHorizontalSpacing(30);
     m_layoutMails->setMargin(0);
+    m_layoutMails->setSizeConstraint(QLayout::SetNoConstraint);
+
+    // DEBUG TEST
+    m_layoutMails->addWidget(new QLabel("test"), 0, 0);
+    m_layoutMails->addWidget(new QLabel("test"), 0, 1);
 
     m_layoutMain->addLayout(m_layoutMails);
 
     m_layoutMain->addSpacerItem(new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding));
-
 
 
     m_layoutMails->activate();
