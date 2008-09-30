@@ -64,6 +64,8 @@ private:
     void initApplet();
     void drawIcon();
 
+    void readjustSize();
+
     Plasma::DataEngine *m_engine;
 
     QString m_cfgBackground;
