@@ -62,13 +62,11 @@ void GmailNotifierApplet::init()
     kDebug();
 
     // Main layout, used both in desktop and panel mode
-    m_layout = new QGraphicsLinearLayout(this);
+    m_layout = new QGraphicsLinearLayout();
+//    m_layout->setObjectName("Main QGraphicsLinearLayout");
     m_layout->setContentsMargins(0, 0, 0, 0);
     m_layout->setSpacing(0);
     Plasma::Applet::setLayout(m_layout);
-
-    // Read config
-    initApplet();
 } // init()
 
 
@@ -80,23 +78,17 @@ void GmailNotifierApplet::dataUpdated(const QString &source, const Plasma::DataE
     kDebug();
 
     kDebug() << QTime::currentTime();
+    kDebug() << source << data;
 
     if (data.contains("Error")) {
         kDebug() << "ERROR";
-//        m_count[source]->setText("Err.");
         return;
     }
 
-    kDebug() << source << data;
-
     m_totalUnreadMailCount[source] = data["fullcount"].toUInt();
-    m_dialog->updateMailCount(source, data);
-
-
-//    Plasma::Applet::resize(m_dialog->widget()->size()/* + QSize(100, 100) */);
-//    Plasma::Applet::setMinimumSize(m_dialog->widget()->minimumSizeHint() + QSize(20, 20));
-
     drawIcon();
+
+    m_dialog->updateMailCount(source, data);
 } // dataUpdated()
 
 
@@ -109,16 +101,24 @@ void GmailNotifierApplet::constraintsEvent(Plasma::Constraints constraints)
 
     bool isSizeConstrained = (formFactor() == Plasma::Horizontal ||
                               formFactor() == Plasma::Vertical);
+
     if (constraints & Plasma::FormFactorConstraint) {
         if (isSizeConstrained) {
             if (m_proxy) {
                 m_layout->removeItem(m_proxy);
                 delete m_proxy;
-                m_proxy=0;
+                m_proxy = 0;
             }
+
             m_dialog = new GmailNotifierDialog(GmailNotifierDialog::PanelArea, this);
             setBackgroundHints(NoBackground);
+
             m_icon = new Plasma::Icon(this);
+            connect(m_icon, SIGNAL(clicked()), this, SLOT(onClickNotifier()));
+            m_layout->addItem(m_icon);
+
+            Plasma::Applet::setAspectRatioMode(Plasma::ConstrainedSquare);
+
             drawIcon();
         }
         else {
@@ -140,6 +140,8 @@ void GmailNotifierApplet::constraintsEvent(Plasma::Constraints constraints)
     if (m_icon && (constraints & Plasma::SizeConstraint)) {
         drawIcon();
     }
+
+    initApplet();
 } // constraintsEvent()
 
 void GmailNotifierApplet::createConfigurationInterface(KConfigDialog *parent)
@@ -189,10 +191,10 @@ void GmailNotifierApplet::initApplet()
 {
     kDebug();
 
-    // Set applet background
     bool isSizeConstrained = (formFactor() == Plasma::Horizontal ||
                               formFactor() == Plasma::Vertical);
 
+    // Set applet background
     // Do not change background when in "panel" Form Factor
     if (!isSizeConstrained) {
         QString background(config().readEntry("Background", "Standard"));
@@ -211,9 +213,6 @@ void GmailNotifierApplet::initApplet()
         Plasma::Applet::setBackgroundHints(hint);
     }
 
-    if(!m_dialog) {
-        return;
-    }
     // Read account informations
     QList<QMap<QString, QString> > accountList;
     bool loop = true;
@@ -271,8 +270,6 @@ void GmailNotifierApplet::initApplet()
         }
     }
 
-    drawIcon();
-
     if (!isSizeConstrained) {
         Plasma::Applet::resize(m_dialog->widget()->size()/* + QSize(100, 100) */);
         Plasma::Applet::setMinimumSize(m_dialog->widget()->minimumSizeHint() + QSize(20, 20));
@@ -283,12 +280,7 @@ void GmailNotifierApplet::drawIcon()
 {
     kDebug();
 
-    // Remove any previously created icon
-    if (m_icon) {
-        m_layout->removeItem(m_icon);
-        delete m_icon;
-        m_icon = 0;
-    } else {
+    if (!m_icon) {
         return;
     }
 
@@ -312,12 +304,8 @@ void GmailNotifierApplet::drawIcon()
     p.setPen(QColor("#0057AE"));
     p.drawText(QRectF(0, img.height()/2, img.width(), img.height()/2), Qt::AlignCenter, QString("%1").arg(totalUnreadMailCount));
 
-    m_icon = new Plasma::Icon(img, QString(), this);
-    connect(m_icon, SIGNAL(clicked()), this, SLOT(onClickNotifier()));
+    m_icon->setIcon(img);
     m_icon->resize(geometry().size());
-
-    Plasma::Applet::setAspectRatioMode(Plasma::ConstrainedSquare);
-    m_layout->addItem(m_icon);
 } // drawIcon()
 
 
