@@ -85,6 +85,13 @@ void GmailNotifierDialog::setAccounts(const QList<QMap<QString, QString> > &acco
         delete item;
     }
 
+//    m_layoutMain->update();
+//    m_layoutMails->update();
+//    m_layoutMain->invalidate();
+//    m_layoutMails->invalidate();
+//    m_layoutMain->activate();
+//    m_layoutMails->activate();
+
     // Populate...
     QList<QMap<QString, QString> >::ConstIterator it;
     int row = 0;
@@ -109,6 +116,44 @@ void GmailNotifierDialog::setAccounts(const QList<QMap<QString, QString> > &acco
 
         ++row;
     }
+
+//    m_layoutMain->update();
+//    m_layoutMails->update();
+//    m_layoutMain->invalidate();
+//    m_layoutMails->invalidate();
+    m_layoutMain->activate();
+    m_layoutMails->activate();
+
+    kDebug() << m_widget->size() << "m_widget->size()";
+    kDebug() << m_widget->sizeHint() << "m_widget->sizeHint()";
+    kDebug() << m_widget->minimumSize() << "m_widget->minimumSize()";
+    kDebug() << m_widget->minimumSizeHint() << "m_widget->minimumSizeHint()";
+    kDebug() << m_widget->maximumSize() << "m_widget->maximumSize()";
+    kDebug() << m_layoutMain->sizeHint() << "m_layoutMain->sizeHint()";
+    kDebug() << m_layoutMain->minimumSize() << "m_layoutMain->minimumSize()";
+    kDebug() << m_layoutMails->sizeHint() << "m_layoutMails->sizeHint()";
+    kDebug() << m_layoutMails->minimumSize() << "m_layoutMails->minimumSize()";
+    kDebug() << m_layoutMails->maximumSize() << "m_layoutMails->maximumSize()";
+
+//    m_layoutMain->update();
+//    m_layoutMails->update();
+//    m_layoutMain->invalidate();
+//    m_layoutMails->invalidate();
+    m_layoutMain->activate();
+    m_layoutMails->activate();
+
+    m_widget->adjustSize();
+
+    kDebug() << m_widget->size() << "m_widget->size()";
+    kDebug() << m_widget->sizeHint() << "m_widget->sizeHint()";
+    kDebug() << m_widget->minimumSize() << "m_widget->minimumSize()";
+    kDebug() << m_widget->minimumSizeHint() << "m_widget->minimumSizeHint()";
+    kDebug() << m_widget->maximumSize() << "m_widget->maximumSize()";
+    kDebug() << m_layoutMain->sizeHint() << "m_layoutMain->sizeHint()";
+    kDebug() << m_layoutMain->minimumSize() << "m_layoutMain->minimumSize()";
+    kDebug() << m_layoutMails->sizeHint() << "m_layoutMails->sizeHint()";
+    kDebug() << m_layoutMails->minimumSize() << "m_layoutMails->minimumSize()";
+    kDebug() << m_layoutMails->maximumSize() << "m_layoutMails->maximumSize()";
 } //setAccounts()
 
 void GmailNotifierDialog::updateMailCount(const QString &source, const Plasma::DataEngine::Data &data)
@@ -178,6 +223,20 @@ void GmailNotifierDialog::buildDialog(DialogArea area)
     m_layoutMain->addLayout(m_layoutMails);
 
     m_layoutMain->addSpacerItem(new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding));
+
+
+
+    m_layoutMails->activate();
+    kDebug() << m_widget->size() << "m_widget->size()";
+    kDebug() << m_widget->sizeHint() << "m_widget->sizeHint()";
+    kDebug() << m_widget->minimumSize() << "m_widget->minimumSize()";
+    kDebug() << m_widget->minimumSizeHint() << "m_widget->minimumSizeHint()";
+    kDebug() << m_widget->maximumSize() << "m_widget->maximumSize()";
+    kDebug() << m_layoutMain->sizeHint() << "m_layoutMain->sizeHint()";
+    kDebug() << m_layoutMain->minimumSize() << "m_layoutMain->minimumSize()";
+    kDebug() << m_layoutMails->sizeHint() << "m_layoutMails->sizeHint()";
+    kDebug() << m_layoutMails->minimumSize() << "m_layoutMails->minimumSize()";
+    kDebug() << m_layoutMails->maximumSize() << "m_layoutMails->maximumSize()";
 } // buildDialog()
 
 

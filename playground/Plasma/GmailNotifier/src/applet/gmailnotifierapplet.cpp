@@ -138,8 +138,7 @@ void GmailNotifierApplet::constraintsEvent(Plasma::Constraints constraints)
             m_proxy->setWidget(m_dialog->widget());
             m_layout->addItem(m_proxy);
 
-            Plasma::Applet::resize(m_dialog->widget()->size()/* + QSize(100, 100) */);
-            Plasma::Applet::setMinimumSize(m_dialog->widget()->minimumSizeHint() + QSize(20, 20));
+            readjustSize();
         }
 
         initApplet();
@@ -280,8 +279,7 @@ void GmailNotifierApplet::initApplet()
     }
 
     if (!isSizeConstrained) {
-        Plasma::Applet::resize(m_dialog->widget()->size()/* + QSize(100, 100) */);
-        Plasma::Applet::setMinimumSize(m_dialog->widget()->minimumSizeHint() + QSize(20, 20));
+        readjustSize();
     }
 } // initApplet()
 
@@ -317,6 +315,14 @@ void GmailNotifierApplet::drawIcon()
     m_icon->resize(geometry().size());
     m_icon->update(); // Force icon to be refreshed
 } // drawIcon()
+
+void GmailNotifierApplet::readjustSize()
+{
+//    m_dialog->widget()->adjustSize();
+//    Plasma::Applet::resize(m_dialog->widget()->minimumSizeHint()/* + QSize(100, 100) */);
+    //Plasma::Applet::setMinimumSize(m_dialog->widget()->minimumSizeHint() + QSize(20, 20));
+    Plasma::Applet::setMinimumSize(m_dialog->widget()->minimumSizeHint());
+} // readjustSize()
 
 
 #include "gmailnotifierapplet.moc"
