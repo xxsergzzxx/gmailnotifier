@@ -73,7 +73,12 @@ QVariantMap GmailNotifierEngine::passwords() const
 void GmailNotifierEngine::setPasswords(const QVariantMap &passwords)
 {
     kDebug();
-    d->passwordList = passwords;
+
+    // FIXME: Must use Plasma::Service instead !
+    QVariantMap::ConstIterator it;
+    for (it = passwords.constBegin(); it != passwords.constEnd(); ++it) {
+        d->passwordList[it.key()] = it.value();
+    }
 } // setPasswords()
 
 
