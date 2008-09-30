@@ -261,6 +261,7 @@ void GmailNotifierApplet::initApplet()
     }
 
     // Disconnect sources that aren't used anymore
+    /*
     QStringList connectedSources(m_engine->sources());
     foreach (QString source, connectedSources) {
         if (!validRequests.contains(source)) {
@@ -269,6 +270,7 @@ void GmailNotifierApplet::initApplet()
             m_totalUnreadMailCount.remove(source);
         }
     }
+    */
 
     if (!isSizeConstrained) {
         Plasma::Applet::resize(m_dialog->widget()->size()/* + QSize(100, 100) */);
