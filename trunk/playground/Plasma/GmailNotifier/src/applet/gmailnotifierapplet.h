@@ -79,6 +79,8 @@ private:
     QGraphicsLinearLayout *m_layout;
 
     QMap<QString, uint> m_totalUnreadMailCount;
+
+    QStringList m_validSources;
 };
 
 
