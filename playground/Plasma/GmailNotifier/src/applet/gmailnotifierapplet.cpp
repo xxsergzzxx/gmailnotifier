@@ -182,6 +182,9 @@ void GmailNotifierApplet::configAccepted()
 
     // Reinit applet
     initApplet();
+
+    // Redraw icon
+    drawIcon();
 } // configAccepted()
 
 
@@ -306,6 +309,7 @@ void GmailNotifierApplet::drawIcon()
 
     m_icon->setIcon(img);
     m_icon->resize(geometry().size());
+    m_icon->update(); // Force icon to be refreshed
 } // drawIcon()
 
 
