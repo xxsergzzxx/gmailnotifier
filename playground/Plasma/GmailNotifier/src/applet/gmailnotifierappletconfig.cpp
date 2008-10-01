@@ -88,7 +88,10 @@ KConfigGroup GmailNotifierAppletConfig::config()
     m_cg.writeEntry("DisplayLogo", ui.cbDisplayLogo->isChecked());
     m_cg.writeEntry("PollingInterval", ui.spinPollingInterval->value());
 
-    int cnt=0;
+    // Start cnt at "-1" in case the following "for" statement
+    // is ignored (no accounts). That way its value cannot be more than 0
+    // when we'll increment it later.
+    int cnt=-1;
     for (int i=0; i<ui.listAccounts->count(); ++i) {
         QListWidgetItem *item(ui.listAccounts->item(i));
         QVariantMap account(item->data(Qt::UserRole).toMap());
