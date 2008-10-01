@@ -244,7 +244,7 @@ void GmailNotifierApplet::initApplet()
         ++cnt;
     }
 
-    m_dialog->setAccounts(accountList);
+    m_dialog->setAccounts(accountList, m_totalUnreadMailCount);
     m_dialog->setDisplayLogo(config().readEntry("DisplayLogo", true));
 
     // Send passwords to the data engine

@@ -56,7 +56,8 @@ public:
     void hide();
 
     void setDisplayLogo(const bool &display);
-    void setAccounts(const QList<QMap<QString, QString> > &accounts);
+    void setAccounts(const QList<QMap<QString, QString> > &accounts,
+                     const QMap<QString, uint> &unreadMailCount);
     void updateMailCount(const QString &source, const Plasma::DataEngine::Data &data);
 
 private:

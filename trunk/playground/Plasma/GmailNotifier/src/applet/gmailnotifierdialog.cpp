@@ -74,7 +74,8 @@ void GmailNotifierDialog::setDisplayLogo(const bool &display)
     }
 } // setDisplayLogo()
 
-void GmailNotifierDialog::setAccounts(const QList<QMap<QString, QString> > &accounts)
+void GmailNotifierDialog::setAccounts(const QList<QMap<QString, QString> > &accounts,
+                                      const QMap<QString, uint> &unreadMailCount)
 {
     kDebug();
 
@@ -110,7 +111,13 @@ void GmailNotifierDialog::setAccounts(const QList<QMap<QString, QString> > &acco
         lblAccount->setObjectName(QString("lblAccount_%1").arg(loginNLabel));
         m_layoutMails->addWidget(lblAccount, row, 0, Qt::AlignLeft | Qt::AlignVCenter);
 
-        QLabel *lblMailCount = new QLabel("---");
+        QString lblMailCountTxt;
+        if (unreadMailCount.contains(loginNLabel)) {
+            lblMailCountTxt = QString("%1").arg(unreadMailCount[loginNLabel]);
+        } else {
+            lblMailCountTxt = "---";
+        }
+        QLabel *lblMailCount = new QLabel(lblMailCountTxt);
         lblMailCount->setObjectName(QString("lblMailCount_%1").arg(loginNLabel));
         m_layoutMails->addWidget(lblMailCount, row, 1, Qt::AlignRight | Qt::AlignVCenter);
 
