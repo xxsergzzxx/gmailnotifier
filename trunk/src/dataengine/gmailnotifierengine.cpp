@@ -20,6 +20,7 @@
 // Own
 #include "gmailnotifierengine.h"
 #include "gmailatomfeedparser.h"
+#include "gmailnotifiercontainer.h"
 
 // KDE
 #include <KDE/KJob>
@@ -55,6 +56,9 @@ GmailNotifierEngine::GmailNotifierEngine(QObject *parent, const QVariantList &ar
     , d(new Private)
 {
     kDebug();
+
+    // 1 min ought to be enough for anybody :)
+    Plasma::DataEngine::setMinimumPollingInterval(1000 * 60 * 1);
 } // ctor()
 
 
@@ -63,6 +67,21 @@ GmailNotifierEngine::~GmailNotifierEngine()
     kDebug();
     delete d;
 } // dtor()
+
+/*
+Plasma::Service* GmailNotifierEngine::serviceForSource(const QString &name)
+{
+    GmailNotifierContainer *source = qobject_cast<GmailNotifierContainer*>(containerForSource(name));
+
+    if (!source) {
+        return Plasma::DataEngine::serviceForSource(name);
+    }
+
+    Plasma::Service *service = source->createService();
+    service->setParent(this);
+    return service;
+} // serviceForSource()
+*/
 
 QVariantMap GmailNotifierEngine::passwords() const
 {
@@ -85,13 +104,6 @@ void GmailNotifierEngine::setPasswords(const QVariantMap &passwords)
 /*
 ** Protected
 */
-void GmailNotifierEngine::init()
-{
-    kDebug();
-    // 1 min ought to be enough for anybody :)
-    setMinimumPollingInterval(1000 * 60 * 1);
-} // init()
-
 bool GmailNotifierEngine::sourceRequestEvent(const QString &request)
 {
     kDebug();
