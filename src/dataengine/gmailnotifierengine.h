@@ -41,11 +41,12 @@ public:
     GmailNotifierEngine(QObject *parent, const QVariantList &args);
     ~GmailNotifierEngine();
 
+//    Plasma::Service* serviceForSource(const QString &name);
+
     QVariantMap passwords() const;
     void setPasswords(const QVariantMap &passwords);
 
 protected:
-    void init();
     bool sourceRequestEvent(const QString &request);
     bool updateSourceEvent(const QString &request);
 
