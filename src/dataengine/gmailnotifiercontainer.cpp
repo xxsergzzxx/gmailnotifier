@@ -19,6 +19,7 @@
 
 // Own
 #include "gmailnotifiercontainer.h"
+#include "gmailnotifierservice.h"
 
 
 /*
@@ -35,6 +36,20 @@ GmailNotifierContainer::~GmailNotifierContainer()
 {
     kDebug();
 } // dtor()
+
+Plasma::Service* GmailNotifierContainer::createService()
+{
+    kDebug();
+
+    return new GmailNotifierService(this);
+} // createService()
+
+QString GmailNotifierContainer::account() const
+{
+    kDebug();
+
+    return QString(); // FIXME
+} // account()
 
 
 #include "gmailnotifiercontainer.moc"

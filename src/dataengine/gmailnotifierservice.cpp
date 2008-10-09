@@ -28,16 +28,34 @@
 ** Public
 */
 GmailNotifierService::GmailNotifierService(QObject *parent)
-//    : Plasma::Service(parent)
+    : Plasma::Service(parent)
+//    , m_source(parent)
 {
     kDebug();
+
+    Plasma::Service::setName("gmailnotifierengine");
 } // ctor()
 
 
 GmailNotifierService::~GmailNotifierService()
 {
     kDebug();
+
+//    delete m_source;
 } // dtor()
+
+
+/*
+** Protected
+*/
+Plasma::ServiceJob* GmailNotifierService::createJob(const QString &operation, QMap<QString, QVariant> &parameters)
+{
+    kDebug();
+
+//    return new Plasma::ServiceJob(m_source->account(), operation, parameters, this);
+
+    return new GmailNotifierServiceJob(m_source, parameters);
+} // createJob()
 
 
 #include "gmailnotifierservice.moc"

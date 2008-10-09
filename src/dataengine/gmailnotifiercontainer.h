@@ -31,6 +31,10 @@ class GmailNotifierContainer : public Plasma::DataContainer
 public:
     GmailNotifierContainer(QObject *parent = 0);
     ~GmailNotifierContainer();
+
+    Plasma::Service* createService();
+
+    QString account() const;
 };
 
 
