@@ -20,17 +20,28 @@
 #ifndef __GMAILNOTIFIERSERVICE_H__
 #define __GMAILNOTIFIERSERVICE_H__
 
+// Own
+#include "gmailnotifiercontainer.h"
+#include "gmailnotifierservicejob.h"
+
 // Plasma
 #include <Plasma/Service>
+//#include <Plasma/ServiceJob>
 
 
-class GmailNotifierService // : public Plasma::Service
+class GmailNotifierService : public Plasma::Service
 {
-//    Q_OBJECT
+    Q_OBJECT
 
 public:
     GmailNotifierService(QObject *parent = 0);
     ~GmailNotifierService();
+
+protected:
+    Plasma::ServiceJob* createJob(const QString &operation, QMap<QString, QVariant> &parameters);
+
+private:
+    GmailNotifierContainer *m_source;
 };
 
 

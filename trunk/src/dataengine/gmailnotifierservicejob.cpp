@@ -27,10 +27,12 @@
 /*
 ** Public
 */
-GmailNotifierServiceJob::GmailNotifierServiceJob(QObject *parent)
-//    : Plasma::ServiceJob(QString(), QString(), QMap<QString, QVariant>(), parent)
+GmailNotifierServiceJob::GmailNotifierServiceJob(GmailNotifierContainer *source, const QMap<QString, QVariant> &parameters, QObject *parent)
+    : Plasma::ServiceJob(source->account(), "update", parameters, parent)
 {
     kDebug();
+
+    m_url = "https://mail.google.com:443/mail/feed/atom/";
 } // ctor()
 
 
@@ -38,6 +40,12 @@ GmailNotifierServiceJob::~GmailNotifierServiceJob()
 {
     kDebug();
 } // dtor()
+
+
+void GmailNotifierServiceJob::start()
+{
+    kDebug();
+} // start()
 
 
 #include "gmailnotifierservicejob.moc"

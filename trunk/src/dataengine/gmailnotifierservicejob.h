@@ -20,17 +20,37 @@
 #ifndef __GMAILNOTIFIERSERVICEJOB_H__
 #define __GMAILNOTIFIERSERVICEJOB_H__
 
+// Own
+#include "gmailnotifiercontainer.h"
+
 // Plasma
 #include <Plasma/ServiceJob>
 
+// KDE
+#include <KDE/KUrl>
 
-class GmailNotifierServiceJob // : public Plasma::ServiceJob
+/*
+class KJob;
+namespace KIO
 {
-//    Q_OBJECT
+    class Job;
+}
+*/
+
+class GmailNotifierServiceJob : public Plasma::ServiceJob
+{
+    Q_OBJECT
 
 public:
-    GmailNotifierServiceJob(QObject *parent = 0);
+    GmailNotifierServiceJob(GmailNotifierContainer *source,
+                            const QMap<QString, QVariant> &parameters,
+                            QObject *parent = 0);
     ~GmailNotifierServiceJob();
+
+    void start();
+
+private:
+    KUrl m_url;
 };
 
 
