@@ -17,30 +17,49 @@
 ** 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#ifndef __GMAILNOTIFIERENGINE_H__
-#define __GMAILNOTIFIERENGINE_H__
+#ifndef __GMAILNOTIFIER_DATAENGINE_H__
+#define __GMAILNOTIFIER_DATAENGINE_H__
 
 // Plasma
 #include <Plasma/DataEngine>
-#include <Plasma/Service>
+
+// KDE
+class KJob;
+namespace KIO
+{
+    class Job;
+}
 
 
 class GmailNotifierEngine : public Plasma::DataEngine
 {
     Q_OBJECT
+    Q_PROPERTY(QVariantMap passwords READ passwords WRITE setPasswords)
+
 
 public:
     GmailNotifierEngine(QObject *parent, const QVariantList &args);
     ~GmailNotifierEngine();
 
-    Plasma::Service* serviceForSource(const QString &name);
+    QVariantMap passwords() const;
+    void setPasswords(const QVariantMap &passwords);
 
 protected:
+    void init();
     bool sourceRequestEvent(const QString &request);
     bool updateSourceEvent(const QString &request);
+
+private Q_SLOTS:
+    void recv(KIO::Job *job, const QByteArray &data);
+    void result(KJob *job);
+
+private:
+    class Private;
+    Private * const d;
 };
 
 
 K_EXPORT_PLASMA_DATAENGINE(gmailnotifierengine, GmailNotifierEngine)
 
-#endif // __GMAILNOTIFIERENGINE_H__
+
+#endif // __GMAILNOTIFIER_DATAENGINE_H__
