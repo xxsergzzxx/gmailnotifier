@@ -46,8 +46,8 @@ GmailNotifierAppletConfig::GmailNotifierAppletConfig(KConfigGroup cg, QWidget *p
 
     // Background
     QStringList backgroundHints;
-    //backgroundHints << "Default" << "Standard" << "Translucent" << "Shadowed" << "None";
-    backgroundHints << "Standard" << "Translucent";
+    //backgroundHints << "Default" << "Standard" << "Translucent" << "None";
+    backgroundHints << "Standard" << "Translucent" << "None";
     ui.comboBackground->addItems(backgroundHints);
     
     int pos = ui.comboBackground->findText(m_cg.readEntry("Background", "Standard"), Qt::MatchExactly);

@@ -120,7 +120,7 @@ void GmailNotifierApplet::constraintsEvent(Plasma::Constraints constraints)
             m_dialog = new GmailNotifierDialog(GmailNotifierDialog::PanelArea, this);
             setBackgroundHints(NoBackground);
 
-            m_icon = new Plasma::Icon(this);
+            m_icon = new Plasma::IconWidget(this);
             connect(m_icon, SIGNAL(clicked()), this, SLOT(onClickNotifier()));
             m_layout->addItem(m_icon);
 
@@ -212,8 +212,6 @@ void GmailNotifierApplet::initApplet()
             hint = StandardBackground;
         } else if (background == "Translucent") {
             hint = TranslucentBackground;
-        } else if (background == "Shadowed") {
-            hint = ShadowedBackground;
         } else if (background == "None") {
             hint = NoBackground;
         } else { // Default
