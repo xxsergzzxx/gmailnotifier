@@ -32,7 +32,7 @@
 
 // Plasma
 #include <Plasma/Applet>
-#include <Plasma/Icon>
+#include <Plasma/IconWidget>
 
 // Qt
 #include <QtGui/QGraphicsLinearLayout>
@@ -76,7 +76,7 @@ private:
     GmailNotifierDialog *m_dialog;
     GmailNotifierAppletConfig *m_configDialog;
 
-    Plasma::Icon *m_icon;
+    Plasma::IconWidget *m_icon;
     QGraphicsProxyWidget *m_proxy;
     QGraphicsLinearLayout *m_layout;
 
