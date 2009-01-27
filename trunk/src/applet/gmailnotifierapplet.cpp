@@ -212,8 +212,6 @@ void GmailNotifierApplet::initApplet()
             hint = StandardBackground;
         } else if (background == "Translucent") {
             hint = TranslucentBackground;
-        } else if (background == "Shadowed") {
-            hint = ShadowedBackground;
         } else if (background == "None") {
             hint = NoBackground;
         } else { // Default
