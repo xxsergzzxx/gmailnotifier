@@ -1,0 +1,18 @@
+[Desktop Entry]
+Name=Plasma::Services Test data engine
+Comment=Data engine for testing Plasma::Services
+Type=Service
+Icon=unknown
+ 
+X-KDE-ServiceTypes=Plasma/DataEngine
+X-KDE-Library=plasma_engine_pst
+X-Plasma-EngineName=PST
+X-KDE-PluginInfo-Author=Gilles CHAUVIN
+X-KDE-PluginInfo-Email=gcnweb+gmailnotifier@gmail.com
+X-KDE-PluginInfo-Name=gmailnotifier
+X-KDE-PluginInfo-Version=0.0
+X-KDE-PluginInfo-Website=http://gmailnotifier.googlecode.com/
+X-KDE-PluginInfo-Category=
+X-KDE-PluginInfo-Depends=
+X-KDE-PluginInfo-License=GPL
+X-KDE-PluginInfo-EnabledByDefault=
