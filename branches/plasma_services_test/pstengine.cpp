@@ -41,12 +41,34 @@ PSTEngine::PSTEngine(QObject *parent, const QVariantList &args)
     kDebug();
 } // ctor()
 
-
 PSTEngine::~PSTEngine()
 {
     kDebug();
     delete d;
 } // dtor()
+
+
+/*
+** Protected
+*/
+void PSTEngine::init()
+{
+    kDebug();
+} // init()
+
+bool PSTEngine::sourceRequestEvent(const QString &request)
+{
+    kDebug();
+
+    return true;
+} // sourceRequestEvent()
+
+bool PSTEngine::updateSourceEvent(const QString &request)
+{
+    kDebug();
+
+    return true;
+} // updateSourceEvent()
 
 
 #include "pstengine.moc"

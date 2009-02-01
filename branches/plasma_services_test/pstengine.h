@@ -36,6 +36,11 @@ public:
     PSTEngine(QObject *parent, const QVariantList &args);
     ~PSTEngine();
 
+protected:
+    void init();
+    bool sourceRequestEvent(const QString &request);
+    bool updateSourceEvent(const QString &request);
+
 private:
     class Private;
     Private * const d;
