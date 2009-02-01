@@ -6,10 +6,10 @@ Icon=unknown
  
 X-KDE-ServiceTypes=Plasma/DataEngine
 X-KDE-Library=plasma_engine_pst
-X-Plasma-EngineName=PST
+X-Plasma-EngineName=pst
 X-KDE-PluginInfo-Author=Gilles CHAUVIN
 X-KDE-PluginInfo-Email=gcnweb+gmailnotifier@gmail.com
-X-KDE-PluginInfo-Name=gmailnotifier
+X-KDE-PluginInfo-Name=pst
 X-KDE-PluginInfo-Version=0.0
 X-KDE-PluginInfo-Website=http://gmailnotifier.googlecode.com/
 X-KDE-PluginInfo-Category=
