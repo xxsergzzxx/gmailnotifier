@@ -47,6 +47,13 @@ PSTEngine::~PSTEngine()
     delete d;
 } // dtor()
 
+Plasma::Service* PSTEngine::serviceForSource(const QString &source)
+{
+    kDebug();
+
+    return Plasma::DataEngine::serviceForSource(source);
+} // serviceForSource()
+
 
 /*
 ** Protected
@@ -60,12 +67,17 @@ bool PSTEngine::sourceRequestEvent(const QString &request)
 {
     kDebug();
 
-    return true;
+    kDebug() << request;
+
+    return updateSourceEvent(request);
 } // sourceRequestEvent()
+
 
 bool PSTEngine::updateSourceEvent(const QString &request)
 {
     kDebug();
+
+    kDebug() << request;
 
     return true;
 } // updateSourceEvent()

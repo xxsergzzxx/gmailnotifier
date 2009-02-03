@@ -26,6 +26,7 @@
 
 // Plasma
 #include <Plasma/DataEngine>
+#include <Plasma/Service>
 
 
 class PSTEngine : public Plasma::DataEngine
@@ -35,6 +36,7 @@ class PSTEngine : public Plasma::DataEngine
 public:
     PSTEngine(QObject *parent, const QVariantList &args);
     ~PSTEngine();
+    Plasma::Service* serviceForSource(const QString &source);
 
 protected:
     void init();
