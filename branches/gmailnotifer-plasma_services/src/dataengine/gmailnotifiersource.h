@@ -1,5 +1,5 @@
 /*
-** Copyright (C) 2008 Gilles CHAUVIN <gcnweb+gmailnotifier@gmail.com>
+** Copyright (C) 2008-2009 Gilles CHAUVIN <gcnweb+gmailnotifier@gmail.com>
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -17,25 +17,32 @@
 ** 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#ifndef __GMAILNOTIFIERCONTAINER_H__
-#define __GMAILNOTIFIERCONTAINER_H__
+#ifndef __GMAILNOTIFIERSOURCE_H__
+#define __GMAILNOTIFIERSOURCE_H__
 
 // Plasma
 #include <Plasma/DataContainer>
+// KDE
+#include <KDE/KUrl>
 
 
-class GmailNotifierContainer : public Plasma::DataContainer
+class GmailNotifierSource : public Plasma::DataContainer
 {
     Q_OBJECT
 
 public:
-    GmailNotifierContainer(QObject *parent = 0);
-    ~GmailNotifierContainer();
+    GmailNotifierSource(const QString &accountName, const QString &labelName, QObject *parent = 0);
+    ~GmailNotifierSource();
 
-    Plasma::Service* createService();
+    //Plasma::Service* createService();
 
-    QString account() const;
+    void update();
+    //void setPassword(const QString &password);
+    //QString account() const;
+
+private:
+    KUrl    m_url;
 };
 
 
-#endif // __GMAILNOTIFIERCONTAINER_H__
+#endif // __GMAILNOTIFIERSOURCE_H__

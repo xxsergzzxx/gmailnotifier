@@ -1,5 +1,5 @@
 /*
-** Copyright (C) 2008 Gilles CHAUVIN <gcnweb+gmailnotifier@gmail.com>
+** Copyright (C) 2008-2009 Gilles CHAUVIN <gcnweb+gmailnotifier@gmail.com>
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -21,7 +21,7 @@
 #define __GMAILNOTIFIERSERVICEJOB_H__
 
 // Own
-#include "gmailnotifiercontainer.h"
+#include "gmailnotifiersource.h"
 
 // Plasma
 #include <Plasma/ServiceJob>
@@ -42,7 +42,7 @@ class GmailNotifierServiceJob : public Plasma::ServiceJob
     Q_OBJECT
 
 public:
-    GmailNotifierServiceJob(GmailNotifierContainer *source,
+    GmailNotifierServiceJob(GmailNotifierSource *source,
                             const QMap<QString, QVariant> &parameters,
                             QObject *parent = 0);
     ~GmailNotifierServiceJob();

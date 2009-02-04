@@ -3,7 +3,7 @@ project(plasma-dataengine-GmailNotifier)
 set(gmailnotifier_dataengine_SRCS
     gmailnotifierengine.cpp
     gmailatomfeedparser.cpp
-    gmailnotifiercontainer.cpp
+    gmailnotifiersource.cpp
     gmailnotifierservice.cpp
     gmailnotifierservicejob.cpp)
 

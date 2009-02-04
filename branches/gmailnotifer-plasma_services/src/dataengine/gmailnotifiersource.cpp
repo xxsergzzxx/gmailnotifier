@@ -1,5 +1,5 @@
 /*
-** Copyright (C) 2008 Gilles CHAUVIN <gcnweb+gmailnotifier@gmail.com>
+** Copyright (C) 2008-2009 Gilles CHAUVIN <gcnweb+gmailnotifier@gmail.com>
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -18,38 +18,64 @@
 */
 
 // Own
-#include "gmailnotifiercontainer.h"
+#include "gmailnotifiersource.h"
 #include "gmailnotifierservice.h"
 
 
 /*
 ** Public
 */
-GmailNotifierContainer::GmailNotifierContainer(QObject *parent)
+GmailNotifierSource::GmailNotifierSource(const QString &accountName, const QString &labelName, QObject *parent)
     : Plasma::DataContainer(parent)
 {
     kDebug();
+    m_url.setUrl(QString("https://mail.google.com:443/mail/feed/atom/%1").arg(labelName), QUrl::StrictMode);
+    m_url.setUserName(accountName);
+
+    kDebug() << m_url;
+
+    update();
 } // ctor()
 
 
-GmailNotifierContainer::~GmailNotifierContainer()
+GmailNotifierSource::~GmailNotifierSource()
 {
     kDebug();
 } // dtor()
 
-Plasma::Service* GmailNotifierContainer::createService()
+/*
+ * Not sure this is really necessary ?!
+Plasma::Service* GmailNotifierSource::createService()
 {
     kDebug();
 
     return new GmailNotifierService(this);
 } // createService()
+*/
 
-QString GmailNotifierContainer::account() const
+void GmailNotifierSource::update()
+{
+    kDebug();
+    // DO SOMETHING !!
+} // update()
+
+
+/*
+void GmailNotifierSource::setPassword(const QString &password)
+{
+    kDebug();
+    m_url.setPassword(password);
+    update();
+} // setPassword()
+*/
+
+/*
+QString GmailNotifierSource::account() const
 {
     kDebug();
 
-    return QString(); // FIXME
+    return m_url.userName();
 } // account()
+*/
 
-
-#include "gmailnotifiercontainer.moc"
+#include "gmailnotifiersource.moc"
