@@ -20,6 +20,8 @@
 
 // Own
 #include "gmailnotifierservice.h"
+// Plasma
+#include <Plasma/ServiceJob>
 // KDE
 #include <KDE/KDebug>
 

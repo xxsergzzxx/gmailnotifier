@@ -24,7 +24,6 @@
 
 // Own
 #include "gmailnotifiersource.h"
-#include "gmailnotifierservicejob.h"
 // Plasma
 #include <Plasma/Service>
 
