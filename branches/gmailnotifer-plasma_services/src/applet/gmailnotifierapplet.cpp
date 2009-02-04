@@ -1,5 +1,5 @@
 /*
-** Copyright (C) 2008 Gilles CHAUVIN <gcnweb+gmailnotifier@gmail.com>
+** Copyright (C) 2008-2009 Gilles CHAUVIN <gcnweb+gmailnotifier@gmail.com>
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -17,22 +17,21 @@
 ** 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
+
 // Own
 #include "gmailnotifierapplet.h"
-
 // Plasma
 #include <Plasma/DataEngine>
-
 // KDE
 #include <KDE/KConfigDialog>
-
-// Qt
+// QtGui
 #include <QtGui/QPainter>
+// QtCore
 #include <QtCore/QTime>
 
 
 /*
-** Public
+** public:
 */
 GmailNotifierApplet::GmailNotifierApplet(QObject *parent, const QVariantList &args)
     : Plasma::Applet(parent, args)
@@ -71,7 +70,7 @@ void GmailNotifierApplet::init()
 
 
 /*
-** Public Q_SLOTS
+** public Q_SLOTS:
 */
 void GmailNotifierApplet::dataUpdated(const QString &source, const Plasma::DataEngine::Data &data)
 {
@@ -95,12 +94,11 @@ void GmailNotifierApplet::dataUpdated(const QString &source, const Plasma::DataE
     }
 
     drawIcon();
-
 } // dataUpdated()
 
 
 /*
-** Protected
+** protected:
 */
 void GmailNotifierApplet::constraintsEvent(Plasma::Constraints constraints)
 {
@@ -164,7 +162,7 @@ void GmailNotifierApplet::createConfigurationInterface(KConfigDialog *parent)
 
 
 /*
-** Private Q_SLOTS
+** private Q_SLOTS:
 */
 void GmailNotifierApplet::onClickNotifier()
 {
@@ -194,7 +192,7 @@ void GmailNotifierApplet::configAccepted()
 
 
 /*
-** Private
+** private:
 */
 void GmailNotifierApplet::initApplet()
 {

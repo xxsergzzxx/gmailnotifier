@@ -17,22 +17,25 @@
 ** 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
+
 // Own
 #include "gmailnotifiersource.h"
 #include "gmailnotifierservice.h"
+#include "gmailatomfeedparser.h"
+// KDE
+#include <KIO/Job>
 
 
 /*
-** Public
+** public:
 */
 GmailNotifierSource::GmailNotifierSource(const QString &accountName, const QString &labelName, QObject *parent)
     : Plasma::DataContainer(parent)
+    , m_job(0)
 {
     kDebug();
     m_url.setUrl(QString("https://mail.google.com:443/mail/feed/atom/%1").arg(labelName), QUrl::StrictMode);
     m_url.setUserName(accountName);
-
-    kDebug() << m_url;
 
     update();
 } // ctor()
@@ -40,42 +43,80 @@ GmailNotifierSource::GmailNotifierSource(const QString &accountName, const QStri
 
 GmailNotifierSource::~GmailNotifierSource()
 {
-    kDebug();
+//    kDebug();
 } // dtor()
 
-/*
- * Not sure this is really necessary ?!
 Plasma::Service* GmailNotifierSource::createService()
 {
     kDebug();
 
     return new GmailNotifierService(this);
 } // createService()
-*/
 
 void GmailNotifierSource::update()
 {
     kDebug();
-    // DO SOMETHING !!
+
+    if (m_job || (!account().isEmpty() && password().isEmpty())) {
+        return;
+    }
+
+    m_job = KIO::get(m_url, KIO::Reload, KIO::HideProgressInfo);
+    connect(m_job, SIGNAL(data(KIO::Job*, const QByteArray&)),
+            this, SLOT(recv(KIO::Job*, const QByteArray&)));
+    connect(m_job, SIGNAL(result(KJob*)), this, SLOT(result(KJob*)));
 } // update()
 
-
-/*
 void GmailNotifierSource::setPassword(const QString &password)
 {
     kDebug();
+
     m_url.setPassword(password);
     update();
 } // setPassword()
-*/
 
-/*
 QString GmailNotifierSource::account() const
 {
     kDebug();
 
     return m_url.userName();
 } // account()
+
+QString GmailNotifierSource::password() const
+{
+    kDebug();
+
+    return m_url.password();
+} // password()
+
+
+/*
+** private Q_SLOTS:
 */
+void GmailNotifierSource::recv(KIO::Job * /*job*/, const QByteArray &data)
+{
+    m_atomFeed += data;
+} // recv()
+
+void GmailNotifierSource::result(KJob *job)
+{
+    if (job != m_job) {
+        kDebug() << "Fail! Job is not our job!";
+        return;
+    }
+
+    removeAllData();
+    if (job->error()) {
+        kDebug() << "Job error!";
+        setData("error", job->errorText());
+    } else {
+        emit dataUpdated(objectName(), GmailAtomFeedParser::parseFeed(m_atomFeed));
+    }
+
+    Plasma::DataContainer::checkForUpdate();
+    m_atomFeed.clear();
+    m_job = 0;
+} // result()
+
 
 #include "gmailnotifiersource.moc"

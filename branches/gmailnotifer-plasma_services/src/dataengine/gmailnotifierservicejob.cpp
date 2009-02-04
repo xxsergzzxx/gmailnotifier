@@ -17,15 +17,15 @@
 ** 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
+
 // Own
 #include "gmailnotifierservicejob.h"
-
 // KDE
 #include <KDE/KDebug>
 
 
 /*
-** Public
+** public:
 */
 GmailNotifierServiceJob::GmailNotifierServiceJob(GmailNotifierSource * /*source*/, const QMap<QString, QVariant> &parameters, QObject *parent)
     : Plasma::ServiceJob(/*source->account()*/"", "update", parameters, parent)
@@ -38,7 +38,7 @@ GmailNotifierServiceJob::GmailNotifierServiceJob(GmailNotifierSource * /*source*
 
 GmailNotifierServiceJob::~GmailNotifierServiceJob()
 {
-    kDebug();
+//    kDebug();
 } // dtor()
 
 

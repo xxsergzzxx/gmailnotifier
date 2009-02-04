@@ -21,10 +21,10 @@
 // Own
 #include "gmailnotifierengine.h"
 #include "gmailnotifiersource.h"
-#include "gmailnotifierservice.h"   // REMOVEME
+
 
 /*
-** Public
+** public:
 */
 GmailNotifierEngine::GmailNotifierEngine(QObject *parent, const QVariantList &args)
     : Plasma::DataEngine(parent, args)
@@ -38,7 +38,7 @@ GmailNotifierEngine::GmailNotifierEngine(QObject *parent, const QVariantList &ar
 
 GmailNotifierEngine::~GmailNotifierEngine()
 {
-    kDebug();
+//    kDebug();
 } // dtor()
 
 Plasma::Service* GmailNotifierEngine::serviceForSource(const QString &name)
@@ -51,20 +51,14 @@ Plasma::Service* GmailNotifierEngine::serviceForSource(const QString &name)
         return Plasma::DataEngine::serviceForSource(name);
     }
 
-    /*
-     * Not sure this is really necessary ?!
-
     Plasma::Service *service = source->createService();
     service->setParent(this);
     return service;
-    */
-
-    return new GmailNotifierService(this);
 } // serviceForSource()
 
 
 /*
-** Protected
+** protected:
 */
 bool GmailNotifierEngine::sourceRequestEvent(const QString &request)
 {

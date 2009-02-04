@@ -52,4 +52,5 @@ protected:
 
 K_EXPORT_PLASMA_DATAENGINE(gmailnotifierengine, GmailNotifierEngine)
 
+
 #endif // __GMAILNOTIFIERENGINE_H__

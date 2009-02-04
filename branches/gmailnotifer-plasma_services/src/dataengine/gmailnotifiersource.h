@@ -17,13 +17,22 @@
 ** 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
+
 #ifndef __GMAILNOTIFIERSOURCE_H__
 #define __GMAILNOTIFIERSOURCE_H__
+
 
 // Plasma
 #include <Plasma/DataContainer>
 // KDE
 #include <KDE/KUrl>
+// forward declarations
+class KJob;
+
+namespace KIO
+{
+    class Job;
+} // namespace KIO
 
 
 class GmailNotifierSource : public Plasma::DataContainer
@@ -34,14 +43,21 @@ public:
     GmailNotifierSource(const QString &accountName, const QString &labelName, QObject *parent = 0);
     ~GmailNotifierSource();
 
-    //Plasma::Service* createService();
+    Plasma::Service* createService();
 
     void update();
-    //void setPassword(const QString &password);
-    //QString account() const;
+    void setPassword(const QString &password);
+    QString account() const;
+    QString password() const;
+
+private Q_SLOTS:
+    void recv(KIO::Job *job, const QByteArray &data);
+    void result(KJob *job);
 
 private:
-    KUrl    m_url;
+    KUrl         m_url;
+    KIO::Job    *m_job;
+    QByteArray   m_atomFeed;
 };
 
 

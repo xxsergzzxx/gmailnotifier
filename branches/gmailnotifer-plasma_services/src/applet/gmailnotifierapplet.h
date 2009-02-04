@@ -1,5 +1,5 @@
 /*
-** Copyright (C) 2008 Gilles CHAUVIN <gcnweb+gmailnotifier@gmail.com>
+** Copyright (C) 2008-2009 Gilles CHAUVIN <gcnweb+gmailnotifier@gmail.com>
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -18,9 +18,10 @@
 */
 
 /*
-** Some parts were borrowed from the Device Notifier Applet
+** Some parts were borrowed from the Device Notifier Applet provided with KDE
 ** and are (C) Alexis Ménard
 */
+
 
 #ifndef __GMAILNOTIFIER_APPLET_H__
 #define __GMAILNOTIFIER_APPLET_H__
@@ -29,12 +30,10 @@
 // Own
 #include "gmailnotifierdialog.h"
 #include "gmailnotifierappletconfig.h"
-
 // Plasma
 #include <Plasma/Applet>
 #include <Plasma/IconWidget>
-
-// Qt
+// QtGui
 #include <QtGui/QGraphicsLinearLayout>
 #include <QtGui/QGraphicsProxyWidget>
 

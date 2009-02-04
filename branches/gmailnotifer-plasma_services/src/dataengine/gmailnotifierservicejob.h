@@ -17,15 +17,15 @@
 ** 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
+
 #ifndef __GMAILNOTIFIERSERVICEJOB_H__
 #define __GMAILNOTIFIERSERVICEJOB_H__
 
+
 // Own
 #include "gmailnotifiersource.h"
-
 // Plasma
 #include <Plasma/ServiceJob>
-
 // KDE
 #include <KDE/KUrl>
 

@@ -17,16 +17,16 @@
 ** 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
+
 #ifndef __GMAILNOTIFIERSERVICE_H__
 #define __GMAILNOTIFIERSERVICE_H__
+
 
 // Own
 #include "gmailnotifiersource.h"
 #include "gmailnotifierservicejob.h"
-
 // Plasma
 #include <Plasma/Service>
-//#include <Plasma/ServiceJob>
 
 
 class GmailNotifierService : public Plasma::Service
@@ -34,7 +34,7 @@ class GmailNotifierService : public Plasma::Service
     Q_OBJECT
 
 public:
-    GmailNotifierService(QObject *parent = 0);
+    GmailNotifierService(GmailNotifierSource *parent);
     ~GmailNotifierService();
 
 protected:

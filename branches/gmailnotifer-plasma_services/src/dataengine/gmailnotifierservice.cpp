@@ -17,19 +17,19 @@
 ** 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
+
 // Own
 #include "gmailnotifierservice.h"
-
 // KDE
 #include <KDE/KDebug>
 
 
 /*
-** Public
+** public:
 */
-GmailNotifierService::GmailNotifierService(QObject *parent)
+GmailNotifierService::GmailNotifierService(GmailNotifierSource *parent)
     : Plasma::Service(parent)
-//    , m_source(parent)
+    , m_source(parent)
 {
     kDebug();
 
@@ -39,22 +39,23 @@ GmailNotifierService::GmailNotifierService(QObject *parent)
 
 GmailNotifierService::~GmailNotifierService()
 {
-    kDebug();
-
-//    delete m_source;
+//    kDebug();
 } // dtor()
 
 
 /*
-** Protected
+** protected:
 */
-Plasma::ServiceJob* GmailNotifierService::createJob(const QString &/*operation*/, QMap<QString, QVariant> &parameters)
+Plasma::ServiceJob* GmailNotifierService::createJob(const QString &operation, QMap<QString, QVariant> &parameters)
 {
     kDebug();
 
-//    return new Plasma::ServiceJob(m_source->account(), operation, parameters, this);
+    if (operation == "auth") {
+        m_source->setPassword(parameters.value("password").toString());
+    }
 
-    return new GmailNotifierServiceJob(m_source, parameters);
+    // Fail!
+    return new Plasma::ServiceJob(m_source->account(), operation, parameters, this);
 } // createJob()
 
 
