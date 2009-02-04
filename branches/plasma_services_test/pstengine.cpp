@@ -17,10 +17,10 @@
 ** 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
+
 // Own
 #include "pstengine.h"
-
-// KDE
+#include "pstsource.h"
 
 
 class PSTEngine::Private
@@ -47,11 +47,20 @@ PSTEngine::~PSTEngine()
     delete d;
 } // dtor()
 
-Plasma::Service* PSTEngine::serviceForSource(const QString &source)
+Plasma::Service* PSTEngine::serviceForSource(const QString &name)
 {
     kDebug();
+    kDebug() << name;
 
-    return Plasma::DataEngine::serviceForSource(source);
+    PSTSource *source = dynamic_cast<PSTSource*>(containerForSource(name));
+
+    if (!source) {
+        return Plasma::DataEngine::serviceForSource(name);
+    }
+
+    Plasma::Service *service = source->createService();
+    service->setParent(this);
+    return service;
 } // serviceForSource()
 
 
@@ -76,10 +85,25 @@ bool PSTEngine::sourceRequestEvent(const QString &request)
 bool PSTEngine::updateSourceEvent(const QString &request)
 {
     kDebug();
+    kDebug() << "Request:" << request;
 
-    kDebug() << request;
+    QStringList tokens = request.split(':');
+    if (tokens.count() != 2) {
+        kWarning() << "Invalid token count";
+        return false;
+    }
+    kDebug() << "Tokens:" << tokens;
 
-    return true;
+    PSTSource *source = dynamic_cast<PSTSource*>(containerForSource(request));
+    kDebug() << source;
+    if (!source) {
+        source = new PSTSource(tokens.at(0), this);
+        source->setObjectName(request);
+        addSource(source);
+    }
+
+//    source->update();
+    return false;
 } // updateSourceEvent()
 
 

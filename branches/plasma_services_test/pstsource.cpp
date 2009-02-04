@@ -17,39 +17,61 @@
 ** 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-/*
-** PST DATAENGINE (PST = Plasma Services Test)
-*/
 
-#ifndef __PST_DATAENGINE_H__
-#define __PST_DATAENGINE_H__
-
-// Plasma
-#include <Plasma/DataEngine>
-#include <Plasma/Service>
+// Own
+#include "pstsource.h"
+#include "pstservice.h"
 
 
-class PSTEngine : public Plasma::DataEngine
+class PSTSource::Private
 {
-    Q_OBJECT
-
 public:
-    PSTEngine(QObject *parent, const QVariantList &args);
-    ~PSTEngine();
-    Plasma::Service* serviceForSource(const QString &name);
+    Private() {}
+    ~Private() {}
 
-protected:
-    void init();
-    bool sourceRequestEvent(const QString &request);
-    bool updateSourceEvent(const QString &request);
-
-private:
-    class Private;
-    Private * const d;
-};
+    QString account;
+    QString password;
+}; // Private()
 
 
-K_EXPORT_PLASMA_DATAENGINE(pstengine, PSTEngine)
+/*
+** Public
+*/
+PSTSource::PSTSource(const QString &account, QObject *parent)
+    : Plasma::DataContainer(parent)
+    , d(new Private)
+{
+    kDebug();
 
+    d->account = account;
+} // ctor()
 
-#endif // __PST_DATAENGINE_H__
+PSTSource::~PSTSource()
+{
+    kDebug();
+    delete d;
+} // dtor()
+
+Plasma::Service* PSTSource::createService()
+{
+    kDebug();
+
+    return new PSTService(this);
+} // createService()
+
+void PSTSource::setPassword(const QString &password)
+{
+    d->password = password;
+} // setPassword()
+
+QString PSTSource::account() const
+{
+    return QString();
+} // account()
+
+QString PSTSource::password() const
+{
+    return QString();
+} // password()
+
+#include "pstsource.moc"

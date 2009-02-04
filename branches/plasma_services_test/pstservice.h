@@ -17,39 +17,32 @@
 ** 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-/*
-** PST DATAENGINE (PST = Plasma Services Test)
-*/
+#ifndef __PST_SERVICE_H__
+#define __PST_SERVICE_H__
 
-#ifndef __PST_DATAENGINE_H__
-#define __PST_DATAENGINE_H__
 
+// Own
+class PSTSource;
 // Plasma
-#include <Plasma/DataEngine>
 #include <Plasma/Service>
+#include <Plasma/ServiceJob>
 
 
-class PSTEngine : public Plasma::DataEngine
+class PSTService : public Plasma::Service
 {
     Q_OBJECT
 
 public:
-    PSTEngine(QObject *parent, const QVariantList &args);
-    ~PSTEngine();
-    Plasma::Service* serviceForSource(const QString &name);
+    PSTService(PSTSource *parent);
+    ~PSTService();
 
 protected:
-    void init();
-    bool sourceRequestEvent(const QString &request);
-    bool updateSourceEvent(const QString &request);
-
+    Plasma::ServiceJob* createJob(const QString &operation, QMap<QString, QVariant> &parameters);
+    
 private:
     class Private;
     Private * const d;
 };
 
 
-K_EXPORT_PLASMA_DATAENGINE(pstengine, PSTEngine)
-
-
-#endif // __PST_DATAENGINE_H__
+#endif // __PST_SERVICE_H__

@@ -17,39 +17,51 @@
 ** 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-/*
-** PST DATAENGINE (PST = Plasma Services Test)
-*/
 
-#ifndef __PST_DATAENGINE_H__
-#define __PST_DATAENGINE_H__
-
-// Plasma
-#include <Plasma/DataEngine>
-#include <Plasma/Service>
+// Own
+#include "pstservice.h"
+#include "pstsource.h"
 
 
-class PSTEngine : public Plasma::DataEngine
+class PSTService::Private
 {
-    Q_OBJECT
-
 public:
-    PSTEngine(QObject *parent, const QVariantList &args);
-    ~PSTEngine();
-    Plasma::Service* serviceForSource(const QString &name);
-
-protected:
-    void init();
-    bool sourceRequestEvent(const QString &request);
-    bool updateSourceEvent(const QString &request);
-
-private:
-    class Private;
-    Private * const d;
-};
+    Private() {}
+    ~Private() {}
+}; // Private()
 
 
-K_EXPORT_PLASMA_DATAENGINE(pstengine, PSTEngine)
+/*
+** Public
+*/
+PSTService::PSTService(PSTSource *parent)
+    : Plasma::Service(parent)
+    , d(new Private)
+{
+    kDebug();
+
+    setName("pst"); // --> "pst.operations" file
+} // ctor()
+
+PSTService::~PSTService()
+{
+    kDebug();
+    delete d;
+} // dtor()
 
 
-#endif // __PST_DATAENGINE_H__
+/*
+** Protected
+*/
+Plasma::ServiceJob* PSTService::createJob(const QString &operation, QMap<QString, QVariant> &parameters)
+{
+    kDebug();
+    kDebug() << operation;
+    kDebug() << parameters;
+
+    //return new Plasma::ServiceJob(m_source->account(), operation, parameters, this);
+    return new Plasma::ServiceJob("DUMMY", operation, parameters, this);
+} // createJob()
+
+
+#include "pstservice.moc"

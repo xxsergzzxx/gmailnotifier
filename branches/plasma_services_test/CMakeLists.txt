@@ -9,7 +9,10 @@ include_directories(${CMAKE_SOURCE_DIR}
                     ${KDE4_INCLUDES})
 
 set(pst_dataengine_SRCS
-    pstengine.cpp)
+    pstengine.cpp
+    pstsource.cpp
+    pstservice.cpp
+    pstjob.cpp)
 
 kde4_add_plugin(plasma_engine_pst
                 ${pst_dataengine_SRCS})
