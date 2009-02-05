@@ -29,7 +29,6 @@
 
 // Plasma
 #include <Plasma/DataEngine>
-
 // Qt
 #include <QtCore/QObject>
 #include <QtGui/QLabel>

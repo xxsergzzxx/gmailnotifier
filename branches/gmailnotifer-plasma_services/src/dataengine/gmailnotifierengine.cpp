@@ -96,7 +96,7 @@ bool GmailNotifierEngine::updateSourceEvent(const QString &request)
 
     source->update();
 
-    return false; // We're async, return false
+    return true;
 } // updateSourceEvent()
 
 

@@ -22,8 +22,10 @@
 #include "gmailnotifierapplet.h"
 // Plasma
 #include <Plasma/DataEngine>
+#include <Plasma/Service>
 // KDE
 #include <KDE/KConfigDialog>
+#include <KDE/KStringHandler>
 // QtGui
 #include <QtGui/QPainter>
 // QtCore
@@ -243,25 +245,20 @@ void GmailNotifierApplet::initApplet()
     m_dialog->setAccounts(accountList, m_totalUnreadMailCount);
     m_dialog->setDisplayLogo(config().readEntry("DisplayLogo", true));
 
-    // Send passwords to the data engine
-    // FIXME: Possible security hole here !!!
-    QVariantMap passwordList;
-    QList<QMap<QString, QString> >::ConstIterator it;
-    for (it = accountList.constBegin(); it != accountList.constEnd(); ++it) {
-        passwordList.insert(it->value("Login"), it->value("Password"));
-    }
-    m_engine->setProperty("passwords", passwordList);
-
-
     // Request data
     m_validSources.clear();
+    QList<QMap<QString, QString> >::ConstIterator it;
     for (it = accountList.constBegin(); it != accountList.constEnd(); ++it) {
-        QString label = (it->value("Label").isEmpty()) ? "inbox" : it->value("Label");
-        QString request = QString("%1:%2").arg(it->value("Login")).arg(label);
+        QString request = QString("%1:%2").arg(it->value("Login")).arg(it->value("Label"));
         m_engine->connectSource(request,
                                 this,
                                 (1000*60*config().readEntry("PollingInterval", 5)),
                                 Plasma::NoAlignment);
+        Plasma::Service *service = m_engine->serviceForSource(request);
+        KConfigGroup cg = service->operationDescription("auth");
+        cg.writeEntry("password", KStringHandler::obscure(it->value("Password")));
+        service->startOperationCall(cg);
+
         m_validSources << request;
     }
 

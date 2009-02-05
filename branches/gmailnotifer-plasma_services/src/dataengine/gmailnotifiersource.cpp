@@ -82,7 +82,6 @@ void GmailNotifierSource::update()
     KUrl dbgUrl(m_url);
     dbgUrl.setPassword( (!dbgUrl.password().isEmpty() ? "**********" : QString()) );
     kDebug() << "Requesting ATOM feed:" << dbgUrl.toEncoded();
-
 } // update()
 
 void GmailNotifierSource::setPassword(const QString &password)
