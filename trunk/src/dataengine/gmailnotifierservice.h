@@ -17,30 +17,32 @@
 ** 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#ifndef __GMAILNOTIFIERENGINE_H__
-#define __GMAILNOTIFIERENGINE_H__
+#ifndef __GMAILNOTIFIERSERVICE_H__
+#define __GMAILNOTIFIERSERVICE_H__
+
+// Own
+#include "gmailnotifiercontainer.h"
+#include "gmailnotifierservicejob.h"
 
 // Plasma
-#include <Plasma/DataEngine>
 #include <Plasma/Service>
+//#include <Plasma/ServiceJob>
 
 
-class GmailNotifierEngine : public Plasma::DataEngine
+class GmailNotifierService : public Plasma::Service
 {
     Q_OBJECT
 
 public:
-    GmailNotifierEngine(QObject *parent, const QVariantList &args);
-    ~GmailNotifierEngine();
-
-    Plasma::Service* serviceForSource(const QString &name);
+    GmailNotifierService(QObject *parent = 0);
+    ~GmailNotifierService();
 
 protected:
-    bool sourceRequestEvent(const QString &request);
-    bool updateSourceEvent(const QString &request);
+    Plasma::ServiceJob* createJob(const QString &operation, QMap<QString, QVariant> &parameters);
+
+private:
+    GmailNotifierContainer *m_source;
 };
 
 
-K_EXPORT_PLASMA_DATAENGINE(gmailnotifierengine, GmailNotifierEngine)
-
-#endif // __GMAILNOTIFIERENGINE_H__
+#endif // __GMAILNOTIFIERSERVICE_H__

@@ -17,30 +17,35 @@
 ** 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#ifndef __GMAILNOTIFIERENGINE_H__
-#define __GMAILNOTIFIERENGINE_H__
+// Own
+#include "gmailnotifierservicejob.h"
 
-// Plasma
-#include <Plasma/DataEngine>
-#include <Plasma/Service>
+// KDE
+#include <KDE/KDebug>
 
 
-class GmailNotifierEngine : public Plasma::DataEngine
+/*
+** Public
+*/
+GmailNotifierServiceJob::GmailNotifierServiceJob(GmailNotifierContainer *source, const QMap<QString, QVariant> &parameters, QObject *parent)
+    : Plasma::ServiceJob(source->account(), "update", parameters, parent)
 {
-    Q_OBJECT
+    kDebug();
 
-public:
-    GmailNotifierEngine(QObject *parent, const QVariantList &args);
-    ~GmailNotifierEngine();
-
-    Plasma::Service* serviceForSource(const QString &name);
-
-protected:
-    bool sourceRequestEvent(const QString &request);
-    bool updateSourceEvent(const QString &request);
-};
+    m_url = "https://mail.google.com:443/mail/feed/atom/";
+} // ctor()
 
 
-K_EXPORT_PLASMA_DATAENGINE(gmailnotifierengine, GmailNotifierEngine)
+GmailNotifierServiceJob::~GmailNotifierServiceJob()
+{
+    kDebug();
+} // dtor()
 
-#endif // __GMAILNOTIFIERENGINE_H__
+
+void GmailNotifierServiceJob::start()
+{
+    kDebug();
+} // start()
+
+
+#include "gmailnotifierservicejob.moc"
