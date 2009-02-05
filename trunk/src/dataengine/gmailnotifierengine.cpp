@@ -1,5 +1,5 @@
 /*
-** Copyright (C) 2008 Gilles CHAUVIN <gcnweb+kde@gmail.com>
+** Copyright (C) 2008-2009 Gilles CHAUVIN <gcnweb+gmailnotifier@gmail.com>
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -17,12 +17,14 @@
 ** 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
+
 // Own
 #include "gmailnotifierengine.h"
-#include "gmailnotifiercontainer.h"
+#include "gmailnotifiersource.h"
+
 
 /*
-** Public
+** public:
 */
 GmailNotifierEngine::GmailNotifierEngine(QObject *parent, const QVariantList &args)
     : Plasma::DataEngine(parent, args)
@@ -36,14 +38,14 @@ GmailNotifierEngine::GmailNotifierEngine(QObject *parent, const QVariantList &ar
 
 GmailNotifierEngine::~GmailNotifierEngine()
 {
-    kDebug();
+//    kDebug();
 } // dtor()
 
 Plasma::Service* GmailNotifierEngine::serviceForSource(const QString &name)
 {
     kDebug();
 
-    GmailNotifierContainer *source = qobject_cast<GmailNotifierContainer *>(Plasma::DataEngine::containerForSource(name));
+    GmailNotifierSource *source = qobject_cast<GmailNotifierSource*>(Plasma::DataEngine::containerForSource(name));
 
     if (!source) {
         return Plasma::DataEngine::serviceForSource(name);
@@ -56,7 +58,7 @@ Plasma::Service* GmailNotifierEngine::serviceForSource(const QString &name)
 
 
 /*
-** Protected
+** protected:
 */
 bool GmailNotifierEngine::sourceRequestEvent(const QString &request)
 {
@@ -69,7 +71,31 @@ bool GmailNotifierEngine::updateSourceEvent(const QString &request)
 {
     kDebug();
 
-    // FIXME: Import working code from previous dataengine
+    QStringList tokens = request.split(':');
+    if (tokens.count() != 2) {
+        kWarning() << "Request should be of the type: <accountname>:<label>";
+        return false;
+    }
+    QString accountName(tokens.at(0));
+    QString labelName(tokens.at(1));
+
+    if (accountName.isEmpty()) {
+        kWarning() << "<accountname> cannot be empty";
+        return false;
+    }
+
+    GmailNotifierSource *source = qobject_cast<GmailNotifierSource*>(Plasma::DataEngine::containerForSource(request));
+
+    if (!source) {
+        source = new GmailNotifierSource(accountName, labelName, this);
+        source->setObjectName(request);
+        Plasma::DataEngine::addSource(source);
+    }
+
+    kDebug() << "Current sources:" << Plasma::DataEngine::sources();
+
+    source->update();
+
     return true;
 } // updateSourceEvent()
 

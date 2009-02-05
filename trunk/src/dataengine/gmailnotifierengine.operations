@@ -7,10 +7,4 @@
             <label>The log in password for the account.</label>
         </entry>
     </group>
-
-    <group name="update">
-        <entry name="password" type="String">
-            <label>The log in password for the account.</label>
-        </entry>
-    </group>
 </kcfg>

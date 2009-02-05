@@ -1,5 +1,5 @@
 /*
-** Copyright (C) 2008 Gilles CHAUVIN <gcnweb+kde@gmail.com>
+** Copyright (C) 2008-2009 Gilles CHAUVIN <gcnweb+gmailnotifier@gmail.com>
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -46,8 +46,8 @@ GmailNotifierAppletConfig::GmailNotifierAppletConfig(KConfigGroup cg, QWidget *p
 
     // Background
     QStringList backgroundHints;
-    //backgroundHints << "Default" << "Standard" << "Translucent" << "Shadowed" << "None";
-    backgroundHints << "Standard" << "Translucent";
+    //backgroundHints << "Default" << "Standard" << "Translucent" << "None";
+    backgroundHints << "Standard" << "Translucent" << "None";
     ui.comboBackground->addItems(backgroundHints);
     
     int pos = ui.comboBackground->findText(m_cg.readEntry("Background", "Standard"), Qt::MatchExactly);
@@ -252,14 +252,18 @@ void GmailNotifierAppletConfig::adaptAddModifyButtonLabel()
     }
 
     QString buttonText;
+    QString toolTipText;
     if (accountPosition(ui.leLogin->text(), ui.leLabel->text()) != -1) {
-        buttonText = i18n("Modify");
+        buttonText  = i18n("Modify");
+        toolTipText = i18n("Modify this account settings");
     } else {
-        buttonText = i18n("Add");
+        buttonText  = i18n("Add");
+        toolTipText = i18n("Add this account to the list");
     }
 
     if (buttonText != ui.btnAddModify->text().remove('&')) {
         ui.btnAddModify->setText(buttonText);
+        ui.btnAddModify->setToolTip(toolTipText);
     }
 } // adaptAddModifyButtonLabel()
 

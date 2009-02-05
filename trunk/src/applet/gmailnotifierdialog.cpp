@@ -1,5 +1,5 @@
 /*
-** Copyright (C) 2008 Gilles CHAUVIN <gcnweb+kde@gmail.com>
+** Copyright (C) 2008 Gilles CHAUVIN <gcnweb+gmailnotifier@gmail.com>
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -19,10 +19,8 @@
 
 // Own
 #include "gmailnotifierdialog.h"
-
 // Plasma
 #include <Plasma/Dialog>
-
 // KDE
 #include <KDE/KDebug>
 
@@ -97,15 +95,15 @@ void GmailNotifierDialog::setAccounts(const QList<QMap<QString, QString> > &acco
     QList<QMap<QString, QString> >::ConstIterator it;
     int row = 0;
     for (it = accounts.constBegin(); it != accounts.constEnd(); ++it) {
-        QString label = (it->value("Label").isEmpty()) ? "inbox" : it->value("Label");
         QString display;
         if (!it->value("Display").isEmpty()) {
             display = it->value("Display");
         } else {
+            QString label = (it->value("Label").isEmpty()) ? "inbox" : it->value("Label");
             display = QString("%1/%2").arg(it->value("Login")).arg(label);
         }
 
-        QString loginNLabel = QString("%1:%2").arg(it->value("Login")).arg(label);
+        QString loginNLabel = QString("%1:%2").arg(it->value("Login")).arg(it->value("Label"));
 
         QLabel *lblAccount = new QLabel(display);
         lblAccount->setObjectName(QString("lblAccount_%1").arg(loginNLabel));
