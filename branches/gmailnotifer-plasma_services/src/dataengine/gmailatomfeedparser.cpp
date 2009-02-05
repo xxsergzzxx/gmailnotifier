@@ -20,6 +20,7 @@
 
 // Own
 #include "gmailatomfeedparser.h"
+#include "gmailnotifiersource.h"
 // QtXml
 #include <QtXml/QDomDocument>
 #include <QtXml/QDomElement>
@@ -33,7 +34,7 @@
 /*
 ** public:
 */
-Plasma::DataEngine::Data GmailAtomFeedParser::parseFeed(const QByteArray &feed)
+Plasma::DataEngine::Data GmailAtomFeedParser::parseFeed(const QByteArray &feed, GmailNotifierSource * const source)
 {
     Plasma::DataEngine::Data data;
     QList<QVariant>          entries;
@@ -50,21 +51,21 @@ Plasma::DataEngine::Data GmailAtomFeedParser::parseFeed(const QByteArray &feed)
             QString tag(de.tagName().toLower());
 
             if (tag == "title") {
-                data["title"] = de.text();
+                source->setData("title", de.text());
             }
             else if (tag == "tagline") {
-                data["tagline"] = de.text();
+                source->setData("tagline", de.text());
             }
             else if (tag == "fullcount") {
-                data["fullcount"] = de.text().toInt();
+                source->setData("fullcount", de.text().toInt());
             }
             else if (tag == "link") {
-                data["link"] = QUrl(de.attribute("href"), QUrl::StrictMode);
+                source->setData("link", QUrl(de.attribute("href"), QUrl::StrictMode));
             }
             else if (tag == "modified") {
                 QDateTime dt = QDateTime::fromString(de.text(), Qt::ISODate);
                 dt.setTimeSpec(Qt::UTC);
-                data["modified"] = dt;
+                source->setData("modified", dt);
             }
             else if (tag == "entry") {
                 entries << parseEntry(dn);
@@ -74,14 +75,14 @@ Plasma::DataEngine::Data GmailAtomFeedParser::parseFeed(const QByteArray &feed)
         }
     }
 
-    data["entries"] = entries;
+    source->setData("entries", entries);
 
     return data;
 } // parseFeed()
 
 QVariantMap GmailAtomFeedParser::parseEntry(const QDomNode &node)
 {
-    QVariantMap mail;
+    QVariantMap entry;
 
     QDomNode dn = node.firstChild();
     while(!dn.isNull())
@@ -91,26 +92,26 @@ QVariantMap GmailAtomFeedParser::parseEntry(const QDomNode &node)
             QString tag(de.tagName().toLower());
 
             if (tag == "title") {
-                mail["title"] = de.text();
+                entry["title"] = de.text();
             }
             else if (tag == "summary") {
-                mail["summary"] = de.text();
+                entry["summary"] = de.text();
             }
             else if (tag == "link") {
-                mail["link"] = QUrl(de.attribute("href"), QUrl::StrictMode);
+                entry["link"] = QUrl(de.attribute("href"), QUrl::StrictMode);
             }
             else if (tag == "modified") {
                 QDateTime dt = QDateTime::fromString(de.text(), Qt::ISODate);
                 dt.setTimeSpec(Qt::UTC);
-                mail["modified"] = dt;
+                entry["modified"] = dt;
             }
             else if (tag == "issued") {
                 QDateTime dt = QDateTime::fromString(de.text(), Qt::ISODate);
                 dt.setTimeSpec(Qt::UTC);
-                mail["issued"] = dt;
+                entry["issued"] = dt;
             }
             else if (tag == "id") {
-                mail["id"] = de.text();
+                entry["id"] = de.text();
             }
             else if (tag == "author") {
                 QDomNode dn = de.firstChild();
@@ -121,10 +122,10 @@ QVariantMap GmailAtomFeedParser::parseEntry(const QDomNode &node)
                         QString tagName(de.tagName().toLower());
 
                         if (tagName == "name") {
-                            mail["author_name"] = de.text();
+                            entry["author_name"] = de.text();
                         }
                         else if (tagName == "email") {
-                            mail["author_email"] = de.text();
+                            entry["author_email"] = de.text();
                         }
                     }
 
@@ -136,5 +137,5 @@ QVariantMap GmailAtomFeedParser::parseEntry(const QDomNode &node)
         dn = dn.nextSibling();
     }
 
-    return mail;
+    return entry;
 } // parseEntry()

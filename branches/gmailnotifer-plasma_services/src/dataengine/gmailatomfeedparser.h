@@ -25,6 +25,7 @@
 // Plasma
 #include <Plasma/DataEngine>
 // Forward declarations
+class GmailNotifierSource;
 class QByteArray;
 class QDomNode;
 
@@ -35,7 +36,7 @@ public:
     GmailAtomFeedParser() {};
     ~GmailAtomFeedParser() {};
 
-    static Plasma::DataEngine::Data parseFeed(const QByteArray &feed);
+    static Plasma::DataEngine::Data parseFeed(const QByteArray &feed, GmailNotifierSource * const source);
 
 private:
     static QVariantMap parseEntry(const QDomNode &node);

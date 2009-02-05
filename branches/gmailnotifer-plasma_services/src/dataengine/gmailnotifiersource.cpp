@@ -37,6 +37,8 @@ GmailNotifierSource::GmailNotifierSource(const QString &accountName, const QStri
     m_url.setUrl(QString("https://mail.google.com:443/mail/feed/atom/%1").arg(labelName), QUrl::StrictMode);
     m_url.setUserName(accountName);
 
+    kDebug() << "Request URL:" << m_url.toEncoded(QUrl::RemovePassword);
+
     update();
 } // ctor()
 
@@ -58,6 +60,7 @@ void GmailNotifierSource::update()
     kDebug();
 
     if (m_job || (!account().isEmpty() && password().isEmpty())) {
+        kDebug() << "Job running or incomplete credentials. Aborting.";
         return;
     }
 
@@ -65,6 +68,9 @@ void GmailNotifierSource::update()
     connect(m_job, SIGNAL(data(KIO::Job*, const QByteArray&)),
             this, SLOT(recv(KIO::Job*, const QByteArray&)));
     connect(m_job, SIGNAL(result(KJob*)), this, SLOT(result(KJob*)));
+
+    kDebug() << "Requesting ATOM feed:" << m_url.toEncoded(QUrl::RemovePassword);
+
 } // update()
 
 void GmailNotifierSource::setPassword(const QString &password)
@@ -95,22 +101,29 @@ QString GmailNotifierSource::password() const
 */
 void GmailNotifierSource::recv(KIO::Job * /*job*/, const QByteArray &data)
 {
+    kDebug();
+
     m_atomFeed += data;
 } // recv()
 
 void GmailNotifierSource::result(KJob *job)
 {
+    kDebug();
+
+    // ?!
     if (job != m_job) {
         kDebug() << "Fail! Job is not our job!";
         return;
     }
 
     removeAllData();
+
     if (job->error()) {
         kDebug() << "Job error!";
-        setData("error", job->errorText());
+        setData("error", job->errorString());
     } else {
-        emit dataUpdated(objectName(), GmailAtomFeedParser::parseFeed(m_atomFeed));
+        // Parse the ATOM feed
+        GmailAtomFeedParser::parseFeed(m_atomFeed, this);
     }
 
     Plasma::DataContainer::checkForUpdate();

@@ -80,7 +80,7 @@ bool GmailNotifierEngine::updateSourceEvent(const QString &request)
     QString labelName(tokens.at(1));
 
     if (accountName.isEmpty()) {
-        kWarning() << "<accountname> must not be empty";
+        kWarning() << "<accountname> cannot be empty";
         return false;
     }
 
