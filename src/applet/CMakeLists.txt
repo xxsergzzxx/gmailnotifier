@@ -14,7 +14,7 @@ kde4_add_plugin(plasma_applet_gmailnotifier
 
 target_link_libraries(plasma_applet_gmailnotifier
                       ${KDE4_KIO_LIBS}
-                      ${KDE4_PLASMA_LIBS})
+                      ${PLASMA_LIBS})
 
 install(TARGETS plasma_applet_gmailnotifier         DESTINATION ${PLUGIN_INSTALL_DIR}  )
 install(FILES   plasma-applet-gmailnotifier.desktop DESTINATION ${SERVICES_INSTALL_DIR})
