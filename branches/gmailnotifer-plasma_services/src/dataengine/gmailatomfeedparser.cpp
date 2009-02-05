@@ -84,7 +84,8 @@ Plasma::DataEngine::Data GmailAtomFeedParser::parseFeed(const QByteArray &feed, 
 
 QVariantMap GmailAtomFeedParser::parseEntry(const QDomNode &node)
 {
-    QVariantMap entry;
+    QVariantMap  entry;
+    QVariantList contributorList;
 
     QDomNode dn = node.firstChild();
     while(!dn.isNull())
@@ -116,6 +117,7 @@ QVariantMap GmailAtomFeedParser::parseEntry(const QDomNode &node)
                 entry["id"] = de.text();
             }
             else if (tag == "author") {
+                QVariantMap author;
                 QDomNode dn = de.firstChild();
                 while(!dn.isNull())
                 {
@@ -124,19 +126,49 @@ QVariantMap GmailAtomFeedParser::parseEntry(const QDomNode &node)
                         QString tagName(de.tagName().toLower());
 
                         if (tagName == "name") {
-                            entry["author_name"] = de.text();
+                            author["name"] = de.text();
                         }
                         else if (tagName == "email") {
-                            entry["author_email"] = de.text();
+                            author["email"] = de.text();
                         }
                     }
 
                     dn = dn.nextSibling();
                 }
-            } 
+                if (author.count() > 0) {
+                    entry["author"] = author;
+                }
+            }
+            else if (tag == "contributor") {
+                QVariantMap contributor;
+                QDomNode dn = de.firstChild();
+                while(!dn.isNull())
+                {
+                    if (dn.isElement()) {
+                        QDomElement de = dn.toElement();
+                        QString tagName(de.tagName().toLower());
+
+                        if (tagName == "name") {
+                            contributor["name"] = de.text();
+                        }
+                        else if (tagName == "email") {
+                            contributor["email"] = de.text();
+                        }
+                    }
+
+                    dn = dn.nextSibling();
+                }
+                if (contributor.count() > 0) {
+                    contributorList << contributor;
+                }
+            }            
         }
 
         dn = dn.nextSibling();
+    }
+
+    if (contributorList.count() > 0) {
+        entry["contributors"] = contributorList;
     }
 
     return entry;
