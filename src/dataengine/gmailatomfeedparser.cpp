@@ -1,5 +1,5 @@
 /*
-** Copyright (C) 2008 Gilles CHAUVIN <gcnweb+kde@gmail.com>
+** Copyright (C) 2008-2009 Gilles CHAUVIN <gcnweb+gmailnotifier@gmail.com>
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -17,19 +17,24 @@
 ** 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
+
 // Own
 #include "gmailatomfeedparser.h"
-
-// Qt
-#include <QtCore/QByteArray>
-#include <QtCore/QDateTime>
-#include <QtCore/QUrl>
+#include "gmailnotifiersource.h"
+// QtXml
 #include <QtXml/QDomDocument>
 #include <QtXml/QDomElement>
 #include <QtXml/QDomNode>
+// QtCore
+#include <QtCore/QByteArray>
+#include <QtCore/QDateTime>
+#include <QtCore/QUrl>
 
 
-Plasma::DataEngine::Data GmailAtomFeedParser::parseFeed(const QByteArray &feed)
+/*
+** public:
+*/
+Plasma::DataEngine::Data GmailAtomFeedParser::parseFeed(const QByteArray &feed, GmailNotifierSource * const source)
 {
     Plasma::DataEngine::Data data;
     QList<QVariant>          entries;
@@ -46,21 +51,21 @@ Plasma::DataEngine::Data GmailAtomFeedParser::parseFeed(const QByteArray &feed)
             QString tag(de.tagName().toLower());
 
             if (tag == "title") {
-                data["title"] = de.text();
+                source->setData("title", de.text());
             }
             else if (tag == "tagline") {
-                data["tagline"] = de.text();
+                source->setData("tagline", de.text());
             }
             else if (tag == "fullcount") {
-                data["fullcount"] = de.text().toInt();
+                source->setData("fullcount", de.text().toInt());
             }
             else if (tag == "link") {
-                data["link"] = QUrl(de.attribute("href"), QUrl::StrictMode);
+                source->setData("link", QUrl(de.attribute("href"), QUrl::StrictMode));
             }
             else if (tag == "modified") {
                 QDateTime dt = QDateTime::fromString(de.text(), Qt::ISODate);
                 dt.setTimeSpec(Qt::UTC);
-                data["modified"] = dt;
+                source->setData("modified", dt);
             }
             else if (tag == "entry") {
                 entries << parseEntry(dn);
@@ -70,15 +75,17 @@ Plasma::DataEngine::Data GmailAtomFeedParser::parseFeed(const QByteArray &feed)
         }
     }
 
-    data["entries"] = entries;
+    if (entries.count() > 0) {
+        source->setData("entries", entries);
+    }
 
     return data;
 } // parseFeed()
 
-
 QVariantMap GmailAtomFeedParser::parseEntry(const QDomNode &node)
 {
-    QVariantMap mail;
+    QVariantMap  entry;
+    QVariantList contributorList;
 
     QDomNode dn = node.firstChild();
     while(!dn.isNull())
@@ -88,28 +95,29 @@ QVariantMap GmailAtomFeedParser::parseEntry(const QDomNode &node)
             QString tag(de.tagName().toLower());
 
             if (tag == "title") {
-                mail["title"] = de.text();
+                entry["title"] = de.text();
             }
             else if (tag == "summary") {
-                mail["summary"] = de.text();
+                entry["summary"] = de.text();
             }
             else if (tag == "link") {
-                mail["link"] = QUrl(de.attribute("href"), QUrl::StrictMode);
+                entry["link"] = QUrl(de.attribute("href"), QUrl::StrictMode);
             }
             else if (tag == "modified") {
                 QDateTime dt = QDateTime::fromString(de.text(), Qt::ISODate);
                 dt.setTimeSpec(Qt::UTC);
-                mail["modified"] = dt;
+                entry["modified"] = dt;
             }
             else if (tag == "issued") {
                 QDateTime dt = QDateTime::fromString(de.text(), Qt::ISODate);
                 dt.setTimeSpec(Qt::UTC);
-                mail["issued"] = dt;
+                entry["issued"] = dt;
             }
             else if (tag == "id") {
-                mail["id"] = de.text();
+                entry["id"] = de.text();
             }
             else if (tag == "author") {
+                QVariantMap author;
                 QDomNode dn = de.firstChild();
                 while(!dn.isNull())
                 {
@@ -118,20 +126,50 @@ QVariantMap GmailAtomFeedParser::parseEntry(const QDomNode &node)
                         QString tagName(de.tagName().toLower());
 
                         if (tagName == "name") {
-                            mail["author_name"] = de.text();
+                            author["name"] = de.text();
                         }
                         else if (tagName == "email") {
-                            mail["author_email"] = de.text();
+                            author["email"] = de.text();
                         }
                     }
 
                     dn = dn.nextSibling();
                 }
-            } 
+                if (author.count() > 0) {
+                    entry["author"] = author;
+                }
+            }
+            else if (tag == "contributor") {
+                QVariantMap contributor;
+                QDomNode dn = de.firstChild();
+                while(!dn.isNull())
+                {
+                    if (dn.isElement()) {
+                        QDomElement de = dn.toElement();
+                        QString tagName(de.tagName().toLower());
+
+                        if (tagName == "name") {
+                            contributor["name"] = de.text();
+                        }
+                        else if (tagName == "email") {
+                            contributor["email"] = de.text();
+                        }
+                    }
+
+                    dn = dn.nextSibling();
+                }
+                if (contributor.count() > 0) {
+                    contributorList << contributor;
+                }
+            }            
         }
 
         dn = dn.nextSibling();
     }
 
-    return mail;
+    if (contributorList.count() > 0) {
+        entry["contributors"] = contributorList;
+    }
+
+    return entry;
 } // parseEntry()

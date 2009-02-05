@@ -33,7 +33,7 @@
            </sizepolicy>
           </property>
           <property name="toolTip" >
-           <string>Add this to the account list</string>
+           <string>Add this account to the list</string>
           </property>
           <property name="text" >
            <string>Add</string>
@@ -71,7 +71,7 @@
           <item rowspan="2" row="0" column="1" colspan="2" >
            <widget class="KLineEdit" name="leLogin" >
             <property name="toolTip" >
-             <string>Gmail login name</string>
+             <string>Gmail account name</string>
             </property>
             <property name="whatsThis" >
              <string>whatsThis</string>
@@ -162,7 +162,7 @@
            <bool>false</bool>
           </property>
           <property name="toolTip" >
-           <string>Move the selected icon down</string>
+           <string>Move the selected account down</string>
           </property>
           <property name="text" >
            <string>Down</string>
@@ -175,7 +175,7 @@
            <bool>false</bool>
           </property>
           <property name="toolTip" >
-           <string>Move the selected icon up</string>
+           <string>Move the selected account up</string>
           </property>
           <property name="text" >
            <string>Up</string>
@@ -238,7 +238,7 @@
       <bool>true</bool>
      </property>
      <property name="toolTip" >
-      <string>Show/hide the Gmail logo in the applet</string>
+      <string>Show/hide the Gmail logo within the widget</string>
      </property>
      <property name="text" >
       <string>Display Gmail logo</string>
@@ -285,6 +285,9 @@
      </item>
      <item row="0" column="1" >
       <widget class="KIntSpinBox" name="spinPollingInterval" >
+       <property name="toolTip" >
+        <string>Polling interval</string>
+       </property>
        <property name="suffix" >
         <string> mins</string>
        </property>

@@ -1,5 +1,5 @@
 /*
-** Copyright (C) 2008 Gilles CHAUVIN <gcnweb+kde@gmail.com>
+** Copyright (C) 2008-2009 Gilles CHAUVIN <gcnweb+gmailnotifier@gmail.com>
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -17,22 +17,23 @@
 ** 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
+
 // Own
 #include "gmailnotifierapplet.h"
-
 // Plasma
 #include <Plasma/DataEngine>
-
+#include <Plasma/Service>
 // KDE
 #include <KDE/KConfigDialog>
-
-// Qt
+#include <KDE/KStringHandler>
+// QtGui
 #include <QtGui/QPainter>
+// QtCore
 #include <QtCore/QTime>
 
 
 /*
-** Public
+** public:
 */
 GmailNotifierApplet::GmailNotifierApplet(QObject *parent, const QVariantList &args)
     : Plasma::Applet(parent, args)
@@ -71,7 +72,7 @@ void GmailNotifierApplet::init()
 
 
 /*
-** Public Q_SLOTS
+** public Q_SLOTS:
 */
 void GmailNotifierApplet::dataUpdated(const QString &source, const Plasma::DataEngine::Data &data)
 {
@@ -95,12 +96,11 @@ void GmailNotifierApplet::dataUpdated(const QString &source, const Plasma::DataE
     }
 
     drawIcon();
-
 } // dataUpdated()
 
 
 /*
-** Protected
+** protected:
 */
 void GmailNotifierApplet::constraintsEvent(Plasma::Constraints constraints)
 {
@@ -120,7 +120,7 @@ void GmailNotifierApplet::constraintsEvent(Plasma::Constraints constraints)
             m_dialog = new GmailNotifierDialog(GmailNotifierDialog::PanelArea, this);
             setBackgroundHints(NoBackground);
 
-            m_icon = new Plasma::Icon(this);
+            m_icon = new Plasma::IconWidget(this);
             connect(m_icon, SIGNAL(clicked()), this, SLOT(onClickNotifier()));
             m_layout->addItem(m_icon);
 
@@ -164,7 +164,7 @@ void GmailNotifierApplet::createConfigurationInterface(KConfigDialog *parent)
 
 
 /*
-** Private Q_SLOTS
+** private Q_SLOTS:
 */
 void GmailNotifierApplet::onClickNotifier()
 {
@@ -194,7 +194,7 @@ void GmailNotifierApplet::configAccepted()
 
 
 /*
-** Private
+** private:
 */
 void GmailNotifierApplet::initApplet()
 {
@@ -212,8 +212,6 @@ void GmailNotifierApplet::initApplet()
             hint = StandardBackground;
         } else if (background == "Translucent") {
             hint = TranslucentBackground;
-        } else if (background == "Shadowed") {
-            hint = ShadowedBackground;
         } else if (background == "None") {
             hint = NoBackground;
         } else { // Default
@@ -247,25 +245,20 @@ void GmailNotifierApplet::initApplet()
     m_dialog->setAccounts(accountList, m_totalUnreadMailCount);
     m_dialog->setDisplayLogo(config().readEntry("DisplayLogo", true));
 
-    // Send passwords to the data engine
-    // FIXME: Possible security hole here !!!
-    QVariantMap passwordList;
-    QList<QMap<QString, QString> >::ConstIterator it;
-    for (it = accountList.constBegin(); it != accountList.constEnd(); ++it) {
-        passwordList.insert(it->value("Login"), it->value("Password"));
-    }
-    m_engine->setProperty("passwords", passwordList);
-
-
     // Request data
     m_validSources.clear();
+    QList<QMap<QString, QString> >::ConstIterator it;
     for (it = accountList.constBegin(); it != accountList.constEnd(); ++it) {
-        QString label = (it->value("Label").isEmpty()) ? "inbox" : it->value("Label");
-        QString request = QString("%1:%2").arg(it->value("Login")).arg(label);
+        QString request = QString("%1:%2").arg(it->value("Login")).arg(it->value("Label"));
         m_engine->connectSource(request,
                                 this,
                                 (1000*60*config().readEntry("PollingInterval", 5)),
                                 Plasma::NoAlignment);
+        Plasma::Service *service = m_engine->serviceForSource(request);
+        KConfigGroup cg = service->operationDescription("auth");
+        cg.writeEntry("password", KStringHandler::obscure(it->value("Password")));
+        service->startOperationCall(cg);
+
         m_validSources << request;
     }
 
