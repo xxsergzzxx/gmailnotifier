@@ -92,6 +92,8 @@ bool GmailNotifierEngine::updateSourceEvent(const QString &request)
         Plasma::DataEngine::addSource(source);
     }
 
+    kDebug() << "Current sources:" << Plasma::DataEngine::sources();
+
     source->update();
 
     return false; // We're async, return false

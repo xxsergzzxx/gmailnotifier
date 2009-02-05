@@ -75,7 +75,9 @@ Plasma::DataEngine::Data GmailAtomFeedParser::parseFeed(const QByteArray &feed, 
         }
     }
 
-    source->setData("entries", entries);
+    if (entries.count() > 0) {
+        source->setData("entries", entries);
+    }
 
     return data;
 } // parseFeed()

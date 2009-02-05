@@ -34,10 +34,18 @@ GmailNotifierSource::GmailNotifierSource(const QString &accountName, const QStri
     , m_job(0)
 {
     kDebug();
-    m_url.setUrl(QString("https://mail.google.com:443/mail/feed/atom/%1").arg(labelName), QUrl::StrictMode);
+
+    kDebug() << "AccountName:" << accountName;
+    kDebug() << "LabelName:" << labelName;
+
+    m_url.setUrl("https://mail.google.com:443/mail/feed/atom/", QUrl::StrictMode);
+    m_url.setPath(m_url.path()+labelName); // Add the label afterward to workaround a bug
+                                           // when labels contain characters such as [, ], ...
     m_url.setUserName(accountName);
 
-    kDebug() << "Request URL:" << m_url.toEncoded(QUrl::RemovePassword);
+    KUrl dbgUrl(m_url);
+    dbgUrl.setPassword( (!dbgUrl.password().isEmpty() ? "**********" : QString()) );
+    kDebug() << "Request URL:" << dbgUrl.toEncoded(QUrl::None);
 
     update();
 } // ctor()
@@ -61,6 +69,8 @@ void GmailNotifierSource::update()
 
     if (m_job || (!account().isEmpty() && password().isEmpty())) {
         kDebug() << "Job running or incomplete credentials. Aborting.";
+        kDebug() << "Account:" << account();
+        kDebug() << "Password:" << (password().isEmpty() ? "**UNSET**" : "**********");
         return;
     }
 
@@ -69,7 +79,9 @@ void GmailNotifierSource::update()
             this, SLOT(recv(KIO::Job*, const QByteArray&)));
     connect(m_job, SIGNAL(result(KJob*)), this, SLOT(result(KJob*)));
 
-    kDebug() << "Requesting ATOM feed:" << m_url.toEncoded(QUrl::RemovePassword);
+    KUrl dbgUrl(m_url);
+    dbgUrl.setPassword( (!dbgUrl.password().isEmpty() ? "**********" : QString()) );
+    kDebug() << "Requesting ATOM feed:" << dbgUrl.toEncoded();
 
 } // update()
 
@@ -78,6 +90,7 @@ void GmailNotifierSource::setPassword(const QString &password)
     kDebug();
 
     m_url.setPassword(password);
+    kDebug() << "URL password:" << (m_url.password().isEmpty() ? "**UNSET**" : "**********");
     update();
 } // setPassword()
 
@@ -99,10 +112,16 @@ QString GmailNotifierSource::password() const
 /*
 ** private Q_SLOTS:
 */
-void GmailNotifierSource::recv(KIO::Job * /*job*/, const QByteArray &data)
+void GmailNotifierSource::recv(KIO::Job * job, const QByteArray &data)
 {
     kDebug();
 
+    if (job != m_job) {
+        kWarning() << "Receiving data from" << job << "should be" << m_job;
+        return;
+    }
+
+    //kDebug() << data;
     m_atomFeed += data;
 } // recv()
 
@@ -117,6 +136,9 @@ void GmailNotifierSource::result(KJob *job)
     }
 
     removeAllData();
+
+//    kDebug() << "ATOM feed:" << m_atomFeed;
+    kDebug() << "Job error:" << job->error();
 
     if (job->error()) {
         kDebug() << "Job error!";
