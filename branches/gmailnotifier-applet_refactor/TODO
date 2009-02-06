@@ -1,0 +1,30 @@
+==================================[TODO LIST]==================================
+
+== HIGH PRIORITY:
+- Port the applet code from Plasma::Applet to Plasma::PopupApplet
+- Use KWallet to store passwords
+- Tell the user the widget needs configuration the 1st time it is launched
+  (using Plasma::Applet::setConfigurationRequired)
+
+
+== MEDIUM PRIORITY:
+- Offline mode (automatic with Solid or manually set by the user)
+- New mail notifications
+- Use the SVG icon instead of the PNG
+- Open mailbox in browser
+
+
+== LOW PRIORITY:
+- Retrieve the labels from Gmail to automagically populate the CGUI
+
+
+
+
+====================================[DONE]====================================
+- Port the data engine code to Plasma::Service
+
+
+
+
+# $Id$
+# EOF - vim:tw=80:

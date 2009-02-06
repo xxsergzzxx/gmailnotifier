@@ -1,0 +1,439 @@
+<ui version="4.0" >
+ <class>GmailNotifierAppletConfig</class>
+ <widget class="QWidget" name="GmailNotifierAppletConfig" >
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>358</width>
+    <height>396</height>
+   </rect>
+  </property>
+  <property name="windowTitle" >
+   <string>Form</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout" >
+   <item row="0" column="0" >
+    <widget class="QGroupBox" name="grpBoxAccounts" >
+     <property name="sizePolicy" >
+      <sizepolicy vsizetype="Expanding" hsizetype="Preferred" >
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="title" >
+      <string>Accounts</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_3" >
+      <item row="0" column="0" >
+       <layout class="QGridLayout" name="gridLayoutAccounts" >
+        <property name="sizeConstraint" >
+         <enum>QLayout::SetMaximumSize</enum>
+        </property>
+        <item row="0" column="0" >
+         <layout class="QGridLayout" name="gridLayout_2" >
+          <property name="sizeConstraint" >
+           <enum>QLayout::SetFixedSize</enum>
+          </property>
+          <item rowspan="2" row="0" column="0" >
+           <widget class="QLabel" name="lblLogin" >
+            <property name="sizePolicy" >
+             <sizepolicy vsizetype="Fixed" hsizetype="Preferred" >
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text" >
+             <string>Login:</string>
+            </property>
+            <property name="buddy" >
+             <cstring>leLogin</cstring>
+            </property>
+           </widget>
+          </item>
+          <item rowspan="2" row="0" column="1" colspan="2" >
+           <widget class="KLineEdit" name="leLogin" >
+            <property name="toolTip" >
+             <string>Gmail account name</string>
+            </property>
+            <property name="whatsThis" >
+             <string>whatsThis</string>
+            </property>
+            <property name="showClearButton" stdset="0" >
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item rowspan="2" row="0" column="3" >
+           <widget class="QLabel" name="lblGmaildotcom" >
+            <property name="enabled" >
+             <bool>false</bool>
+            </property>
+            <property name="sizePolicy" >
+             <sizepolicy vsizetype="Fixed" hsizetype="Preferred" >
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text" >
+             <string>@gmail.com</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0" >
+           <widget class="QLabel" name="lblPassword" >
+            <property name="sizePolicy" >
+             <sizepolicy vsizetype="Fixed" hsizetype="Preferred" >
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text" >
+             <string>Password:</string>
+            </property>
+            <property name="buddy" >
+             <cstring>lePassword</cstring>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1" colspan="3" >
+           <widget class="KLineEdit" name="lePassword" >
+            <property name="toolTip" >
+             <string>Gmail password</string>
+            </property>
+            <property name="showClearButton" stdset="0" >
+             <bool>true</bool>
+            </property>
+            <property name="passwordMode" >
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0" >
+           <widget class="QLabel" name="lblLabel" >
+            <property name="sizePolicy" >
+             <sizepolicy vsizetype="Fixed" hsizetype="Preferred" >
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text" >
+             <string>Label (optional):</string>
+            </property>
+            <property name="buddy" >
+             <cstring>leLabel</cstring>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="1" colspan="3" >
+           <widget class="KLineEdit" name="leLabel" >
+            <property name="toolTip" >
+             <string>Gmail label (leave empty for inbox)</string>
+            </property>
+            <property name="showClearButton" stdset="0" >
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="0" >
+           <widget class="QLabel" name="lblDisplay" >
+            <property name="sizePolicy" >
+             <sizepolicy vsizetype="Fixed" hsizetype="Preferred" >
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text" >
+             <string>Display (optional):</string>
+            </property>
+            <property name="buddy" >
+             <cstring>leDisplay</cstring>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="1" colspan="3" >
+           <widget class="KLineEdit" name="leDisplay" >
+            <property name="toolTip" >
+             <string>Use this if you want to display something other than your login name in the applet</string>
+            </property>
+            <property name="showClearButton" stdset="0" >
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item row="0" column="1" >
+         <widget class="KPushButton" name="btnAddModify" >
+          <property name="enabled" >
+           <bool>false</bool>
+          </property>
+          <property name="sizePolicy" >
+           <sizepolicy vsizetype="Minimum" hsizetype="Minimum" >
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="toolTip" >
+           <string>Add this account to the list</string>
+          </property>
+          <property name="text" >
+           <string>Add</string>
+          </property>
+          <property name="autoDefault" >
+           <bool>true</bool>
+          </property>
+          <property name="default" >
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item rowspan="2" row="5" column="0" >
+         <widget class="KListWidget" name="listAccounts" >
+          <property name="sizePolicy" >
+           <sizepolicy vsizetype="Expanding" hsizetype="Expanding" >
+            <horstretch>0</horstretch>
+            <verstretch>255</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="toolTip" >
+           <string>Account list</string>
+          </property>
+          <property name="showDropIndicator" stdset="0" >
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item rowspan="2" row="5" column="1" >
+         <layout class="QVBoxLayout" name="verticalLayout" >
+          <item>
+           <spacer name="verticalSpacer" >
+            <property name="orientation" >
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0" >
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="KPushButton" name="btnDelete" >
+            <property name="enabled" >
+             <bool>false</bool>
+            </property>
+            <property name="sizePolicy" >
+             <sizepolicy vsizetype="Minimum" hsizetype="Minimum" >
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="toolTip" >
+             <string>Delete the selected account</string>
+            </property>
+            <property name="text" >
+             <string>Delete</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="KPushButton" name="btnUp" >
+            <property name="enabled" >
+             <bool>false</bool>
+            </property>
+            <property name="sizePolicy" >
+             <sizepolicy vsizetype="Minimum" hsizetype="Minimum" >
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="toolTip" >
+             <string>Move the selected account up</string>
+            </property>
+            <property name="text" >
+             <string>Up</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="KPushButton" name="btnDown" >
+            <property name="enabled" >
+             <bool>false</bool>
+            </property>
+            <property name="sizePolicy" >
+             <sizepolicy vsizetype="Minimum" hsizetype="Minimum" >
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="toolTip" >
+             <string>Move the selected account down</string>
+            </property>
+            <property name="text" >
+             <string>Down</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="1" column="0" >
+    <spacer name="verticalSpacer_2" >
+     <property name="orientation" >
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeType" >
+      <enum>QSizePolicy::Fixed</enum>
+     </property>
+     <property name="sizeHint" stdset="0" >
+      <size>
+       <width>20</width>
+       <height>10</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item row="2" column="0" >
+    <widget class="QGroupBox" name="grpBoxMisc" >
+     <property name="title" >
+      <string>Misc</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_4" >
+      <item row="0" column="0" >
+       <layout class="QGridLayout" name="gridLayoutMisc" >
+        <item row="0" column="0" >
+         <widget class="QLabel" name="lblPollingInterval" >
+          <property name="text" >
+           <string>Polling interval:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0" >
+         <widget class="QLabel" name="lblBackground" >
+          <property name="sizePolicy" >
+           <sizepolicy vsizetype="Preferred" hsizetype="Minimum" >
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="text" >
+           <string>Background:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1" >
+         <widget class="KIntSpinBox" name="spinPollingInterval" >
+          <property name="toolTip" >
+           <string>Polling interval</string>
+          </property>
+          <property name="autoFillBackground" >
+           <bool>false</bool>
+          </property>
+          <property name="suffix" >
+           <string> mins</string>
+          </property>
+          <property name="minimum" >
+           <number>1</number>
+          </property>
+          <property name="maximum" >
+           <number>9999</number>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1" >
+         <widget class="KComboBox" name="comboBackground" >
+          <property name="sizePolicy" >
+           <sizepolicy vsizetype="Fixed" hsizetype="Expanding" >
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="toolTip" >
+           <string>Applet background</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item row="1" column="0" >
+       <spacer name="verticalSpacer_3" >
+        <property name="orientation" >
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeType" >
+         <enum>QSizePolicy::Fixed</enum>
+        </property>
+        <property name="sizeHint" stdset="0" >
+         <size>
+          <width>20</width>
+          <height>10</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item row="2" column="0" >
+       <widget class="QCheckBox" name="cbDisplayLogo" >
+        <property name="enabled" >
+         <bool>true</bool>
+        </property>
+        <property name="toolTip" >
+         <string>Show/hide the Gmail logo within the widget</string>
+        </property>
+        <property name="text" >
+         <string>Display Gmail logo</string>
+        </property>
+        <property name="checked" >
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>KComboBox</class>
+   <extends>QComboBox</extends>
+   <header>kcombobox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>KIntSpinBox</class>
+   <extends>QSpinBox</extends>
+   <header>knuminput.h</header>
+  </customwidget>
+  <customwidget>
+   <class>KLineEdit</class>
+   <extends>QLineEdit</extends>
+   <header>klineedit.h</header>
+  </customwidget>
+  <customwidget>
+   <class>KListWidget</class>
+   <extends>QListWidget</extends>
+   <header>klistwidget.h</header>
+  </customwidget>
+  <customwidget>
+   <class>KPushButton</class>
+   <extends>QPushButton</extends>
+   <header>kpushbutton.h</header>
+  </customwidget>
+ </customwidgets>
+ <tabstops>
+  <tabstop>leLogin</tabstop>
+  <tabstop>lePassword</tabstop>
+  <tabstop>leLabel</tabstop>
+  <tabstop>leDisplay</tabstop>
+  <tabstop>btnAddModify</tabstop>
+  <tabstop>listAccounts</tabstop>
+  <tabstop>cbDisplayLogo</tabstop>
+ </tabstops>
+ <resources/>
+ <connections/>
+</ui>
