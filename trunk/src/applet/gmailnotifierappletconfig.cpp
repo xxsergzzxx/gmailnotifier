@@ -38,6 +38,12 @@ GmailNotifierAppletConfig::GmailNotifierAppletConfig(KConfigGroup cg, QWidget *p
 
     ui.setupUi(this);
 
+    // Button icons
+    ui.btnAddModify->setIcon(KIcon("list-add"));
+    ui.btnDelete->setIcon(KIcon("list-remove"));
+    ui.btnUp->setIcon(KIcon("arrow-up"));
+    ui.btnDown->setIcon(KIcon("arrow-down"));
+
     // Display logo
     ui.cbDisplayLogo->setChecked(m_cg.readEntry("DisplayLogo", true));
 
@@ -256,9 +262,11 @@ void GmailNotifierAppletConfig::adaptAddModifyButtonLabel()
     if (accountPosition(ui.leLogin->text(), ui.leLabel->text()) != -1) {
         buttonText  = i18n("Modify");
         toolTipText = i18n("Modify this account settings");
+        ui.btnAddModify->setIcon(KIcon("edit-rename"));
     } else {
         buttonText  = i18n("Add");
         toolTipText = i18n("Add this account to the list");
+        ui.btnAddModify->setIcon(KIcon("list-add"));
     }
 
     if (buttonText != ui.btnAddModify->text().remove('&')) {
