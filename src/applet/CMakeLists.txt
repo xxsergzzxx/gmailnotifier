@@ -1,3 +1,5 @@
+# $Id$
+
 project(plasma-applet-GmailNotifier)
 
 set(gmailnotifier_applet_SRCS

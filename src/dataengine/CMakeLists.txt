@@ -1,3 +1,5 @@
+# $Id$
+
 project(plasma-dataengine-GmailNotifier)
 
 set(gmailnotifier_dataengine_SRCS

@@ -1,4 +1,5 @@
 #!/bin/bash
+# $Id$
 
 function msg {
     echo -e "\n$1"
