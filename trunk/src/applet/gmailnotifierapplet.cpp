@@ -265,11 +265,12 @@ void GmailNotifierApplet::initApplet()
     // Remove sources that aren't used anymore from the total counter
     foreach (QString source, m_engine->sources()) {
         if (!m_validSources.contains(source)) {
-            //kDebug() << "Disconnecting unused source" << source;
-            //m_engine->disconnectSource(source, this);
+            kDebug() << "Disconnecting unused source" << source;
+            m_engine->disconnectSource(source, this);
             m_totalUnreadMailCount.remove(source);
         }
     }
+    kDebug() << m_engine->sources(); // Only sources used by other applets should remain
 
     if (!isSizeConstrained) {
         readjustSize();
