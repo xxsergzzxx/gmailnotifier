@@ -226,6 +226,17 @@ void GmailNotifierAppletConfig::on_listAccounts_itemPressed(QListWidgetItem *ite
     adaptAddModifyButtonLabel();
 } // on_listAccounts_itemPressed()
 
+void GmailNotifierAppletConfig::on_spinPollingInterval_valueChanged(int value)
+{
+    kDebug();
+
+    if (value < 5) {
+        ui.spinPollingInterval->setStyleSheet("KIntSpinBox {color: red}");
+    } else {
+        ui.spinPollingInterval->setStyleSheet("KIntSpinBox {color: black}");
+    }
+
+} // on_spinPollingInterval_valueChanged() 
 
 /*
 ** private

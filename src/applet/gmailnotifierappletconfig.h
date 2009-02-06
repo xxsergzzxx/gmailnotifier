@@ -49,6 +49,7 @@ private Q_SLOTS:
     void on_btnUp_clicked();
     void on_btnDown_clicked();
     void on_listAccounts_itemPressed(QListWidgetItem *item);
+    void on_spinPollingInterval_valueChanged(int value);
 
 private:
     void setAddModifyButtonEnabled();
