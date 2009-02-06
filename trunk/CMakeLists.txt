@@ -1,3 +1,6 @@
+# Gmail Notifier / KDE 4 plasmoid
+# $Id$
+
 project(GmailNotifier-plasmoid)
 
 find_package(KDE4 REQUIRED)
