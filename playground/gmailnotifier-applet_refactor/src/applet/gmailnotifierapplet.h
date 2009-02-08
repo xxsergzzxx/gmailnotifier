@@ -44,12 +44,17 @@ public:
 
     void init();
 
+    QWidget* widget();
+
 public Q_SLOTS:
     void dataUpdated(const QString &source, const Plasma::DataEngine::Data &data);
 
 protected:
     void constraintsEvent(Plasma::Constraints constraints);
     void createConfigurationInterface(KConfigDialog *parent);
+
+private:
+
 };
 
 

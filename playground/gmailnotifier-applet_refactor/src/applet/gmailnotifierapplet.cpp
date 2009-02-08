@@ -24,8 +24,13 @@
 #include "gmailnotifierapplet.h"
 // Plasma
 #include <Plasma/DataEngine>
+#include <Plasma/IconWidget>
 // KDE
 #include <KDE/KDebug>
+#include <KDE/KIcon>
+
+
+#include <QtGui/QWidget>    // REMOVEME
 
 
 /*
@@ -35,6 +40,9 @@ GmailNotifierApplet::GmailNotifierApplet(QObject *parent, const QVariantList &ar
     : Plasma::PopupApplet(parent, args)
 {
     kDebug();
+
+    Plasma::IconWidget *icon = new Plasma::IconWidget(KIcon("gmailnotifier",NULL), QString());
+    Plasma::PopupApplet::setPopupIcon(icon->icon());
 } // ctor()
 
 GmailNotifierApplet::~GmailNotifierApplet()
@@ -46,6 +54,12 @@ void GmailNotifierApplet::init()
 {
     kDebug();
 } // init()
+
+
+QWidget* GmailNotifierApplet::widget()
+{
+    return new QWidget();
+} // widget()
 
 
 /*
