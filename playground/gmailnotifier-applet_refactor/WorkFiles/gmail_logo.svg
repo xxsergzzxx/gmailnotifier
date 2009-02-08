@@ -313,39 +313,10 @@
     </rdf:RDF>
   </metadata>
   <g
-     inkscape:groupmode="layer"
-     id="layer2"
-     inkscape:label="Gmail (Bitmap)"
-     style="opacity:1;display:none"
-     sodipodi:insensitive="true">
-    <image
-       style="display:inline"
-       y="335.36218"
-       x="180"
-       id="image2446"
-       height="392"
-       width="392"
-       sodipodi:absref="/home/gchauvin/Documents/dev/C++/gmailnotifier/WorkFiles/gmail_logo_big.png"
-       xlink:href="gmail_logo_big.png" />
-  </g>
-  <g
-     inkscape:groupmode="layer"
-     id="layer4"
-     inkscape:label="Gradients"
-     style="display:inline" />
-  <g
-     inkscape:groupmode="layer"
-     id="layer6"
-     style="display:inline" />
-  <g
      inkscape:label="Gmail (SVG)"
      inkscape:groupmode="layer"
      id="layer1"
      style="display:inline">
-    <g
-       inkscape:groupmode="layer"
-       id="layer3"
-       style="display:inline" />
     <g
        id="g2447">
       <rect
