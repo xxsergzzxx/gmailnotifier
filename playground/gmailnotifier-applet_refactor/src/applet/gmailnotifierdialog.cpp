@@ -96,7 +96,7 @@ void GmailNotifierDialog::setAccounts(const QList<QMap<QString, QString> > &acco
         if (unreadMailCount.contains(loginNLabel)) {
             lblMailCountTxt = QString("%1").arg(unreadMailCount[loginNLabel]);
         } else {
-            lblMailCountTxt = "---";
+            lblMailCountTxt = "----";
         }
         QLabel *lblMailCount = new QLabel(lblMailCountTxt);
         lblMailCount->setObjectName(QString("lblMailCount_%1").arg(loginNLabel));

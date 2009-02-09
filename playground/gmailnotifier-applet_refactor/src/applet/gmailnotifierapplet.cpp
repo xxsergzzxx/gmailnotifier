@@ -79,8 +79,10 @@ void GmailNotifierApplet::dataUpdated(const QString &source, const Plasma::DataE
 {
     kDebug();
 
-    m_unreadMailCount[source] = data["fullcount"].toUInt();
-    m_dialog->updateMailCount(source, data);
+    if (data.contains("fullcount")) {
+        m_unreadMailCount[source] = data.value("fullcount").toUInt();
+        m_dialog->updateMailCount(source, data);
+    }
 } // dataUpdated()
 
 
