@@ -52,7 +52,7 @@ public:
 
 
 public Q_SLOTS:
-//    void dataUpdated(const QString &source, const Plasma::DataEngine::Data &data);
+    void dataUpdated(const QString &source, const Plasma::DataEngine::Data &data);
 
 
 protected:
@@ -65,12 +65,18 @@ private Q_SLOTS:
 
 
 private:
+    void initApplet();
+
+    // Data engine
+    Plasma::DataEngine        *m_engine;
     // Where we display mailboxes and their labels/mail count
     GmailNotifierDialog       *m_dialog;
     // Widget configuration dialog
     GmailNotifierAppletConfig *m_configDialog;
     // Icon for when in panel mode
     Plasma::IconWidget        *m_icon;
+    // Per source unread mail count
+    QMap<QString, uint>        m_unreadMailCount;
 };
 
 

@@ -29,6 +29,8 @@
 #define __GMAILNOTIFIERDIALOG_H__
 
 
+// Plasma
+#include <Plasma/DataEngine>
 // QtGui
 #include <QtGui/QLabel>
 #include <QtGui/QVBoxLayout>
@@ -40,11 +42,22 @@ class GmailNotifierDialog : public QObject
 {
     Q_OBJECT
 
+        
 public:
     GmailNotifierDialog(QObject *parent=0);
     ~GmailNotifierDialog();
 
     QWidget* widget();
+
+    // Show/Hide the Gmail logo
+    void setDisplayLogo(const bool &visible);
+
+    // Populate the widget with user's accounts
+    void setAccounts(const QList<QMap<QString, QString> > &accounts,
+                     const QMap<QString, uint> &unreadMailCount);
+
+    // Update the mail count
+    void updateMailCount(const QString &source, const Plasma::DataEngine::Data &data);
 
 
 private:

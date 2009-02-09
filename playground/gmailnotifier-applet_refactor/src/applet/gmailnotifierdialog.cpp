@@ -34,6 +34,7 @@ GmailNotifierDialog::GmailNotifierDialog(QObject *parent)
     , m_widget(new QWidget)
     , m_layoutMain(0)
     , m_layoutAccounts(0)
+    , m_logoGmail(0)
 {
     kDebug();
 
@@ -53,6 +54,76 @@ QWidget* GmailNotifierDialog::widget()
     kDebug();
     return m_widget;
 } // widget();
+
+void GmailNotifierDialog::setDisplayLogo(const bool &visible)
+{
+    kDebug();
+
+    m_logoGmail->setVisible(visible);
+} // setDisplayLogo()
+
+void GmailNotifierDialog::setAccounts(const QList<QMap<QString, QString> > &accounts,
+                                      const QMap<QString, uint> &unreadMailCount)
+{
+    kDebug();
+
+    // Remove any existing labels
+    QLayoutItem *item;
+    while ((item = m_layoutAccounts->takeAt(0)) != 0) {
+        delete item->widget();
+        delete item;
+    }
+
+    // Populate...
+    QList<QMap<QString, QString> >::ConstIterator it;
+    int row = 0;
+    for (it = accounts.constBegin(); it != accounts.constEnd(); ++it) {
+        QString display;
+        if (!it->value("Display").isEmpty()) {
+            display = it->value("Display");
+        } else {
+            QString label = (it->value("Label").isEmpty()) ? "inbox" : it->value("Label");
+            display = QString("%1/%2").arg(it->value("Login")).arg(label);
+        }
+
+        QString loginNLabel = QString("%1:%2").arg(it->value("Login")).arg(it->value("Label"));
+
+        QLabel *lblAccount = new QLabel(display);
+        lblAccount->setObjectName(QString("lblAccount_%1").arg(loginNLabel));
+        m_layoutAccounts->addWidget(lblAccount, row, 0, Qt::AlignLeft | Qt::AlignVCenter);
+
+        QString lblMailCountTxt;
+        if (unreadMailCount.contains(loginNLabel)) {
+            lblMailCountTxt = QString("%1").arg(unreadMailCount[loginNLabel]);
+        } else {
+            lblMailCountTxt = "---";
+        }
+        QLabel *lblMailCount = new QLabel(lblMailCountTxt);
+        lblMailCount->setObjectName(QString("lblMailCount_%1").arg(loginNLabel));
+        m_layoutAccounts->addWidget(lblMailCount, row, 1, Qt::AlignRight | Qt::AlignVCenter);
+
+        ++row;
+    }
+} //setAccounts()
+
+void GmailNotifierDialog::updateMailCount(const QString &source, const Plasma::DataEngine::Data &data)
+{
+    kDebug();
+
+    QLabel *label;
+    if (!(label = m_widget->findChild<QLabel *>("lblMailCount_"+source))) {
+        kDebug() << QString("No existing QLabel for %1. Skipping...").arg(source);
+        return;
+    }
+    QString content;
+    if (!data["error"].toString().isEmpty()) {
+        kDebug() << "Error:" << data["error"].toString();
+        content = "Err.";
+    } else {
+        content = data["fullcount"].toString();
+    }
+    label->setText(content);
+} // updateMailCount()
 
 
 /*
@@ -92,10 +163,6 @@ void GmailNotifierDialog::buildDialog()
     m_layoutAccounts->setMargin(0);
     m_layoutAccounts->setSizeConstraint(QLayout::SetNoConstraint);
     
-    // DEBUG / TEST
-    //m_layoutAccounts->addWidget(new QLabel("test"), 0, 0);
-    //m_layoutAccounts->addWidget(new QLabel("test"), 0, 1);
-
     m_layoutMain->addLayout(m_layoutAccounts);
 
     m_layoutMain->addSpacerItem(new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding));
