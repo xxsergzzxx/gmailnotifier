@@ -24,6 +24,8 @@
 #include "gmailnotifierdialog.h"
 // KDE
 #include <KDE/KDebug>
+// QtGui
+#include <QtGui/QWidget>
 
 
 /*
@@ -31,6 +33,7 @@
 */
 GmailNotifierDialog::GmailNotifierDialog(QObject *parent)
     : QObject(parent)
+    , m_widget(new QWidget)
 {
     kDebug();
 } // ctor()
@@ -39,6 +42,12 @@ GmailNotifierDialog::~GmailNotifierDialog()
 {
     kDebug();
 } // dtor()
+
+QWidget* GmailNotifierDialog::widget()
+{
+    kDebug();
+    return m_widget;
+} // widget();
 
 
 #include "gmailnotifierdialog.moc"

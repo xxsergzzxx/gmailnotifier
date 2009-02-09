@@ -40,6 +40,12 @@ class GmailNotifierDialog : public QObject
 public:
     GmailNotifierDialog(QObject *parent=0);
     ~GmailNotifierDialog();
+
+    QWidget* widget();
+
+
+private:
+    QWidget *m_widget;
 };
 
 

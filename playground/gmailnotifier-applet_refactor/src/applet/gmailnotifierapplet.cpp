@@ -25,12 +25,11 @@
 // Plasma
 #include <Plasma/DataEngine>
 #include <Plasma/IconWidget>
+#include <Plasma/ToolTipManager>
 // KDE
+#include <KDE/KConfigDialog>
 #include <KDE/KDebug>
 #include <KDE/KIcon>
-
-
-#include <QtGui/QWidget>    // REMOVEME
 
 
 /*
@@ -38,11 +37,21 @@
 */
 GmailNotifierApplet::GmailNotifierApplet(QObject *parent, const QVariantList &args)
     : Plasma::PopupApplet(parent, args)
+    , m_dialog(0)
+    , m_configDialog(0)
+    , m_icon(0)
 {
     kDebug();
 
-    Plasma::IconWidget *icon = new Plasma::IconWidget(KIcon("gmailnotifier",NULL), QString());
-    Plasma::PopupApplet::setPopupIcon(icon->icon());
+    Plasma::Applet::setAspectRatioMode(Plasma::IgnoreAspectRatio);
+    Plasma::Applet::setHasConfigurationInterface(true);
+    m_icon = new Plasma::IconWidget(KIcon("gmailnotifier", 0), QString()/*, this*/);
+    Plasma::PopupApplet::setPopupIcon(m_icon->icon());
+
+
+    // Initialize the widget
+    (void)widget();
+    resize(widget()->sizeHint());
 } // ctor()
 
 GmailNotifierApplet::~GmailNotifierApplet()
@@ -50,39 +59,66 @@ GmailNotifierApplet::~GmailNotifierApplet()
     kDebug();
 } // dtor()
 
+/*
 void GmailNotifierApplet::init()
 {
     kDebug();
 } // init()
-
+*/
 
 QWidget* GmailNotifierApplet::widget()
 {
-    return new QWidget();
+    if (!m_dialog) {
+        m_dialog = new GmailNotifierDialog(this);
+    }
+
+    return m_dialog->widget();
 } // widget()
 
 
 /*
 ** public Q_SLOTS:
 */
-void GmailNotifierApplet::dataUpdated(const QString &/*source*/, const Plasma::DataEngine::Data &/*data*/)
+/*
+void GmailNotifierApplet::dataUpdated(const QString &source, const Plasma::DataEngine::Data &data)
 {
     kDebug();
 } // dataUpdated()
-
+*/
 
 /*
 ** protected:
 */
-void GmailNotifierApplet::constraintsEvent(Plasma::Constraints /*constraints*/)
+/*
+void GmailNotifierApplet::constraintsEvent(Plasma::Constraints constraints)
 {
     kDebug();
 } // constraintsEvent()
+*/
 
-void GmailNotifierApplet::createConfigurationInterface(KConfigDialog * /*parent*/)
+void GmailNotifierApplet::createConfigurationInterface(KConfigDialog *parent)
 {
     kDebug();
+
+    m_configDialog = new GmailNotifierAppletConfig(Plasma::Applet::config(), parent);
+    parent->setButtons(KDialog::Ok | KDialog::Cancel);
+    parent->addPage(m_configDialog, parent->windowTitle(), icon());
+    parent->setDefaultButton(KDialog::Ok);
+    parent->showButtonSeparator(true);
+    connect(parent, SIGNAL(okClicked()), this, SLOT(configAccepted()));
 } // createConfigurationInterface()
+
+
+/*
+** private Q_SLOTS:
+*/
+void GmailNotifierApplet::configAccepted()
+{
+    kDebug();
+
+    KConfigGroup cg(m_configDialog->config());
+    Plasma::Applet::save(cg);
+} // configAccepted()
 
 
 #include "gmailnotifierapplet.moc"

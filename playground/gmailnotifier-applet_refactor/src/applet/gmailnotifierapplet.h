@@ -29,9 +29,13 @@
 #define __GMAILNOTIFIER_APPLET_H__
 
 
+// Own
+#include "gmailnotifierappletconfig.h"
+#include "gmailnotifierdialog.h"
 // Plasma
 #include <Plasma/DataEngine>
 #include <Plasma/PopupApplet>
+#include <Plasma/IconWidget>
 
 
 class GmailNotifierApplet : public Plasma::PopupApplet
@@ -42,19 +46,31 @@ public:
     GmailNotifierApplet(QObject *parent, const QVariantList &args);
     ~GmailNotifierApplet();
 
-    void init();
+//    void init();
 
     QWidget* widget();
 
+
 public Q_SLOTS:
-    void dataUpdated(const QString &source, const Plasma::DataEngine::Data &data);
+//    void dataUpdated(const QString &source, const Plasma::DataEngine::Data &data);
+
 
 protected:
-    void constraintsEvent(Plasma::Constraints constraints);
+//    void constraintsEvent(Plasma::Constraints constraints);
     void createConfigurationInterface(KConfigDialog *parent);
 
-private:
 
+private Q_SLOTS:
+    void configAccepted();
+
+
+private:
+    // Where we display mailboxes and their labels/mail count
+    GmailNotifierDialog       *m_dialog;
+    // Widget configuration dialog
+    GmailNotifierAppletConfig *m_configDialog;
+    // Icon for when in panel mode
+    Plasma::IconWidget        *m_icon;
 };
 
 
