@@ -45,9 +45,6 @@ GmailNotifierApplet::GmailNotifierApplet(QObject *parent, const QVariantList &ar
 
     Plasma::Applet::setAspectRatioMode(Plasma::IgnoreAspectRatio);
     Plasma::Applet::setHasConfigurationInterface(true);
-    m_icon = new Plasma::IconWidget(KIcon("gmailnotifier", 0), QString()/*, this*/);
-    Plasma::PopupApplet::setPopupIcon(m_icon->icon());
-
 
     // Initialize the widget
     (void)widget();
@@ -59,12 +56,15 @@ GmailNotifierApplet::~GmailNotifierApplet()
     kDebug();
 } // dtor()
 
-/*
 void GmailNotifierApplet::init()
 {
     kDebug();
+//    m_icon = new Plasma::IconWidget(KIcon("gmailnotifier", 0), QString(), this);
+//    Plasma::PopupApplet::setPopupIcon(m_icon->icon());
+
+    Plasma::PopupApplet::setPopupIcon("gmailnotifier");
+
 } // init()
-*/
 
 QWidget* GmailNotifierApplet::widget()
 {

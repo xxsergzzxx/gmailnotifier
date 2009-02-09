@@ -29,6 +29,9 @@
 #define __GMAILNOTIFIERDIALOG_H__
 
 
+// QtGui
+#include <QtGui/QLabel>
+#include <QtGui/QVBoxLayout>
 // QtCore
 #include <QtCore/QObject>
 
@@ -45,7 +48,14 @@ public:
 
 
 private:
-    QWidget *m_widget;
+    void buildDialog();
+
+    QWidget     *m_widget;
+
+    QVBoxLayout *m_layoutMain;
+    QGridLayout *m_layoutAccounts;
+
+    QLabel      *m_logoGmail;
 };
 
 

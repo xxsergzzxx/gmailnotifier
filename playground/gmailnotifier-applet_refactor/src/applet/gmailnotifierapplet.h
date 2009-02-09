@@ -46,7 +46,7 @@ public:
     GmailNotifierApplet(QObject *parent, const QVariantList &args);
     ~GmailNotifierApplet();
 
-//    void init();
+    void init();
 
     QWidget* widget();
 
