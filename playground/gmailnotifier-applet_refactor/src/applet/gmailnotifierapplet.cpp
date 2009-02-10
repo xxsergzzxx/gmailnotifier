@@ -27,6 +27,8 @@
 // KDE
 #include <KDE/KConfigDialog>
 #include <KDE/KStringHandler>
+// QtGui
+#include <QtGui/QPainter>
 
 
 /*
@@ -34,9 +36,9 @@
 */
 GmailNotifierApplet::GmailNotifierApplet(QObject *parent, const QVariantList &args)
     : Plasma::PopupApplet(parent, args)
+    , m_engine(0)
     , m_dialog(new GmailNotifierDialog(this))
     , m_configDialog(0)
-    , m_icon(0)
 {
     kDebug();
 
@@ -44,14 +46,8 @@ GmailNotifierApplet::GmailNotifierApplet(QObject *parent, const QVariantList &ar
     Plasma::Applet::setAspectRatioMode(Plasma::IgnoreAspectRatio);
     Plasma::Applet::setConfigurationRequired(true);
     Plasma::Applet::setHasConfigurationInterface(true);
-    Plasma::PopupApplet::setPopupIcon("gmailnotifier");
-
-    // Connect to the dataengine
-    m_engine = Plasma::Applet::dataEngine("gmailnotifier");
-    if (!m_engine->isValid()) {
-        Plasma::Applet::setFailedToLaunch(true, i18n("Failed to open the data engine!"));
-        return;
-    }
+    m_icon = KIcon(Plasma::Applet::icon()); // Applet icon from .desktop file
+    Plasma::PopupApplet::setPopupIcon(m_icon);
 } // ctor()
 
 GmailNotifierApplet::~GmailNotifierApplet()
@@ -63,6 +59,14 @@ void GmailNotifierApplet::init()
 {
     kDebug();
 
+    // Connect to the dataengine
+    m_engine = Plasma::Applet::dataEngine("gmailnotifier");
+    if (!m_engine->isValid()) {
+        Plasma::Applet::setFailedToLaunch(true, i18n("Failed to open the data engine!"));
+        return;
+    }
+
+    // Init the applet
     initApplet();
 } // init()
 
@@ -79,9 +83,11 @@ void GmailNotifierApplet::dataUpdated(const QString &source, const Plasma::DataE
 {
     kDebug();
 
+    // FIXME: This is wrong....
     if (data.contains("fullcount")) {
         m_unreadMailCount[source] = data.value("fullcount").toUInt();
         m_dialog->updateMailCount(source, data);
+        paintIcon();
     }
 } // dataUpdated()
 
@@ -89,13 +95,6 @@ void GmailNotifierApplet::dataUpdated(const QString &source, const Plasma::DataE
 /*
 ** protected:
 */
-/*
-void GmailNotifierApplet::constraintsEvent(Plasma::Constraints constraints)
-{
-    kDebug();
-} // constraintsEvent()
-*/
-
 void GmailNotifierApplet::createConfigurationInterface(KConfigDialog *parent)
 {
     kDebug();
@@ -105,6 +104,7 @@ void GmailNotifierApplet::createConfigurationInterface(KConfigDialog *parent)
     parent->addPage(m_configDialog, parent->windowTitle(), icon());
     parent->setDefaultButton(KDialog::Ok);
     parent->showButtonSeparator(true);
+
     connect(parent, SIGNAL(okClicked()), this, SLOT(configAccepted()));
 } // createConfigurationInterface()
 
@@ -166,6 +166,7 @@ void GmailNotifierApplet::initApplet()
         ++cnt;
     }
 
+    // If the account list is empty, set the applet in unconfigured state
     bool configured = (accountList.size() == 0);
     Plasma::Applet::setConfigurationRequired(configured);
 
@@ -189,14 +190,52 @@ void GmailNotifierApplet::initApplet()
         validSources << request;
     }
 
-    // Remove sources that aren't used anymore from the total counter
+    // Remove sources that aren't used anymore
     foreach (QString source, m_engine->sources()) {
         if (!validSources.contains(source)) {
             m_engine->disconnectSource(source, this);
             m_unreadMailCount.remove(source);
         }
     }
+
+    paintIcon();
 } // initApplet()
+
+void GmailNotifierApplet::paintIcon()
+{
+    kDebug();
+
+    kDebug() << Plasma::PopupApplet::icon().size();
+
+    // We don't need to update the icon if we don't live in a panel
+    if (Plasma::Applet::formFactor() != Plasma::Horizontal &&
+        Plasma::Applet::formFactor() != Plasma::Vertical) {
+        return;
+    }
+
+    // Compute total amount/number of unread e-mails
+    uint totalUnreadMailCount=0;
+    QMap<QString, uint>::ConstIterator it;
+    for (it = m_unreadMailCount.constBegin(); it != m_unreadMailCount.constEnd(); ++it) {
+        totalUnreadMailCount += it.value();
+    }
+
+    // Draw text over the icon
+    QRect appletRect(0, 0, (int)geometry().width(), (int)geometry().height());
+    QSize iconSize((int)geometry().width(), (int)geometry().height());
+
+    QPixmap img(m_icon.pixmap(iconSize));
+    QPainter p(&img);
+    QFont font(p.font());
+    font.setBold(true);
+    p.setFont(font);
+    p.setPen(QColor("#0057AE"));
+    p.drawText(QRectF(0, appletRect.height()/2, appletRect.width(), appletRect.height()/2), Qt::AlignCenter, QString("%1").arg(totalUnreadMailCount)
+    );
+
+    // Set the icon
+    Plasma::PopupApplet::setPopupIcon(QIcon(img));
+} // drawIcon()
 
 
 #include "gmailnotifierapplet.moc"

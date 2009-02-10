@@ -35,7 +35,6 @@
 // Plasma
 #include <Plasma/DataEngine>
 #include <Plasma/PopupApplet>
-#include <Plasma/IconWidget>
 
 
 class GmailNotifierApplet : public Plasma::PopupApplet
@@ -56,7 +55,6 @@ public Q_SLOTS:
 
 
 protected:
-//    void constraintsEvent(Plasma::Constraints constraints);
     void createConfigurationInterface(KConfigDialog *parent);
 
 
@@ -66,6 +64,7 @@ private Q_SLOTS:
 
 private:
     void initApplet();
+    void paintIcon();
 
     // Data engine
     Plasma::DataEngine        *m_engine;
@@ -74,7 +73,7 @@ private:
     // Widget configuration dialog
     GmailNotifierAppletConfig *m_configDialog;
     // Icon for when in panel mode
-    Plasma::IconWidget        *m_icon;
+    KIcon                      m_icon;
     // Per source unread mail count
     QMap<QString, uint>        m_unreadMailCount;
 };
