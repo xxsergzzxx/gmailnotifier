@@ -205,8 +205,6 @@ void GmailNotifierApplet::paintIcon()
 {
     kDebug();
 
-    kDebug() << Plasma::PopupApplet::icon().size();
-
     // We don't need to update the icon if we don't live in a panel
     if (Plasma::Applet::formFactor() != Plasma::Horizontal &&
         Plasma::Applet::formFactor() != Plasma::Vertical) {
@@ -220,21 +218,22 @@ void GmailNotifierApplet::paintIcon()
         totalUnreadMailCount += it.value();
     }
 
-    // Draw text over the icon
-    QRect appletRect(0, 0, (int)geometry().width(), (int)geometry().height());
-    QSize iconSize((int)geometry().width(), (int)geometry().height());
+    // Draw the total unread mail count over the icon
+    int size = KIconLoader::SizeEnormous;   // 128
+    QPixmap icon(size, size);
+    icon = KIconLoader::global()->loadIcon(Plasma::Applet::icon(), KIconLoader::NoGroup, size);
 
-    QPixmap img(m_icon.pixmap(iconSize));
-    QPainter p(&img);
+    QPainter p(&icon);
     QFont font(p.font());
+    font.setPointSize(20);
     font.setBold(true);
     p.setFont(font);
     p.setPen(QColor("#0057AE"));
-    p.drawText(QRectF(0, appletRect.height()/2, appletRect.width(), appletRect.height()/2), Qt::AlignCenter, QString("%1").arg(totalUnreadMailCount)
-    );
+    p.drawText(QRectF(0, size-42, size, 42), Qt::AlignCenter, QString("%1").arg(totalUnreadMailCount));
+    p.end();
 
     // Set the icon
-    Plasma::PopupApplet::setPopupIcon(QIcon(img));
+    Plasma::PopupApplet::setPopupIcon(icon);
 } // drawIcon()
 
 
