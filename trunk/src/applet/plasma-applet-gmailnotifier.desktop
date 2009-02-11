@@ -4,7 +4,7 @@
 Name=Gmail Notifier
 Comment=A Gmail notifier plasmoid
 Type=Service
-Icon=unknown
+Icon=gmailnotifier
 
 X-KDE-ServiceTypes=Plasma/Applet
 X-KDE-Library=plasma_applet_gmailnotifier
@@ -13,7 +13,7 @@ X-KDE-PluginInfo-Email=gcnweb+gmailnotifier@gmail.com
 X-KDE-PluginInfo-Name=gmailnotifier
 X-KDE-PluginInfo-Version=0.1
 X-KDE-PluginInfo-Website=http://gmailnotifier.googlecode.com/
-X-KDE-PluginInfo-Category=
+X-KDE-PluginInfo-Category=Online Services
 X-KDE-PluginInfo-Depends=
 X-KDE-PluginInfo-License=GPL
-X-KDE-PluginInfo-EnabledByDefault=
+X-KDE-PluginInfo-EnabledByDefault=true
