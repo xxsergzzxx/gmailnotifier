@@ -19,28 +19,20 @@
 ** 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-/*
-** Some parts were borrowed from the Device Notifier Applet provided with KDE
-** and are (C) Alexis Ménard
-*/
-
 
 #ifndef __GMAILNOTIFIER_APPLET_H__
 #define __GMAILNOTIFIER_APPLET_H__
 
 
 // Own
-#include "gmailnotifierdialog.h"
 #include "gmailnotifierappletconfig.h"
+#include "gmailnotifierdialog.h"
 // Plasma
-#include <Plasma/Applet>
-#include <Plasma/IconWidget>
-// QtGui
-#include <QtGui/QGraphicsLinearLayout>
-#include <QtGui/QGraphicsProxyWidget>
+#include <Plasma/DataEngine>
+#include <Plasma/PopupApplet>
 
 
-class GmailNotifierApplet : public Plasma::Applet
+class GmailNotifierApplet : public Plasma::PopupApplet
 {
     Q_OBJECT
 
@@ -50,40 +42,37 @@ public:
 
     void init();
 
+    QWidget* widget();
+
+
 public Q_SLOTS:
     void dataUpdated(const QString &source, const Plasma::DataEngine::Data &data);
 
+
 protected:
-    void constraintsEvent(Plasma::Constraints constraints);
     void createConfigurationInterface(KConfigDialog *parent);
 
+
 private Q_SLOTS:
-    void onClickNotifier();
     void configAccepted();
+
 
 private:
     void initApplet();
-    void drawIcon();
+    void paintIcon();
 
-    void readjustSize();
-
-    Plasma::DataEngine *m_engine;
-
-    QString m_cfgBackground;
-    bool m_cfgDisplayLogo;
-    uint m_cfgPollingInterval;
-    QVariantList m_cfgAccounts;
-
-    GmailNotifierDialog *m_dialog;
+    // Data engine
+    Plasma::DataEngine        *m_engine;
+    // Where we display mailboxes and their labels/mail count
+    GmailNotifierDialog       *m_dialog;
+    // Widget configuration dialog
     GmailNotifierAppletConfig *m_configDialog;
-
-    Plasma::IconWidget *m_icon;
-    QGraphicsProxyWidget *m_proxy;
-    QGraphicsLinearLayout *m_layout;
-
-    QMap<QString, uint> m_totalUnreadMailCount;
-
-    QStringList m_validSources;
+    // Icon for when in panel mode
+    KIcon                      m_icon;
+    // Per source unread mail count
+    QMap<QString, uint>        m_unreadMailCount;
+    // Is applet configured ?
+    bool                       m_appletConfigured;
 };
 
 

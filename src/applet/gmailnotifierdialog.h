@@ -31,43 +31,44 @@
 
 // Plasma
 #include <Plasma/DataEngine>
-// Qt
-#include <QtCore/QObject>
+// QtGui
 #include <QtGui/QLabel>
-#include <QtGui/QGridLayout>
 #include <QtGui/QVBoxLayout>
+// QtCore
+#include <QtCore/QObject>
 
 
 class GmailNotifierDialog : public QObject
 {
     Q_OBJECT
 
+        
 public:
-    enum DialogArea
-    {
-        DesktopArea,
-        PanelArea
-    };
-
-    GmailNotifierDialog(DialogArea area, QObject *parent=0);
+    GmailNotifierDialog(QObject *parent=0);
     ~GmailNotifierDialog();
 
     QWidget* widget();
-    void show();
-    void hide();
 
-    void setDisplayLogo(const bool &display);
+    // Show/Hide the Gmail logo
+    void setDisplayLogo(const bool &visible);
+
+    // Populate the widget with user's accounts
     void setAccounts(const QList<QMap<QString, QString> > &accounts,
                      const QMap<QString, uint> &unreadMailCount);
+
+    // Update the mail count
     void updateMailCount(const QString &source, const Plasma::DataEngine::Data &data);
 
-private:
-    void buildDialog(DialogArea area);
 
-    QWidget *m_widget;
-    QLabel *m_lblLogo;
+private:
+    void buildDialog();
+
+    QWidget     *m_widget;
+
     QVBoxLayout *m_layoutMain;
-    QGridLayout *m_layoutMails;
+    QGridLayout *m_layoutAccounts;
+
+    QLabel      *m_logoGmail;
 };
 
 
