@@ -220,18 +220,34 @@ void GmailNotifierApplet::paintIcon()
         totalUnreadMailCount += it.value();
     }
 
+    // Text to display
+    QString mailCount(QString("%1").arg(totalUnreadMailCount));
+    // Text font size
+    int fontSize = 45;
+
     // Draw the total unread mail count over the icon
     int size = KIconLoader::SizeEnormous;   // 128
     QPixmap icon(size, size);
     icon = KIconLoader::global()->loadIcon(Plasma::Applet::icon(), KIconLoader::NoGroup, size);
 
     QPainter p(&icon);
-    QFont font(p.font());
-    font.setPointSize(20);
+    QFont font(p.font()); // TODO: Use font from KDE global settings
+    font.setPointSize(fontSize);
     font.setBold(true);
+
+    // Reduce the font size when needed...
+    QFontMetrics fm(font);
+    while (fm.width(mailCount) > icon.width()-6 && fontSize > 0) {
+        --fontSize;
+        font.setPointSize(fontSize);
+        fm = font;
+        kDebug() << "Reducing font size:" << fontSize;
+    }
+
     p.setFont(font);
-    p.setPen(QColor("#0057AE"));
-    p.drawText(QRectF(0, size-42, size, 42), Qt::AlignCenter, QString("%1").arg(totalUnreadMailCount));
+    p.setPen(QColor("#0057AE")); // TODO: User configurable color
+    p.drawText(QRectF(0, icon.height()/2, icon.width(), icon.height()/2),
+               Qt::AlignCenter, mailCount);
     p.end();
 
     // Set the icon
