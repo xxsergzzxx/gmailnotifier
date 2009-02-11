@@ -46,6 +46,7 @@ public:
 
 
 public Q_SLOTS:
+    void constraintsEvent(Plasma::Constraints constraints);
     void dataUpdated(const QString &source, const Plasma::DataEngine::Data &data);
 
 
@@ -62,17 +63,19 @@ private:
     void paintIcon();
 
     // Data engine
-    Plasma::DataEngine        *m_engine;
+    Plasma::DataEngine         *m_engine;
     // Where we display mailboxes and their labels/mail count
-    GmailNotifierDialog       *m_dialog;
+    GmailNotifierDialog        *m_dialog;
     // Widget configuration dialog
-    GmailNotifierAppletConfig *m_configDialog;
+    GmailNotifierAppletConfig  *m_configDialog;
     // Icon for when in panel mode
-    KIcon                      m_icon;
+    KIcon                       m_icon;
     // Per source unread mail count
-    QMap<QString, uint>        m_unreadMailCount;
+    QMap<QString, uint>         m_unreadMailCount;
     // Is applet configured ?
-    bool                       m_appletConfigured;
+    bool                        m_appletConfigured;
+    // Current form factor
+    Plasma::FormFactor          m_formFactor;
 };
 
 
