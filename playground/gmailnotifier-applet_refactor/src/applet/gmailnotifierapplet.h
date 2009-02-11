@@ -19,11 +19,6 @@
 ** 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-/*
-** Some parts were borrowed from the Device Notifier Applet provided with KDE
-** and are (C) Alexis Ménard
-*/
-
 
 #ifndef __GMAILNOTIFIER_APPLET_H__
 #define __GMAILNOTIFIER_APPLET_H__

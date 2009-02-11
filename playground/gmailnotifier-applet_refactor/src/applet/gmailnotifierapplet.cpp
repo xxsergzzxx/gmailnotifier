@@ -129,19 +129,22 @@ void GmailNotifierApplet::initApplet()
 {
     kDebug();
 
-    // Set applet background
-    QString background(config().readEntry("Background", "Standard"));
-    Plasma::Applet::BackgroundHints hint;
-    if (background == "Standard") {
-        hint = StandardBackground;
-    } else if (background == "Translucent") {
-        hint = TranslucentBackground;
-    } else if (background == "None") {
-        hint = NoBackground;
-    } else { // Default
-        hint = DefaultBackground;
+    // Set applet background (only if we are not in a panel)
+    if (Plasma::Applet::formFactor() == Plasma::Planar ||
+        Plasma::Applet::formFactor() == Plasma::MediaCenter) {
+        QString background(config().readEntry("Background", "Standard"));
+        Plasma::Applet::BackgroundHints hint;
+        if (background == "Standard") {
+            hint = StandardBackground;
+        } else if (background == "Translucent") {
+            hint = TranslucentBackground;
+        } else if (background == "None") {
+            hint = NoBackground;
+        } else { // Default
+            hint = DefaultBackground;
+        }
+        Plasma::Applet::setBackgroundHints(hint);
     }
-    Plasma::Applet::setBackgroundHints(hint);
 
     // Read account informations
     QList<QMap<QString, QString> > accountList;
@@ -205,8 +208,8 @@ void GmailNotifierApplet::paintIcon()
     kDebug();
 
     // We don't need to update the icon if we don't live in a panel
-    if (Plasma::Applet::formFactor() != Plasma::Horizontal &&
-        Plasma::Applet::formFactor() != Plasma::Vertical) {
+    if (Plasma::Applet::formFactor() == Plasma::Planar ||
+        Plasma::Applet::formFactor() == Plasma::MediaCenter) {
         return;
     }
 
