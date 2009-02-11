@@ -237,11 +237,11 @@ void GmailNotifierApplet::paintIcon()
 
     // Reduce the font size when needed...
     QFontMetrics fm(font);
-    while (fm.width(mailCount) > icon.width()-6 && fontSize > 0) {
+    while (fm.width(mailCount) > icon.width()-10 && fontSize > 0) {
         --fontSize;
+        kDebug() << "Reducing font size:" << fontSize;
         font.setPointSize(fontSize);
         fm = font;
-        kDebug() << "Reducing font size:" << fontSize;
     }
 
     p.setFont(font);
