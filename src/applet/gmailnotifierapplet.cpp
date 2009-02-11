@@ -263,7 +263,7 @@ void GmailNotifierApplet::paintIcon()
     // Text to display
     QString mailCount(QString("%1").arg(totalUnreadMailCount));
     // Text font size
-    int fontSize = 45;
+    int fontSize = 40;
 
     // Draw the total unread mail count over the icon
     int size = KIconLoader::SizeEnormous;   // 128
