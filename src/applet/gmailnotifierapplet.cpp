@@ -59,6 +59,9 @@ void GmailNotifierApplet::init()
 {
     kDebug();
 
+    // Store the current form factor
+    m_formFactor = Plasma::Applet::formFactor();
+
     // Connect to the dataengine
     m_engine = Plasma::Applet::dataEngine("gmailnotifier");
     if (!m_engine->isValid()) {
@@ -97,6 +100,37 @@ void GmailNotifierApplet::dataUpdated(const QString &source, const Plasma::DataE
 /*
 ** protected:
 */
+void GmailNotifierApplet::constraintsEvent(Plasma::Constraints constraints)
+{
+    if (constraints & Plasma::FormFactorConstraint) {
+        // Ignore if previous form factor was the same
+        if (Plasma::Applet::formFactor() == m_formFactor) {
+            return;
+        }
+
+        // Form factor just changed from !Vertical or !Horizontal to
+        // Vertical or Horizontal
+        if ((m_formFactor != Plasma::Horizontal &&
+             m_formFactor != Plasma::Vertical) &&
+            (Plasma::Applet::formFactor() == Plasma::Horizontal ||
+             Plasma::Applet::formFactor() == Plasma::Vertical)) {
+
+            // Prevent the applet from displaying the "Configure..." button
+            // This forces the displaying of the wrench icon
+            if (!m_appletConfigured) {
+                setConfigurationRequired(false);
+                setConfigurationRequired(true);
+            } else {        
+                // Paint the icon    
+                paintIcon();
+            }
+        }
+
+        // Store the new form factor
+        m_formFactor = Plasma::Applet::formFactor();
+    }
+} // constraintsEvent()
+
 void GmailNotifierApplet::createConfigurationInterface(KConfigDialog *parent)
 {
     kDebug();
