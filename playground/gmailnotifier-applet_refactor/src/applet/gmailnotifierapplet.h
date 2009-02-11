@@ -71,6 +71,8 @@ private:
     KIcon                      m_icon;
     // Per source unread mail count
     QMap<QString, uint>        m_unreadMailCount;
+    // Is applet configured ?
+    bool                       m_appletConfigured;
 };
 
 

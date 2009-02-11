@@ -39,6 +39,7 @@ GmailNotifierApplet::GmailNotifierApplet(QObject *parent, const QVariantList &ar
     , m_engine(0)
     , m_dialog(new GmailNotifierDialog(this))
     , m_configDialog(0)
+    , m_appletConfigured(false)
 {
     kDebug();
 
@@ -67,6 +68,9 @@ void GmailNotifierApplet::init()
 
     // Init the applet
     initApplet();
+
+    // Paint Icon
+    paintIcon();
 } // init()
 
 QWidget* GmailNotifierApplet::widget()
@@ -120,6 +124,9 @@ void GmailNotifierApplet::configAccepted()
 
     // Reinit applet
     initApplet();
+
+    // Paint icon
+    paintIcon();
 } // configAccepted()
 
 /*
@@ -169,8 +176,8 @@ void GmailNotifierApplet::initApplet()
     }
 
     // If the account list is empty, set the applet in unconfigured state
-    bool configured = (accountList.size() == 0);
-    Plasma::Applet::setConfigurationRequired(configured);
+    m_appletConfigured = (accountList.size() != 0);
+    Plasma::Applet::setConfigurationRequired(!m_appletConfigured);
 
     m_dialog->setAccounts(accountList, m_unreadMailCount);
     m_dialog->setDisplayLogo(config().readEntry("DisplayLogo", true));
@@ -199,8 +206,6 @@ void GmailNotifierApplet::initApplet()
             m_unreadMailCount.remove(source);
         }
     }
-
-    paintIcon();
 } // initApplet()
 
 void GmailNotifierApplet::paintIcon()
@@ -208,8 +213,10 @@ void GmailNotifierApplet::paintIcon()
     kDebug();
 
     // We don't need to update the icon if we don't live in a panel
+    // or we're not configured yet
     if (Plasma::Applet::formFactor() == Plasma::Planar ||
-        Plasma::Applet::formFactor() == Plasma::MediaCenter) {
+        Plasma::Applet::formFactor() == Plasma::MediaCenter ||
+        !m_appletConfigured) {
         return;
     }
 
