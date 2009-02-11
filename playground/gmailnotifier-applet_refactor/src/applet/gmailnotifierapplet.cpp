@@ -44,7 +44,6 @@ GmailNotifierApplet::GmailNotifierApplet(QObject *parent, const QVariantList &ar
 
     // Applet defaults
     Plasma::Applet::setAspectRatioMode(Plasma::IgnoreAspectRatio);
-    Plasma::Applet::setConfigurationRequired(true);
     Plasma::Applet::setHasConfigurationInterface(true);
     m_icon = KIcon(Plasma::Applet::icon()); // Applet icon from .desktop file
     Plasma::PopupApplet::setPopupIcon(m_icon);
