@@ -89,6 +89,8 @@ void GmailNotifierApplet::dataUpdated(const QString &source, const Plasma::DataE
 {
     kDebug();
 
+    kDebug() << qPrintable(QString("[%1] Receiving data update for source \"%2\" (cnt: %3)").arg(QTime::currentTime().toString()).arg(source).arg(data.count()));
+
     if (data.count() != 0) {
         m_unreadMailCount[source] = data.value("fullcount").toUInt();
         m_dialog->updateMailCount(source, data);
