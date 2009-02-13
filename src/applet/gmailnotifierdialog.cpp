@@ -62,6 +62,16 @@ void GmailNotifierDialog::setDisplayLogo(const bool &visible)
     m_logoGmail->setVisible(visible);
 } // setDisplayLogo()
 
+void GmailNotifierDialog::setTextColor(const QColor &color)
+{
+    // Text color
+    QPalette palette(m_widget->palette());
+    QBrush brush(color);
+    palette.setBrush(QPalette::Active, QPalette::WindowText, brush);
+    palette.setBrush(QPalette::Inactive, QPalette::WindowText, brush);
+    m_widget->setPalette(palette);
+} // setTextColor()
+
 void GmailNotifierDialog::setAccounts(const QList<QMap<QString, QString> > &accounts,
                                       const QMap<QString, uint> &unreadMailCount)
 {
@@ -132,14 +142,6 @@ void GmailNotifierDialog::updateMailCount(const QString &source, const Plasma::D
 void GmailNotifierDialog::buildDialog()
 {
     kDebug();
-
-    // Use white colored text
-    // TODO: Maybe provide a way for the user to set his own colors
-    QPalette palette(m_widget->palette());
-    QBrush brush(QColor(Qt::white));
-    palette.setBrush(QPalette::Active, QPalette::WindowText, brush);
-    palette.setBrush(QPalette::Inactive, QPalette::WindowText, brush);
-    m_widget->setPalette(palette);
 
     // Main layout
     m_layoutMain = new QVBoxLayout(m_widget);

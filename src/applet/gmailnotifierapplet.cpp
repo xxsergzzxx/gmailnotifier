@@ -217,6 +217,8 @@ void GmailNotifierApplet::initApplet()
     m_dialog->setAccounts(accountList, m_unreadMailCount);
     m_dialog->setDisplayLogo(config().readEntry("DisplayLogo", true));
 
+    m_dialog->setTextColor(config().readEntry("DialogTextColor", "#FFFFFF"));
+
     // Request data
     QStringList validSources;
     QList<QMap<QString, QString> >::ConstIterator it;
@@ -287,7 +289,7 @@ void GmailNotifierApplet::paintIcon()
     }
 
     p.setFont(font);
-    p.setPen(QColor("#0057AE")); // TODO: User configurable color
+    p.setPen(config().readEntry("IconTextColor", "#0057AE"));
     p.drawText(QRectF(0, icon.height()/2, icon.width(), icon.height()/2),
                Qt::AlignCenter, mailCount);
     p.end();

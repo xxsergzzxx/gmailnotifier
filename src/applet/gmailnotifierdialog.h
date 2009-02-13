@@ -52,6 +52,9 @@ public:
     // Show/Hide the Gmail logo
     void setDisplayLogo(const bool &visible);
 
+    // Textcolor
+    void setTextColor(const QColor &color="#FFFFFF");
+
     // Populate the widget with user's accounts
     void setAccounts(const QList<QMap<QString, QString> > &accounts,
                      const QMap<QString, uint> &unreadMailCount);

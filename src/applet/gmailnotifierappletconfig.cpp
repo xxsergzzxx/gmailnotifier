@@ -40,48 +40,8 @@ GmailNotifierAppletConfig::GmailNotifierAppletConfig(KConfigGroup cg, QWidget *p
 
     ui.setupUi(this);
 
-    // Button icons
-    ui.btnAddModify->setIcon(KIcon("list-add"));
-    ui.btnDelete->setIcon(KIcon("list-remove"));
-    ui.btnUp->setIcon(KIcon("arrow-up"));
-    ui.btnDown->setIcon(KIcon("arrow-down"));
-
-    // Display logo
-    ui.cbDisplayLogo->setChecked(m_cg.readEntry("DisplayLogo", true));
-
-    // Polling Interval
-    ui.spinPollingInterval->setValue(m_cg.readEntry("PollingInterval", 5));
-
-    // Background
-    QStringList backgroundHints;
-    //backgroundHints << "Default" << "Standard" << "Translucent" << "None";
-    backgroundHints << "Standard" << "Translucent" << "None";
-    ui.comboBackground->addItems(backgroundHints);
-    
-    int pos = ui.comboBackground->findText(m_cg.readEntry("Background", "Standard"), Qt::MatchExactly);
-    ui.comboBackground->setCurrentIndex(pos);
-
-    // Accounts
-    bool loop = true;
-    int cnt=0;
-    while (loop == true) {
-        QString prefix = QString("Account%1_").arg(cnt);
-        QString login = m_cg.readEntry(prefix+"Login", QString());
-        // No (more?) accounts
-        if (login.isEmpty()) {
-            loop = false;
-            break;
-        }
-        QMap<QString, QString> account;
-        account["Login"] = login;
-        account["Password"] = KStringHandler::obscure(m_cg.readEntry(prefix+"Password", QString()));
-        account["Label"] = m_cg.readEntry(prefix+"Label", QString());
-        account["Display"] = m_cg.readEntry(prefix+"Display", QString());
-
-        addItemToList(account);
-
-        ++cnt;
-    }
+    // Init CGUI
+    initDialog();
 } // ctor()
 
 GmailNotifierAppletConfig::~GmailNotifierAppletConfig()
@@ -95,6 +55,8 @@ KConfigGroup GmailNotifierAppletConfig::config()
     m_cg.writeEntry("Background", ui.comboBackground->currentText());
     m_cg.writeEntry("DisplayLogo", ui.cbDisplayLogo->isChecked());
     m_cg.writeEntry("PollingInterval", ui.spinPollingInterval->value());
+    m_cg.writeEntry("IconTextColor", ui.kcbIconColor->color().name());
+    m_cg.writeEntry("DialogTextColor", ui.kcbDialogColor->color().name());
 
     // Start cnt at "-1" in case the following "for" statement
     // is ignored (no accounts). That way its value cannot be more than 0
@@ -113,7 +75,7 @@ KConfigGroup GmailNotifierAppletConfig::config()
 
     ++cnt;
 
-    // Make sure we delete any remaining previously created entries
+    // Make sure we delete any remaining previously created accounts
     bool loop = true;
     while (loop == true) {
         QString prefix = QString("Account%1_").arg(cnt);
@@ -241,6 +203,55 @@ void GmailNotifierAppletConfig::on_spinPollingInterval_valueChanged(int value)
 /*
 ** private
 */
+void GmailNotifierAppletConfig::initDialog()
+{
+    // Button icons
+    ui.btnAddModify->setIcon(KIcon("list-add"));
+    ui.btnDelete->setIcon(KIcon("list-remove"));
+    ui.btnUp->setIcon(KIcon("arrow-up"));
+    ui.btnDown->setIcon(KIcon("arrow-down"));
+
+    // Display logo
+    ui.cbDisplayLogo->setChecked(m_cg.readEntry("DisplayLogo", true));
+
+    // Polling Interval
+    ui.spinPollingInterval->setValue(m_cg.readEntry("PollingInterval", 5));
+
+    // Background
+    QStringList backgroundHints;
+    backgroundHints << "Standard" << "Translucent" << "None";
+    ui.comboBackground->addItems(backgroundHints);
+    
+    int pos = ui.comboBackground->findText(m_cg.readEntry("Background", "Standard"), Qt::MatchExactly);
+    ui.comboBackground->setCurrentIndex(pos);
+
+    // Colors
+    ui.kcbIconColor->setColor(m_cg.readEntry("IconTextColor", "#0057AE"));
+    ui.kcbDialogColor->setColor(m_cg.readEntry("DialogTextColor", "#FFFFFF"));
+
+    // Accounts
+    bool loop = true;
+    int cnt=0;
+    while (loop == true) {
+        QString prefix = QString("Account%1_").arg(cnt);
+        QString login = m_cg.readEntry(prefix+"Login", QString());
+        // No (more?) accounts
+        if (login.isEmpty()) {
+            loop = false;
+            break;
+        }
+        QMap<QString, QString> account;
+        account["Login"] = login;
+        account["Password"] = KStringHandler::obscure(m_cg.readEntry(prefix+"Password", QString()));
+        account["Label"] = m_cg.readEntry(prefix+"Label", QString());
+        account["Display"] = m_cg.readEntry(prefix+"Display", QString());
+
+        addItemToList(account);
+
+        ++cnt;
+    }
+} // initDialog()
+
 void GmailNotifierAppletConfig::setAddModifyButtonEnabled()
 {
     kDebug();

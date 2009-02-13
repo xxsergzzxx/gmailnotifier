@@ -52,6 +52,7 @@ private Q_SLOTS:
     void on_spinPollingInterval_valueChanged(int value);
 
 private:
+    void initDialog();
     void setAddModifyButtonEnabled();
     void setUpDownButtonsEnabled();
     void adaptAddModifyButtonLabel();
