@@ -72,6 +72,8 @@ private:
     KIcon                       m_icon;
     // Per source unread mail count
     QMap<QString, uint>         m_unreadMailCount;
+    // Per source list of email entries
+    QMap<QString, QVariantList> m_entries;
     // Is applet configured ?
     bool                        m_appletConfigured;
     // Current form factor
