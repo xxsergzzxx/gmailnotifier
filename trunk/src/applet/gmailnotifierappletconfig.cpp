@@ -21,8 +21,8 @@
 
 
 // Own
+#include "defaults.h"
 #include "gmailnotifierappletconfig.h"
-
 // KDE
 #include <KDE/KDebug>
 #include <KDE/KStringHandler>
@@ -212,22 +212,22 @@ void GmailNotifierAppletConfig::initDialog()
     ui.btnDown->setIcon(KIcon("arrow-down"));
 
     // Display logo
-    ui.cbDisplayLogo->setChecked(m_cg.readEntry("DisplayLogo", true));
+    ui.cbDisplayLogo->setChecked(m_cg.readEntry("DisplayLogo", Defaults::displayLogo));
 
     // Polling Interval
-    ui.spinPollingInterval->setValue(m_cg.readEntry("PollingInterval", 5));
+    ui.spinPollingInterval->setValue(m_cg.readEntry("PollingInterval", Defaults::pollingInterval));
 
     // Background
     QStringList backgroundHints;
     backgroundHints << "Standard" << "Translucent" << "None";
     ui.comboBackground->addItems(backgroundHints);
     
-    int pos = ui.comboBackground->findText(m_cg.readEntry("Background", "Standard"), Qt::MatchExactly);
+    int pos = ui.comboBackground->findText(m_cg.readEntry("Background", Defaults::background), Qt::MatchExactly);
     ui.comboBackground->setCurrentIndex(pos);
 
     // Colors
-    ui.kcbIconColor->setColor(m_cg.readEntry("IconTextColor", "#0057AE"));
-    ui.kcbDialogColor->setColor(m_cg.readEntry("DialogTextColor", "#FFFFFF"));
+    ui.kcbIconColor->setColor(m_cg.readEntry("IconTextColor", Defaults::iconTextColor));
+    ui.kcbDialogColor->setColor(m_cg.readEntry("DialogTextColor", Defaults::dialogTextColor));
 
     // Accounts
     bool loop = true;

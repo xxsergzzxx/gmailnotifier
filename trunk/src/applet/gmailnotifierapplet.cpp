@@ -21,6 +21,7 @@
 
 
 // Own
+#include "defaults.h"
 #include "gmailnotifierapplet.h"
 // Plasma
 #include <Plasma/Service>
@@ -174,7 +175,7 @@ void GmailNotifierApplet::initApplet()
     // Set applet background (only if we are not in a panel)
     if (Plasma::Applet::formFactor() == Plasma::Planar ||
         Plasma::Applet::formFactor() == Plasma::MediaCenter) {
-        QString background(config().readEntry("Background", "Standard"));
+        QString background(config().readEntry("Background", Defaults::background));
         Plasma::Applet::BackgroundHints hint;
         if (background == "Standard") {
             hint = StandardBackground;
@@ -215,9 +216,9 @@ void GmailNotifierApplet::initApplet()
     Plasma::Applet::setConfigurationRequired(!m_appletConfigured);
 
     m_dialog->setAccounts(accountList, m_unreadMailCount);
-    m_dialog->setDisplayLogo(config().readEntry("DisplayLogo", true));
+    m_dialog->setDisplayLogo(config().readEntry("DisplayLogo", Defaults::displayLogo));
 
-    m_dialog->setTextColor(config().readEntry("DialogTextColor", "#FFFFFF"));
+    m_dialog->setTextColor(config().readEntry("DialogTextColor", Defaults::dialogTextColor));
 
     // Request data
     QStringList validSources;
@@ -226,7 +227,7 @@ void GmailNotifierApplet::initApplet()
         QString request = QString("%1:%2").arg(it->value("Login")).arg(it->value("Label"));
         m_engine->connectSource(request,
                                 this,
-                                (1000*60*config().readEntry("PollingInterval", 5)),
+                                (1000*60*config().readEntry("PollingInterval", Defaults::pollingInterval)),
                                 Plasma::NoAlignment);
         Plasma::Service *service = m_engine->serviceForSource(request);
         KConfigGroup cg = service->operationDescription("auth");
@@ -289,7 +290,7 @@ void GmailNotifierApplet::paintIcon()
     }
 
     p.setFont(font);
-    p.setPen(config().readEntry("IconTextColor", "#0057AE"));
+    p.setPen(config().readEntry("IconTextColor", Defaults::iconTextColor));
     p.drawText(QRectF(0, icon.height()/2, icon.width(), icon.height()/2),
                Qt::AlignCenter, mailCount);
     p.end();
