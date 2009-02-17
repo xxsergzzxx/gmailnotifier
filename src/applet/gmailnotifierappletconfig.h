@@ -25,7 +25,6 @@
 
 // Own
 #include "ui_gmailnotifierappletconfig.h"
-
 // Qt
 #include <QtGui/QWidget>
 
