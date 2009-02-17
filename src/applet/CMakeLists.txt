@@ -17,10 +17,12 @@ kde4_add_plugin(plasma_applet_gmailnotifier
 
 target_link_libraries(plasma_applet_gmailnotifier
                       ${KDE4_KIO_LIBS}
-                      ${KDE4_PLASMA_LIBS})
+                      ${KDE4_PLASMA_LIBS}
+                      ${KDE4_KNOTIFYCONFIG_LIBS})
 
-install(TARGETS plasma_applet_gmailnotifier         DESTINATION ${PLUGIN_INSTALL_DIR}  )
-install(FILES   plasma-applet-gmailnotifier.desktop DESTINATION ${SERVICES_INSTALL_DIR})
+install(TARGETS plasma_applet_gmailnotifier          DESTINATION ${PLUGIN_INSTALL_DIR}  )
+install(FILES   plasma-applet-gmailnotifier.desktop  DESTINATION ${SERVICES_INSTALL_DIR})
+install(FILES   plasma-applet-gmailnotifier.notifyrc DESTINATION ${DATA_INSTALL_DIR}/plasma-applet-gmailnotifier)
 
 # TODO: This should be done using the kde4_install_icons(${ICON_INSTALL_DIR}) command.
 #       However, this command does not seem to run when added to the CMakeLists.txt file in the "icons" directory,
