@@ -33,8 +33,8 @@ GmailNotifierEngine::GmailNotifierEngine(QObject *parent, const QVariantList &ar
 {
     kDebug();
 
-    // 1 min ought to be enough for anybody :)
-    Plasma::DataEngine::setMinimumPollingInterval(1000 * 60 * 1);
+    // Prevent from polling the dataengine too often.
+    Plasma::DataEngine::setMinimumPollingInterval(1000 * 50); // 50 secs
 } // ctor()
 
 
