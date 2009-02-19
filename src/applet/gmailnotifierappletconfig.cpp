@@ -25,6 +25,7 @@
 #include "gmailnotifierappletconfig.h"
 // KDE
 #include <KDE/KDebug>
+#include <KDE/KGlobal>
 #include <KDE/KStringHandler>
 
 
@@ -205,6 +206,14 @@ void GmailNotifierAppletConfig::on_spinPollingInterval_valueChanged(int value)
 */
 void GmailNotifierAppletConfig::initDialog()
 {
+    // use of @gmail.com is forbidden in the UK and is replaced by @googlemail.com
+    // http://mail.google.com/mail/help/intl/en-GB/googlemail.html
+    if (KGlobal::locale()->country() == "gb") {
+        ui.lblAtDomain->setText("@googlemail.com");
+    } else {
+        ui.lblAtDomain->setText("@gmail.com");
+    }
+
     // Button icons
     ui.btnAddModify->setIcon(KIcon("list-add"));
     ui.btnDelete->setIcon(KIcon("list-remove"));
