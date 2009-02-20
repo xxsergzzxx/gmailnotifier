@@ -6,7 +6,7 @@ Name[fr]=Moteur de données de Gmail Notifier
 Comment=Data engine for fetching new mails on Gmail
 Comment[fr]=Moteur de données pour interroger les nouveaux messages Gmail
 Type=Service
-Icon=unknown
+Icon=gmailnotifier
  
 X-KDE-ServiceTypes=Plasma/DataEngine
 X-KDE-Library=plasma_engine_gmailnotifier
