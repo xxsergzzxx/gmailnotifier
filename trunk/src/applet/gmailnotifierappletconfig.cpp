@@ -24,6 +24,7 @@
 #include "defaults.h"
 #include "gmailnotifierappletconfig.h"
 // KDE
+#include <KDE/KColorScheme>
 #include <KDE/KDebug>
 #include <KDE/KGlobal>
 #include <KDE/KStringHandler>
@@ -193,12 +194,16 @@ void GmailNotifierAppletConfig::on_spinPollingInterval_valueChanged(int value)
 {
     kDebug();
 
+    KColorScheme kcs(QPalette::Active, KColorScheme::View);
+    QPalette pal(ui.spinPollingInterval->palette());
+
     if (value < 5) {
-        ui.spinPollingInterval->setStyleSheet("KIntSpinBox {color: red}");
+        pal.setColor(QPalette::Text, kcs.foreground(KColorScheme::NegativeText).color());
     } else {
-        ui.spinPollingInterval->setStyleSheet("KIntSpinBox {color: black}");
+        pal.setColor(QPalette::Text, kcs.foreground(KColorScheme::NormalText).color());
     }
 
+    ui.spinPollingInterval->setPalette(pal);
 } // on_spinPollingInterval_valueChanged() 
 
 /*
