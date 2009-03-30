@@ -252,6 +252,7 @@ void GmailNotifierApplet::initApplet()
         account["Password"] = config().readEntry(prefix+"Password", QString());
         account["Label"] = config().readEntry(prefix+"Label", QString());
         account["Display"] = config().readEntry(prefix+"Display", QString());
+        account["BypassNotifications"] = config().readEntry(prefix+"BypassNotifications", false);
         accountList.append(account);
 
         ++cnt;
@@ -291,7 +292,9 @@ void GmailNotifierApplet::initApplet()
             m_entries.remove(source);
         } else {
             // Make sure that m_unreadMailCount is initialized for each source
-            if ( !m_unreadMailCount.contains(source) ) { m_unreadMailCount[source] = 0; }
+            if ( !m_unreadMailCount.contains(source) ) {
+                m_unreadMailCount[source] = 0;
+            }
         }
     }
 } // initApplet()

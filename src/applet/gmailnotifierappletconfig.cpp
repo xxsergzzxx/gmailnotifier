@@ -72,6 +72,7 @@ KConfigGroup GmailNotifierAppletConfig::config()
         m_cg.writeEntry(prefix+"Password", KStringHandler::obscure(account["Password"].toString()));
         m_cg.writeEntry(prefix+"Label", account["Label"].toString());
         m_cg.writeEntry(prefix+"Display", account["Display"].toString());
+        m_cg.writeEntry(prefix+"BypassNotifications", account["BypassNotifications"].toBool());
         cnt = i;
     }
 
@@ -91,6 +92,7 @@ KConfigGroup GmailNotifierAppletConfig::config()
         m_cg.deleteEntry(prefix+"Password");
         m_cg.deleteEntry(prefix+"Label");
         m_cg.deleteEntry(prefix+"Display");
+        m_cg.deleteEntry(prefix+"BypassNotifications");
 
         ++cnt;
     }
@@ -128,11 +130,12 @@ void GmailNotifierAppletConfig::on_lePassword_textChanged(const QString &text)
 void GmailNotifierAppletConfig::on_btnAddModify_clicked()
 {
     kDebug();
-    QMap<QString, QString> data;
-    data["Login"]    = ui.leLogin->text();
+    QVariantMap data;
+    data["Login"] = ui.leLogin->text();
     data["Password"] = ui.lePassword->text();
-    data["Label"]    = ui.leLabel->text();
-    data["Display"]  = ui.leDisplay->text();
+    data["Label"] = ui.leLabel->text();
+    data["Display"] = ui.leDisplay->text();
+    data["BypassNotifications"] = ui.cbBypassNotifications->isChecked();
 
     int pos = accountPosition(ui.leLogin->text(), ui.leLabel->text());
     if (pos == -1) {
@@ -143,7 +146,7 @@ void GmailNotifierAppletConfig::on_btnAddModify_clicked()
         // Modify
         QListWidgetItem *item = ui.listAccounts->item(pos);
         item->setText(listItemText(data));
-        item->setData(Qt::UserRole, QSM2QVM(data));
+        item->setData(Qt::UserRole, data);
     }
 
     adaptAddModifyButtonLabel();
@@ -184,6 +187,7 @@ void GmailNotifierAppletConfig::on_listAccounts_itemPressed(QListWidgetItem *ite
     ui.lePassword->setText(data["Password"].toString());
     ui.leLabel->setText(data["Label"].toString());
     ui.leDisplay->setText(data["Display"].toString());
+    ui.cbBypassNotifications->setChecked(data["BypassNotifications"].toBool());
 
     ui.btnDelete->setEnabled(true);
     setUpDownButtonsEnabled();
@@ -254,11 +258,12 @@ void GmailNotifierAppletConfig::initDialog()
             loop = false;
             break;
         }
-        QMap<QString, QString> account;
+        QVariantMap account;
         account["Login"] = login;
         account["Password"] = KStringHandler::obscure(m_cg.readEntry(prefix+"Password", QString()));
         account["Label"] = m_cg.readEntry(prefix+"Label", QString());
         account["Display"] = m_cg.readEntry(prefix+"Display", QString());
+        account["BypassNotifications"] = m_cg.readEntry(prefix+"BypassNotifications", false);
 
         addItemToList(account);
 
@@ -313,26 +318,26 @@ void GmailNotifierAppletConfig::adaptAddModifyButtonLabel()
     }
 } // adaptAddModifyButtonLabel()
 
-QString GmailNotifierAppletConfig::listItemText(const QMap<QString, QString> &data)
+QString GmailNotifierAppletConfig::listItemText(const QVariantMap &data)
 {
     kDebug();
     QString itemText;
-    QString label = (data["Label"].isEmpty()) ? "inbox" : data["Label"];
-    if (data["Display"].isEmpty()) {
-        itemText = QString("%1/%2").arg(data["Login"]).arg(label);
+    QString label = (data["Label"].toString().isEmpty()) ? "inbox" : data["Label"].toString();
+    if (data["Display"].toString().isEmpty()) {
+        itemText = QString("%1/%2").arg(data["Login"].toString()).arg(label);
     } else {
-        itemText = QString("%1").arg(data["Display"]);
+        itemText = QString("%1").arg(data["Display"].toString());
     }
 
     return itemText;
 } // listItemText()
 
-void GmailNotifierAppletConfig::addItemToList(const QMap<QString, QString> &data)
+void GmailNotifierAppletConfig::addItemToList(const QVariantMap &data)
 {
     kDebug();
     QListWidgetItem *item = new QListWidgetItem();
     item->setText(listItemText(data));
-    item->setData(Qt::UserRole, QSM2QVM(data));
+    item->setData(Qt::UserRole, data);
     ui.listAccounts->addItem(item);
 //    ui.listAccounts->scrollToItem(item);
 } // addItemToList()
@@ -364,6 +369,7 @@ void GmailNotifierAppletConfig::moveItem(const int &shift)
     ui.listAccounts->setCurrentRow(pos+shift);
 } // moveItem()
 
+/*
 QVariantMap GmailNotifierAppletConfig::QSM2QVM(const QMap<QString, QString> &data)
 {
     kDebug();
@@ -374,7 +380,9 @@ QVariantMap GmailNotifierAppletConfig::QSM2QVM(const QMap<QString, QString> &dat
 
     return map;
 } // QSM2QVM()
+*/
 
+/*
 QMap<QString, QString> GmailNotifierAppletConfig::QVM2QSM(const QVariantMap &data)
 {
     kDebug();
@@ -385,6 +393,7 @@ QMap<QString, QString> GmailNotifierAppletConfig::QVM2QSM(const QVariantMap &dat
 
     return map;
 } // QVM2QSM();
+*/
 
 
 #include "gmailnotifierappletconfig.moc"
