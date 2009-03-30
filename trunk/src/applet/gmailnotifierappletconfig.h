@@ -55,12 +55,12 @@ private:
     void setAddModifyButtonEnabled();
     void setUpDownButtonsEnabled();
     void adaptAddModifyButtonLabel();
-    QString listItemText(const QMap<QString, QString> &data);
-    void addItemToList(const QMap<QString, QString> &data);
+    QString listItemText(const QVariantMap &data);
+    void addItemToList(const QVariantMap &data);
     int accountPosition(const QString &login, const QString &label);
     void moveItem(const int &shift);
-    QVariantMap QSM2QVM(const QMap<QString, QString> &data);
-    QMap<QString, QString> QVM2QSM(const QVariantMap &data);
+//    QVariantMap QSM2QVM(const QMap<QString, QString> &data);
+//    QMap<QString, QString> QVM2QSM(const QVariantMap &data);
 
     Ui::GmailNotifierAppletConfig ui;
 
