@@ -24,12 +24,32 @@
 #define __ACCOUNTS_H__
 
 
-// Default values
+// QtCore
+#include <QtCore/QString>
+#include <QtCore/QVariantMap>
+
+
 class Accounts
 {
 public:
     Accounts();
     ~Accounts();
+
+    // Append a new account to the account list
+    bool addAccount(QVariantMap &accountInfos);
+    // Clear all accounts
+    void clearAccounts();
+
+private:
+    struct account_t {
+        QString login;
+        QString password;
+        QString label;
+        QString display;
+        bool    bypassNotifications;
+    };
+
+    QMap<QString, account_t>    m_accounts;
 };
 
 

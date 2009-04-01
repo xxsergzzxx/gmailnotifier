@@ -22,11 +22,87 @@
 
 // Own
 #include "accounts.h"
+// KDE
+#include <KDE/KDebug>
 
+
+/*
+** public:
+*/
 Accounts::Accounts()
 {
+    kDebug();
 } // ctor()
 
 Accounts::~Accounts()
 {
+    kDebug();
 } // dtor()
+
+bool Accounts::addAccount(QVariantMap &accountInfos)
+{
+    kDebug();
+
+    account_t account;
+    QString accountId;
+    bool retVal = true;
+
+    if (accountInfos.contains("Login")) {
+        if (!accountInfos.value("Login").toString().isEmpty()) {
+            account.login = accountInfos.value("Login").toString();
+        } else {
+            retVal = false;
+        }
+    } else {
+        retVal = false;
+    }
+
+    if (accountInfos.contains("Password")) {
+        if (!accountInfos.value("Password").toString().isEmpty()) {
+            account.password = accountInfos.value("Password").toString();
+        } else {
+            retVal = false;
+        }
+    } else {
+        retVal = false;
+    }
+
+    if (accountInfos.contains("Label")) {
+        account.password = accountInfos.value("Label").toString();
+    }
+
+    // Account ID
+    accountId = QString("%1:%2").arg(account.login).arg(account.label);
+
+    // We cannot add an account without login and/or password
+    if (!retVal) {
+        return false;
+    } else {
+        // Was the account previousy added ?
+        if (m_accounts.contains(accountId)) {
+            kWarning() << accountId << "was already added!";
+            return false;
+        }
+    }
+
+    if (accountInfos.contains("Display")) {
+        account.password = accountInfos.value("Display").toString();
+    }
+
+    if (accountInfos.contains("BypassNotifications")) {
+        account.bypassNotifications = accountInfos.value("BypassNotifications").toBool();
+    } else {
+        account.bypassNotifications = false;
+    }
+
+    m_accounts[accountId] = account;
+
+    return true;
+} // addAccount()
+
+void Accounts::clearAccounts()
+{
+    kDebug();
+
+    m_accounts.clear();
+} // clearAccounts()
