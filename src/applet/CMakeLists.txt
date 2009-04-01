@@ -3,6 +3,7 @@
 project(plasma-applet-GmailNotifier)
 
 set(gmailnotifier_applet_SRCS
+    accounts.cpp
     defaults.cpp
     gmailnotifierapplet.cpp
     gmailnotifierappletconfig.cpp
