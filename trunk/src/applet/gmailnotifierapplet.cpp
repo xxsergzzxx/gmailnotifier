@@ -107,11 +107,10 @@ void GmailNotifierApplet::dataUpdated(const QString &source, const Plasma::DataE
             QString message = "";
             
             // Check number of sources
-            if (m_unreadMailCount.size() == 1) {
+            if (m_accounts.size() == 1) {
                 message = "<table>";
             } else {
-                // FIXME: This should likely use the "Display" value for the source, if it exists.
-                message = i18n("<table><tr><td><b>Source</b>: </td><td>%1</td></tr>").arg(source);
+                message = i18n("<table><tr><td><b>Source</b>: </td><td>%1</td></tr>").arg(m_accounts.display(source));
             }
             
             // Check number of new entries
@@ -132,7 +131,7 @@ void GmailNotifierApplet::dataUpdated(const QString &source, const Plasma::DataE
         }
         
         // Update dialog and icon
-        m_unreadMailCount[source] = data.value("fullcount").toUInt();
+        m_accounts.updateAccountData(source, data);
         m_entries[source] = data.value("entries").toList();
         m_dialog->updateMailCount(source, data);
         paintIcon();
@@ -235,8 +234,11 @@ void GmailNotifierApplet::initApplet()
         Plasma::Applet::setBackgroundHints(hint);
     }
 
+    // TODO: Don't blindly remove all accounts (we don't want to screw up notifications
+    //       by unnecessary removing previously used accounts)
+    m_accounts.clear();
+
     // Read account informations
-    QList<QMap<QString, QString> > accountList;
     bool loop = true;
     int cnt = 0;
     while (loop == true) {
@@ -247,54 +249,45 @@ void GmailNotifierApplet::initApplet()
             loop = false;
             break;
         }
-        QMap<QString, QString> account;
+        QVariantMap account;
         account["Login"] = login;
         account["Password"] = config().readEntry(prefix+"Password", QString());
         account["Label"] = config().readEntry(prefix+"Label", QString());
         account["Display"] = config().readEntry(prefix+"Display", QString());
         account["BypassNotifications"] = config().readEntry(prefix+"BypassNotifications", false);
-        accountList.append(account);
+
+        // Add this account
+        m_accounts.addAccount(account);
 
         ++cnt;
     }
 
     // If the account list is empty, set the applet in unconfigured state
-    m_appletConfigured = (accountList.size() != 0);
+    m_appletConfigured = (m_accounts.size() != 0);
     Plasma::Applet::setConfigurationRequired(!m_appletConfigured);
 
-    m_dialog->setAccounts(accountList, m_unreadMailCount);
+    m_dialog->setAccounts(m_accounts);
     m_dialog->setDisplayLogo(config().readEntry("DisplayLogo", Defaults::displayLogo));
 
     m_dialog->setTextColor(config().readEntry("DialogTextColor", Defaults::dialogTextColor));
 
     // Request data
-    QStringList validSources;
-    QList<QMap<QString, QString> >::ConstIterator it;
-    for (it = accountList.constBegin(); it != accountList.constEnd(); ++it) {
-        QString request = QString("%1:%2").arg(it->value("Login")).arg(it->value("Label"));
-        m_engine->connectSource(request,
+    foreach(QString accountId, m_accounts.accountIds()) {
+        m_engine->connectSource(accountId,
                                 this,
                                 (1000*60*config().readEntry("PollingInterval", Defaults::pollingInterval)),
                                 Plasma::NoAlignment);
-        Plasma::Service *service = m_engine->serviceForSource(request);
+        Plasma::Service *service = m_engine->serviceForSource(accountId);
         KConfigGroup cg = service->operationDescription("auth");
-        cg.writeEntry("password", KStringHandler::obscure(it->value("Password")));
+        cg.writeEntry("password", KStringHandler::obscure(m_accounts.password(accountId)));
         service->startOperationCall(cg);
-
-        validSources << request;
     }
 
     // Remove sources that aren't used anymore
     foreach (QString source, m_engine->sources()) {
-        if (!validSources.contains(source)) {
+        if (!m_accounts.accountIds().contains(source)) {
             m_engine->disconnectSource(source, this);
-            m_unreadMailCount.remove(source);
             m_entries.remove(source);
-        } else {
-            // Make sure that m_unreadMailCount is initialized for each source
-            if ( !m_unreadMailCount.contains(source) ) {
-                m_unreadMailCount[source] = 0;
-            }
         }
     }
 } // initApplet()
@@ -311,15 +304,8 @@ void GmailNotifierApplet::paintIcon()
         return;
     }
 
-    // Compute total amount/number of unread e-mails
-    uint totalUnreadMailCount=0;
-    QMap<QString, uint>::ConstIterator it;
-    for (it = m_unreadMailCount.constBegin(); it != m_unreadMailCount.constEnd(); ++it) {
-        totalUnreadMailCount += it.value();
-    }
-
     // Text to display
-    QString mailCount(QString("%1").arg(totalUnreadMailCount));
+    QString mailCount(QString("%1").arg(m_accounts.totalUnreadMailCount()));
     // Text font size
     int fontSize = 40;
 

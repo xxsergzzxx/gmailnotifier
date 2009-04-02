@@ -29,6 +29,8 @@
 #define __GMAILNOTIFIERDIALOG_H__
 
 
+// Own
+#include "accounts.h"
 // Plasma
 #include <Plasma/DataEngine>
 // QtGui
@@ -56,8 +58,7 @@ public:
     void setTextColor(const QColor &color="#FFFFFF");
 
     // Populate the widget with user's accounts
-    void setAccounts(const QList<QMap<QString, QString> > &accounts,
-                     const QMap<QString, uint> &unreadMailCount);
+    void setAccounts(const Accounts &accounts);
 
     // Update the mail count
     void updateMailCount(const QString &source, const Plasma::DataEngine::Data &data);

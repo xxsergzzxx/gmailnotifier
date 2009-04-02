@@ -25,6 +25,7 @@
 
 
 // Own
+#include "accounts.h"
 #include "gmailnotifierappletconfig.h"
 #include "gmailnotifierdialog.h"
 // Plasma
@@ -70,10 +71,10 @@ private:
     GmailNotifierAppletConfig  *m_configDialog;
     // Icon for when in panel mode
     KIcon                       m_icon;
-    // Per source unread mail count
-    QMap<QString, uint>         m_unreadMailCount;
     // Per source list of email entries
     QMap<QString, QVariantList> m_entries;
+    // Account data
+    Accounts                    m_accounts;
     // Is applet configured ?
     bool                        m_appletConfigured;
     // Current form factor
