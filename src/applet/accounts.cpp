@@ -44,35 +44,26 @@ bool Accounts::addAccount(QVariantMap &accountInfos)
     kDebug();
 
     account_t account;
-    QString accountId;
     bool retVal = true;
 
-    if (accountInfos.contains("Login")) {
-        if (!accountInfos.value("Login").toString().isEmpty()) {
-            account.login = accountInfos.value("Login").toString();
-        } else {
-            retVal = false;
-        }
+    if (accountInfos.contains("Login") && !accountInfos.value("Login").toString().isEmpty()) {
+        account.login = accountInfos.value("Login").toString();
     } else {
         retVal = false;
     }
 
-    if (accountInfos.contains("Password")) {
-        if (!accountInfos.value("Password").toString().isEmpty()) {
-            account.password = accountInfos.value("Password").toString();
-        } else {
-            retVal = false;
-        }
+    if (accountInfos.contains("Password") && !accountInfos.value("Password").toString().isEmpty()) {
+        account.password = accountInfos.value("Password").toString();
     } else {
         retVal = false;
     }
 
     if (accountInfos.contains("Label")) {
-        account.password = accountInfos.value("Label").toString();
+        account.label = accountInfos.value("Label").toString();
     }
 
     // Account ID
-    accountId = QString("%1:%2").arg(account.login).arg(account.label);
+    QString accountId = QString("%1:%2").arg(account.login).arg(account.label);
 
     // We cannot add an account without login and/or password
     if (!retVal) {
@@ -86,13 +77,11 @@ bool Accounts::addAccount(QVariantMap &accountInfos)
     }
 
     if (accountInfos.contains("Display")) {
-        account.password = accountInfos.value("Display").toString();
+        account.display = accountInfos.value("Display").toString();
     }
 
     if (accountInfos.contains("BypassNotifications")) {
         account.bypassNotifications = accountInfos.value("BypassNotifications").toBool();
-    } else {
-        account.bypassNotifications = false;
     }
 
     m_accounts[accountId] = account;
@@ -100,9 +89,89 @@ bool Accounts::addAccount(QVariantMap &accountInfos)
     return true;
 } // addAccount()
 
-void Accounts::clearAccounts()
+void Accounts::updateAccountData(const QString &accountId, const Plasma::DataEngine::Data &data)
+{
+    // Update unread mail count
+    m_accounts[accountId].unreadMailCount = data.value("fullcount").toInt();
+} // updateAccountData()
+
+int Accounts::size() const
 {
     kDebug();
+    return m_accounts.size();
+} // size()
 
+QStringList Accounts::accountIds() const
+{
+    kDebug();
+    return m_accounts.keys();
+} // accountIds()
+
+uint Accounts::totalUnreadMailCount() const
+{
+    uint count = 0;
+
+    foreach(QString accountId, accountIds()) {
+        // Account unreadMailCount is an int and can be -1
+        if (m_accounts.value(accountId).unreadMailCount > 0) {
+            count += m_accounts.value(accountId).unreadMailCount;
+        }
+    }
+
+    return count;
+} // totalUnreadMailCount()
+
+void Accounts::clear()
+{
+    kDebug();
     m_accounts.clear();
-} // clearAccounts()
+} // clear()
+
+
+/*
+** Account data
+*/
+QString Accounts::login(const QString &accountId) const
+{
+    kDebug();
+    return m_accounts.value(accountId).login;
+} // login()
+
+QString Accounts::password(const QString &accountId) const
+{
+    kDebug();
+    return m_accounts.value(accountId).password;
+} // password()
+
+QString Accounts::label(const QString &accountId) const
+{
+    kDebug();
+    return m_accounts.value(accountId).label;
+} // label()
+
+QString Accounts::display(const QString &accountId) const
+{
+    kDebug();
+    QString display;
+
+    if (m_accounts.value(accountId).display.isEmpty()) {
+        QString label = (m_accounts.value(accountId).label.isEmpty()) ? "inbox" : m_accounts.value(accountId).label;
+        display = QString("%1/%2").arg(m_accounts.value(accountId).login).arg(label);
+    } else {
+        display = m_accounts.value(accountId).display;
+    }
+
+    return display;
+} // display()
+
+bool Accounts::bypassNotifications(const QString &accountId) const
+{
+    kDebug();
+    return m_accounts.value(accountId).bypassNotifications;
+} // bypassNotifications()
+
+int Accounts::unreadMailCount(const QString &accountId) const
+{
+    kDebug();
+    return m_accounts.value(accountId).unreadMailCount;
+} // unreadMailCount()

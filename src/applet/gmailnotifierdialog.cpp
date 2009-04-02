@@ -72,8 +72,7 @@ void GmailNotifierDialog::setTextColor(const QColor &color)
     m_widget->setPalette(palette);
 } // setTextColor()
 
-void GmailNotifierDialog::setAccounts(const QList<QMap<QString, QString> > &accounts,
-                                      const QMap<QString, uint> &unreadMailCount)
+void GmailNotifierDialog::setAccounts(const Accounts &accounts)
 {
     kDebug();
 
@@ -85,31 +84,20 @@ void GmailNotifierDialog::setAccounts(const QList<QMap<QString, QString> > &acco
     }
 
     // Populate...
-    QList<QMap<QString, QString> >::ConstIterator it;
     int row = 0;
-    for (it = accounts.constBegin(); it != accounts.constEnd(); ++it) {
-        QString display;
-        if (!it->value("Display").isEmpty()) {
-            display = it->value("Display");
-        } else {
-            QString label = (it->value("Label").isEmpty()) ? "inbox" : it->value("Label");
-            display = QString("%1/%2").arg(it->value("Login")).arg(label);
-        }
-
-        QString loginNLabel = QString("%1:%2").arg(it->value("Login")).arg(it->value("Label"));
-
-        QLabel *lblAccount = new QLabel(display);
-        lblAccount->setObjectName(QString("lblAccount_%1").arg(loginNLabel));
+    foreach(QString accountId, accounts.accountIds()) {
+        QLabel *lblAccount = new QLabel(accounts.display(accountId));
+        lblAccount->setObjectName(QString("lblAccount_%1").arg(accountId));
         m_layoutAccounts->addWidget(lblAccount, row, 0, Qt::AlignLeft | Qt::AlignVCenter);
 
         QString lblMailCountTxt;
-        if (unreadMailCount.contains(loginNLabel)) {
-            lblMailCountTxt = QString("%1").arg(unreadMailCount[loginNLabel]);
-        } else {
+        if (accounts.unreadMailCount(accountId) < 0) {
             lblMailCountTxt = "----";
+        } else {
+            lblMailCountTxt = QString("%1").arg(accounts.unreadMailCount(accountId));
         }
         QLabel *lblMailCount = new QLabel(lblMailCountTxt);
-        lblMailCount->setObjectName(QString("lblMailCount_%1").arg(loginNLabel));
+        lblMailCount->setObjectName(QString("lblMailCount_%1").arg(accountId));
         m_layoutAccounts->addWidget(lblMailCount, row, 1, Qt::AlignRight | Qt::AlignVCenter);
 
         ++row;

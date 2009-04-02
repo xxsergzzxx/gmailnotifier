@@ -25,8 +25,10 @@
 
 
 // QtCore
-#include <QtCore/QString>
+#include <QtCore/QStringList>
 #include <QtCore/QVariantMap>
+// Plasma
+#include <Plasma/DataEngine>
 
 
 class Accounts
@@ -37,19 +39,46 @@ public:
 
     // Append a new account to the account list
     bool addAccount(QVariantMap &accountInfos);
-    // Clear all accounts
-    void clearAccounts();
+    // Update data for account
+    void updateAccountData(const QString &accountId, const Plasma::DataEngine::Data &data);
+    // Total number of accounts
+    int size() const;
+    // Get all the current account Ids
+    QStringList accountIds() const;
+    // Total unread mail count
+    uint totalUnreadMailCount() const;
+    // Clear all the account data
+    void clear();
+
+    // Account data
+    QString login(const QString &accountId) const;
+    QString password(const QString &accountId) const;
+    QString label(const QString &accountId) const;
+    QString display(const QString &accountId) const;
+    bool    bypassNotifications(const QString &accountId) const;
+    int     unreadMailCount(const QString &accountdId) const;
+
 
 private:
     struct account_t {
-        QString login;
-        QString password;
-        QString label;
-        QString display;
-        bool    bypassNotifications;
+        QString login;               // Account login
+        QString password;            // Account password
+        QString label;               // Label
+        QString display;             // Display
+        bool    bypassNotifications; // Bypass Notifications?
+        int     unreadMailCount;     // Unread mail count
+
+        account_t() {
+            login               = QString();
+            password            = QString();
+            label               = QString();
+            display             = QString();
+            bypassNotifications = false;
+            unreadMailCount     = -1;
+        };
     };
 
-    QMap<QString, account_t>    m_accounts;
+    QMap<QString, account_t> m_accounts;
 };
 
 
