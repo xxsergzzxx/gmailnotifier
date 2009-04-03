@@ -31,8 +31,6 @@
 
 // Own
 #include "accounts.h"
-// Plasma
-#include <Plasma/DataEngine>
 // QtGui
 #include <QtGui/QLabel>
 #include <QtGui/QVBoxLayout>
@@ -61,7 +59,7 @@ public:
     void setAccounts(const Accounts &accounts);
 
     // Update the mail count
-    void updateMailCount(const QString &source, const Plasma::DataEngine::Data &data);
+    void updateMailCount(const QString &accountId, const QString &text);
 
 
 private:

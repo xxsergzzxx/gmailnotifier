@@ -39,7 +39,7 @@ Accounts::~Accounts()
     kDebug();
 } // dtor()
 
-bool Accounts::add(QVariantMap &accountInfos)
+bool Accounts::add(const QVariantMap &accountInfos)
 {
     kDebug();
 
@@ -69,12 +69,6 @@ bool Accounts::add(QVariantMap &accountInfos)
     if (!retVal) {
         kWarning() << QString("Cannot add %1 (invalid data)").arg(accountId);
         return false;
-    } else {
-        // Was the account previousy added ?
-        if (m_accounts.contains(accountId)) {
-            kWarning() << accountId << "was already added!";
-            return false;
-        }
     }
 
     if (accountInfos.contains("Display")) {
@@ -92,9 +86,32 @@ bool Accounts::add(QVariantMap &accountInfos)
 
 void Accounts::updateData(const QString &accountId, const Plasma::DataEngine::Data &data)
 {
+    kDebug();
+    // Remove previous "new entries"
+    m_accounts[accountId].newMailEntries.clear();
+
+    // Don't compare old and new mail entries the first time we run
+    // (in that case unreadMailCount should be == -1)
+    if (m_accounts[accountId].unreadMailCount >= 0) {
+        foreach (QVariant entry, data.value("entries").toList()) {
+            if (!m_accounts.value(accountId).mailEntries.contains(entry)) {
+                m_accounts[accountId].newMailEntries.append(entry);
+            }
+        }
+    }
+
+    // Update mail entries
+    m_accounts[accountId].mailEntries = data.value("entries").toList();
+
     // Update unread mail count
     m_accounts[accountId].unreadMailCount = data.value("fullcount").toInt();
 } // updateData()
+
+void Accounts::remove(const QString &accountId)
+{
+    kDebug();
+    m_accounts.remove(accountId);
+} // remove()
 
 int Accounts::size() const
 {
@@ -176,3 +193,15 @@ int Accounts::unreadMailCount(const QString &accountId) const
     kDebug();
     return m_accounts.value(accountId).unreadMailCount;
 } // unreadMailCount()
+
+QVariantList Accounts::mailEntries(const QString &accountId) const
+{
+    kDebug();
+    return m_accounts.value(accountId).mailEntries;
+} // mailEntries()
+
+QVariantList Accounts::newMailEntries(const QString &accountId) const
+{
+    kDebug();
+    return m_accounts.value(accountId).newMailEntries;
+} // newMailEntries()

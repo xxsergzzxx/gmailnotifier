@@ -94,48 +94,27 @@ void GmailNotifierApplet::dataUpdated(const QString &source, const Plasma::DataE
 
     kDebug() << qPrintable(QString("[%1] Receiving data update for source \"%2\" (cnt: %3)").arg(QTime::currentTime().toString()).arg(source).arg(data.count()));
 
-    if (data.count() != 0) {
-        // Create list of new emails
-        QVariantList newEntries;
-        QVariant entry;
-        foreach (entry, data.value("entries").toList()) {
-            if ( !m_entries[source].contains(entry) ) { newEntries.append(entry); }
-        }
-        
-        // If there are new entries we send a notification
-        if ( !newEntries.isEmpty() ) {    
-            QString message = "";
-            
-            // Check number of sources
-            if (m_accounts.size() == 1) {
-                message = "<table>";
-            } else {
-                message = i18n("<table><tr><td><b>Source</b>: </td><td>%1</td></tr>").arg(m_accounts.display(source));
-            }
-            
-            // Check number of new entries
-            if ( newEntries.size() == 1 ) {
-                message += i18n("<tr><td><b>From</b>: </td><td>%1</td></tr><tr><td><b>Subject</b>: </td><td>%2</td></tr></table>").arg(newEntries.at(0).toMap()["author"].toMap()["name"].toString()).arg(newEntries.at(0).toMap()["title"].toString());
-            } else {
-                message += i18n("<tr><td colspan=2>You have <b>%1</b> new messages.</td></tr></table>").arg(newEntries.size());
-            }
-                        
-            // Fire notification
-            KNotification::event("new-mail-arrived",
-                message,
-                QPixmap(),
-                0,
-                KNotification::CloseOnTimeout,
-                KComponentData("plasma-applet-gmailnotifier", "plasma-applet-gmailnotifier", KComponentData::SkipMainComponentRegistration)
-                );
-        }
-        
-        // Update dialog and icon
-        m_accounts.updateData(source, data);
-        m_entries[source] = data.value("entries").toList();
-        m_dialog->updateMailCount(source, data);
-        paintIcon();
+    if (data.count() == 0) {
+        return;
     }
+
+    // Only update data if there were no errors
+    QString newMailCount;
+    if (data.contains("error")) {
+        newMailCount = "Err.";
+    } else {
+        m_accounts.updateData(source, data);
+        newMailCount = QString("%1").arg(m_accounts.unreadMailCount(source));
+    }
+
+    // Fire notification if needed
+    if (!m_accounts.bypassNotifications(source)) {
+        fireNotification(source);
+    }
+
+    // Update dialog and icon
+    m_dialog->updateMailCount(source, newMailCount);
+    paintIcon();
 } // dataUpdated()
 
 
@@ -234,10 +213,6 @@ void GmailNotifierApplet::initApplet()
         Plasma::Applet::setBackgroundHints(hint);
     }
 
-    // TODO: Don't blindly remove all accounts (we don't want to screw up notifications
-    //       by unnecessary removing previously used accounts)
-    m_accounts.clear();
-
     // Read account informations
     bool loop = true;
     int cnt = 0;
@@ -287,7 +262,7 @@ void GmailNotifierApplet::initApplet()
     foreach (QString source, m_engine->sources()) {
         if (!m_accounts.idList().contains(source)) {
             m_engine->disconnectSource(source, this);
-            m_entries.remove(source);
+            m_accounts.remove(source);
         }
     }
 } // initApplet()
@@ -336,7 +311,41 @@ void GmailNotifierApplet::paintIcon()
 
     // Set the icon
     Plasma::PopupApplet::setPopupIcon(icon);
-} // drawIcon()
+} // paintcon()
+
+void GmailNotifierApplet::fireNotification(const QString &accountId)
+{
+    kDebug();
+
+    // If there are new entries we send a notification
+    if (m_accounts.newMailEntries(accountId).size() > 0) {    
+        QString message;
+        
+        // Check number of sources
+        //if (m_accounts.newMailEntries(accountId).size() == 1) {
+        //    message = "<table>";
+        //} else {
+            message = i18n("<table><tr><td><b>Source</b>: </td><td>%1</td></tr>").arg(m_accounts.display(accountId));
+        //}
+        
+        // Check number of new entries
+        if (m_accounts.newMailEntries(accountId).size() == 1) {
+            message += i18n("<tr><td><b>From</b>: </td><td>%1</td></tr><tr><td><b>Subject</b>: </td><td>%2</td></tr></table>").arg(m_accounts.newMailEntries(accountId).at(0).toMap()["author"].toMap()["name"].toString()).arg(m_accounts.newMailEntries(accountId).at(0).toMap()["title"].toString());
+        } else {
+            message += i18n("<tr><td colspan=2>You have <b>%1</b> new messages.</td></tr></table>").arg(m_accounts.newMailEntries(accountId).size());
+        }
+                    
+        // Fire notification
+        KNotification::event(
+            "new-mail-arrived",
+            message,
+            QPixmap(),
+            0,
+            KNotification::CloseOnTimeout,
+            KComponentData("plasma-applet-gmailnotifier", "plasma-applet-gmailnotifier", KComponentData::SkipMainComponentRegistration)
+        );
+    }
+} // fireNotification()
 
 
 #include "gmailnotifierapplet.moc"
