@@ -131,7 +131,7 @@ void GmailNotifierApplet::dataUpdated(const QString &source, const Plasma::DataE
         }
         
         // Update dialog and icon
-        m_accounts.updateAccountData(source, data);
+        m_accounts.updateData(source, data);
         m_entries[source] = data.value("entries").toList();
         m_dialog->updateMailCount(source, data);
         paintIcon();
@@ -257,7 +257,7 @@ void GmailNotifierApplet::initApplet()
         account["BypassNotifications"] = config().readEntry(prefix+"BypassNotifications", false);
 
         // Add this account
-        m_accounts.addAccount(account);
+        m_accounts.add(account);
 
         ++cnt;
     }
@@ -272,7 +272,7 @@ void GmailNotifierApplet::initApplet()
     m_dialog->setTextColor(config().readEntry("DialogTextColor", Defaults::dialogTextColor));
 
     // Request data
-    foreach(QString accountId, m_accounts.accountIds()) {
+    foreach(QString accountId, m_accounts.idList()) {
         m_engine->connectSource(accountId,
                                 this,
                                 (1000*60*config().readEntry("PollingInterval", Defaults::pollingInterval)),
@@ -285,7 +285,7 @@ void GmailNotifierApplet::initApplet()
 
     // Remove sources that aren't used anymore
     foreach (QString source, m_engine->sources()) {
-        if (!m_accounts.accountIds().contains(source)) {
+        if (!m_accounts.idList().contains(source)) {
             m_engine->disconnectSource(source, this);
             m_entries.remove(source);
         }

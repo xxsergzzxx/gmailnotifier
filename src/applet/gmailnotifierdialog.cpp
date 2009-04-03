@@ -85,7 +85,7 @@ void GmailNotifierDialog::setAccounts(const Accounts &accounts)
 
     // Populate...
     int row = 0;
-    foreach(QString accountId, accounts.accountIds()) {
+    foreach(QString accountId, accounts.idList()) {
         QLabel *lblAccount = new QLabel(accounts.display(accountId));
         lblAccount->setObjectName(QString("lblAccount_%1").arg(accountId));
         m_layoutAccounts->addWidget(lblAccount, row, 0, Qt::AlignLeft | Qt::AlignVCenter);

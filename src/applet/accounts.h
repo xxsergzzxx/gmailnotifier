@@ -38,13 +38,13 @@ public:
     ~Accounts();
 
     // Append a new account to the account list
-    bool addAccount(QVariantMap &accountInfos);
+    bool add(QVariantMap &accountInfos);
     // Update data for account
-    void updateAccountData(const QString &accountId, const Plasma::DataEngine::Data &data);
+    void updateData(const QString &accountId, const Plasma::DataEngine::Data &data);
     // Total number of accounts
     int size() const;
     // Get all the current account Ids
-    QStringList accountIds() const;
+    QStringList idList() const;
     // Total unread mail count
     uint totalUnreadMailCount() const;
     // Clear all the account data
