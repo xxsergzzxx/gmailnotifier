@@ -37,10 +37,13 @@ public:
     Accounts();
     ~Accounts();
 
-    // Append a new account to the account list
-    bool add(QVariantMap &accountInfos);
+    // Append a new account to the account list or update if it was
+    // already added previously
+    bool add(const QVariantMap &accountInfos);
     // Update data for account
     void updateData(const QString &accountId, const Plasma::DataEngine::Data &data);
+    // Remove the listed accounts
+    void remove(const QString &accountId);
     // Total number of accounts
     int size() const;
     // Get all the current account Ids
@@ -51,22 +54,27 @@ public:
     void clear();
 
     // Account data
-    QString login(const QString &accountId) const;
-    QString password(const QString &accountId) const;
-    QString label(const QString &accountId) const;
-    QString display(const QString &accountId) const;
-    bool    bypassNotifications(const QString &accountId) const;
-    int     unreadMailCount(const QString &accountdId) const;
+    QString      login(const QString &accountId) const;
+    QString      password(const QString &accountId) const;
+    QString      label(const QString &accountId) const;
+    QString      display(const QString &accountId) const;
+    bool         bypassNotifications(const QString &accountId) const;
+    int          unreadMailCount(const QString &accountdId) const;
+    QVariantList mailEntries(const QString &accountId) const;
+    QVariantList newMailEntries(const QString &accountId) const;
+
 
 
 private:
     struct account_t {
-        QString login;               // Account login
-        QString password;            // Account password
-        QString label;               // Label
-        QString display;             // Display
-        bool    bypassNotifications; // Bypass Notifications?
-        int     unreadMailCount;     // Unread mail count
+        QString      login;               // Account login
+        QString      password;            // Account password
+        QString      label;               // Label
+        QString      display;             // Display
+        bool         bypassNotifications; // Bypass Notifications?
+        int          unreadMailCount;     // Unread mail count
+        QVariantList mailEntries;         // Mail entries
+        QVariantList newMailEntries;      // New mail entries (since the previous polling)
 
         account_t() {
             login               = QString();
@@ -75,6 +83,8 @@ private:
             display             = QString();
             bypassNotifications = false;
             unreadMailCount     = -1;
+            mailEntries         = QVariantList();
+            newMailEntries      = QVariantList();
         };
     };
 

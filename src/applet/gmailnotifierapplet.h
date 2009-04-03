@@ -62,6 +62,7 @@ private Q_SLOTS:
 private:
     void initApplet();
     void paintIcon();
+    void fireNotification(const QString &accountId);
 
     // Data engine
     Plasma::DataEngine         *m_engine;
@@ -71,8 +72,6 @@ private:
     GmailNotifierAppletConfig  *m_configDialog;
     // Icon for when in panel mode
     KIcon                       m_icon;
-    // Per source list of email entries
-    QMap<QString, QVariantList> m_entries;
     // Account data
     Accounts                    m_accounts;
     // Is applet configured ?

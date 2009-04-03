@@ -104,23 +104,17 @@ void GmailNotifierDialog::setAccounts(const Accounts &accounts)
     }
 } //setAccounts()
 
-void GmailNotifierDialog::updateMailCount(const QString &source, const Plasma::DataEngine::Data &data)
+void GmailNotifierDialog::updateMailCount(const QString &accountId, const QString &text)
 {
     kDebug();
 
     QLabel *label;
-    if (!(label = m_widget->findChild<QLabel *>("lblMailCount_"+source))) {
-        kDebug() << QString("No existing QLabel for %1. Skipping...").arg(source);
+    if (!(label = m_widget->findChild<QLabel *>("lblMailCount_"+accountId))) {
+        kDebug() << QString("No existing QLabel for %1. Skipping...").arg(accountId);
         return;
     }
-    QString content;
-    if (!data["error"].toString().isEmpty()) {
-        kDebug() << "Error:" << data["error"].toString();
-        content = "Err.";
-    } else {
-        content = data["fullcount"].toString();
-    }
-    label->setText(content);
+
+    label->setText(text);
 } // updateMailCount()
 
 
