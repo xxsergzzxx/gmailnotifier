@@ -39,7 +39,7 @@ Accounts::~Accounts()
     kDebug();
 } // dtor()
 
-bool Accounts::addAccount(QVariantMap &accountInfos)
+bool Accounts::add(QVariantMap &accountInfos)
 {
     kDebug();
 
@@ -67,6 +67,7 @@ bool Accounts::addAccount(QVariantMap &accountInfos)
 
     // We cannot add an account without login and/or password
     if (!retVal) {
+        kWarning() << QString("Cannot add %1 (invalid data)").arg(accountId);
         return false;
     } else {
         // Was the account previousy added ?
@@ -87,13 +88,13 @@ bool Accounts::addAccount(QVariantMap &accountInfos)
     m_accounts[accountId] = account;
 
     return true;
-} // addAccount()
+} // add()
 
-void Accounts::updateAccountData(const QString &accountId, const Plasma::DataEngine::Data &data)
+void Accounts::updateData(const QString &accountId, const Plasma::DataEngine::Data &data)
 {
     // Update unread mail count
     m_accounts[accountId].unreadMailCount = data.value("fullcount").toInt();
-} // updateAccountData()
+} // updateData()
 
 int Accounts::size() const
 {
@@ -101,17 +102,17 @@ int Accounts::size() const
     return m_accounts.size();
 } // size()
 
-QStringList Accounts::accountIds() const
+QStringList Accounts::idList() const
 {
     kDebug();
     return m_accounts.keys();
-} // accountIds()
+} // idList()
 
 uint Accounts::totalUnreadMailCount() const
 {
     uint count = 0;
 
-    foreach(QString accountId, accountIds()) {
+    foreach(QString accountId, idList()) {
         // Account unreadMailCount is an int and can be -1
         if (m_accounts.value(accountId).unreadMailCount > 0) {
             count += m_accounts.value(accountId).unreadMailCount;
