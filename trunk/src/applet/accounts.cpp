@@ -44,32 +44,43 @@ bool Accounts::add(const QVariantMap &accountInfos)
     kDebug();
 
     account_t account;
+    QString login;
+    QString password;
+    QString label;
     bool retVal = true;
 
     if (accountInfos.contains("Login") && !accountInfos.value("Login").toString().isEmpty()) {
-        account.login = accountInfos.value("Login").toString();
+        login = accountInfos.value("Login").toString();
     } else {
         retVal = false;
     }
 
     if (accountInfos.contains("Password") && !accountInfos.value("Password").toString().isEmpty()) {
-        account.password = accountInfos.value("Password").toString();
+        password = accountInfos.value("Password").toString();
     } else {
         retVal = false;
     }
 
     if (accountInfos.contains("Label")) {
-        account.label = accountInfos.value("Label").toString();
+        label = accountInfos.value("Label").toString();
     }
 
     // Account ID
-    QString accountId = QString("%1:%2").arg(account.login).arg(account.label);
+    QString accountId = QString("%1:%2").arg(login).arg(label);
 
     // We cannot add an account without login and/or password
     if (!retVal) {
         kWarning() << QString("Cannot add %1 (invalid data)").arg(accountId);
         return false;
     }
+
+    // Check whether the account already exist or not
+    if (m_accounts.contains(accountId)) {
+        // Use previous account data
+        account = m_accounts.value(accountId);
+    }
+
+    account.password = password;
 
     if (accountInfos.contains("Display")) {
         account.display = accountInfos.value("Display").toString();
