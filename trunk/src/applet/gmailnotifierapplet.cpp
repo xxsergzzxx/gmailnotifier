@@ -317,34 +317,37 @@ void GmailNotifierApplet::fireNotification(const QString &accountId)
 {
     kDebug();
 
-    // If there are new entries we send a notification
-    if (m_accounts.newMailEntries(accountId).size() > 0) {    
-        QString message;
-        
-        // Check number of sources
-        //if (m_accounts.newMailEntries(accountId).size() == 1) {
-        //    message = "<table>";
-        //} else {
-            message = i18n("<table><tr><td><b>Source</b>: </td><td>%1</td></tr>").arg(m_accounts.display(accountId));
-        //}
-        
+    QString eventId;
+    QString message;
+    message = i18n("<table><tr><td><b>Source</b>: </td><td>%1</td></tr>").arg(m_accounts.display(accountId));
+
+    // If there are new entries we fire a notification
+    if (m_accounts.newMailEntries(accountId).size() > 0) {
+        eventId = "new-mail-arrived";
+
         // Check number of new entries
         if (m_accounts.newMailEntries(accountId).size() == 1) {
-            message += i18n("<tr><td><b>From</b>: </td><td>%1</td></tr><tr><td><b>Subject</b>: </td><td>%2</td></tr></table>").arg(m_accounts.newMailEntries(accountId).at(0).toMap()["author"].toMap()["name"].toString()).arg(m_accounts.newMailEntries(accountId).at(0).toMap()["title"].toString());
+            message += i18n("<tr><td><b>From</b>: </td><td>%1</td></tr><tr><td><b>Subject</b>: </td><td>%2</td></tr>").arg(m_accounts.newMailEntries(accountId).at(0).toMap()["author"].toMap()["name"].toString()).arg(m_accounts.newMailEntries(accountId).at(0).toMap()["title"].toString());
         } else {
-            message += i18n("<tr><td colspan=2>You have <b>%1</b> new messages.</td></tr></table>").arg(m_accounts.newMailEntries(accountId).size());
+            message += i18n("<tr><td colspan=2>You have <b>%1</b> new messages.</td></tr>").arg(m_accounts.newMailEntries(accountId).size());
         }
                     
-        // Fire notification
-        KNotification::event(
-            "new-mail-arrived",
-            message,
-            QPixmap(),
-            0,
-            KNotification::CloseOnTimeout,
-            KComponentData("plasma-applet-gmailnotifier", "plasma-applet-gmailnotifier", KComponentData::SkipMainComponentRegistration)
-        );
+    } else {
+        eventId = "no-new-mail";
+            message += i18n("<tr><td colspan=2>No new message.</td></tr>");
     }
+
+    message += "</table>";
+
+    // Fire notification
+    KNotification::event(
+        eventId,
+        message,
+        QPixmap(),
+        0,
+        KNotification::CloseOnTimeout,
+        KComponentData("plasma-applet-gmailnotifier", "plasma-applet-gmailnotifier", KComponentData::SkipMainComponentRegistration)
+    );
 } // fireNotification()
 
 
