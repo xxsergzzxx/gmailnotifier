@@ -111,3 +111,9 @@ Comment[zh_CN]=新邮件到达
 Comment[zh_TW]=新郵件抵達
 Sound=KDE-Im-New-Mail.ogg
 Action=Popup|Sound
+
+[Event/no-new-mail]
+Name=No New Mail
+Name[fr]=Pas de nouveau message
+Comment=No new mail
+Comment[fr]=Pas de nouveau message
