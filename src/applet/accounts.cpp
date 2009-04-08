@@ -90,6 +90,10 @@ bool Accounts::add(const QVariantMap &accountInfos)
         account.disableNotifications = accountInfos.value("DisableNotifications").toBool();
     }
 
+    if (accountInfos.contains("ExcludeFromTotalCount")) {
+        account.excludeFromTotalCount = accountInfos.value("ExcludeFromTotalCount").toBool();
+    }
+
     m_accounts[accountId] = account;
 
     return true;
@@ -138,11 +142,13 @@ QStringList Accounts::idList() const
 
 uint Accounts::totalUnreadMailCount() const
 {
+    kDebug();
     uint count = 0;
 
     foreach(QString accountId, idList()) {
         // Account unreadMailCount is an int and can be -1
-        if (m_accounts.value(accountId).unreadMailCount > 0) {
+        if (m_accounts.value(accountId).unreadMailCount > 0 &&
+            !m_accounts.value(accountId).excludeFromTotalCount) {
             count += m_accounts.value(accountId).unreadMailCount;
         }
     }
@@ -198,6 +204,12 @@ bool Accounts::disableNotifications(const QString &accountId) const
     kDebug();
     return m_accounts.value(accountId).disableNotifications;
 } // disableNotifications()
+
+bool Accounts::excludeFromTotalCount(const QString &accountId) const
+{
+    kDebug();
+    return m_accounts.value(accountId).excludeFromTotalCount;
+} // excludeFromTotalCount()
 
 int Accounts::unreadMailCount(const QString &accountId) const
 {
