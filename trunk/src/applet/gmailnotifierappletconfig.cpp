@@ -73,6 +73,7 @@ KConfigGroup GmailNotifierAppletConfig::config()
         m_cg.writeEntry(prefix+"Label", account["Label"].toString());
         m_cg.writeEntry(prefix+"Display", account["Display"].toString());
         m_cg.writeEntry(prefix+"DisableNotifications", account["DisableNotifications"].toBool());
+        m_cg.writeEntry(prefix+"ExcludeFromTotalCount", account["ExcludeFromTotalCount"].toBool());
         cnt = i;
     }
 
@@ -93,6 +94,7 @@ KConfigGroup GmailNotifierAppletConfig::config()
         m_cg.deleteEntry(prefix+"Label");
         m_cg.deleteEntry(prefix+"Display");
         m_cg.deleteEntry(prefix+"DisableNotifications");
+        m_cg.deleteEntry(prefix+"ExcludeFromTotalCount");
 
         ++cnt;
     }
@@ -136,6 +138,7 @@ void GmailNotifierAppletConfig::on_btnAddModify_clicked()
     data["Label"] = ui.leLabel->text();
     data["Display"] = ui.leDisplay->text();
     data["DisableNotifications"] = ui.cbDisableNotifications->isChecked();
+    data["ExcludeFromTotalCount"] = ui.cbExcludeFromTotalCount->isChecked();
 
     int pos = accountPosition(ui.leLogin->text(), ui.leLabel->text());
     if (pos == -1) {
@@ -188,6 +191,7 @@ void GmailNotifierAppletConfig::on_listAccounts_itemPressed(QListWidgetItem *ite
     ui.leLabel->setText(data["Label"].toString());
     ui.leDisplay->setText(data["Display"].toString());
     ui.cbDisableNotifications->setChecked(data["DisableNotifications"].toBool());
+    ui.cbExcludeFromTotalCount->setChecked(data["ExcludeFromTotalCount"].toBool());
 
     ui.btnDelete->setEnabled(true);
     setUpDownButtonsEnabled();
@@ -264,6 +268,7 @@ void GmailNotifierAppletConfig::initDialog()
         account["Label"] = m_cg.readEntry(prefix+"Label", QString());
         account["Display"] = m_cg.readEntry(prefix+"Display", QString());
         account["DisableNotifications"] = m_cg.readEntry(prefix+"DisableNotifications", false);
+        account["ExcludeFromTotalCount"] = m_cg.readEntry(prefix+"ExcludeFromTotalCount", false);
 
         addItemToList(account);
 

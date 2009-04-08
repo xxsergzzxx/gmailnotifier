@@ -230,6 +230,7 @@ void GmailNotifierApplet::initApplet()
         account["Label"] = config().readEntry(prefix+"Label", QString());
         account["Display"] = config().readEntry(prefix+"Display", QString());
         account["DisableNotifications"] = config().readEntry(prefix+"DisableNotifications", false);
+        account["ExcludeFromTotalCount"] = config().readEntry(prefix+"ExcludeFromTotalCount", false);
 
         // Add this account
         m_accounts.add(account);
