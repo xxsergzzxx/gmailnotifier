@@ -137,9 +137,6 @@
               <property name="toolTip">
                <string>Gmail account name</string>
               </property>
-              <property name="whatsThis">
-               <string>whatsThis</string>
-              </property>
               <property name="showClearButton" stdset="0">
                <bool>true</bool>
               </property>
@@ -496,18 +493,14 @@
      <layout class="QGridLayout" name="gridLayout_4">
       <item row="0" column="0">
        <layout class="QGridLayout" name="gridLayoutMisc">
-        <item row="0" column="0">
-         <widget class="QLabel" name="lblPollingInterval">
-          <property name="text">
-           <string>Polling interval:</string>
-          </property>
-          <property name="buddy">
-           <cstring>spinPollingInterval</cstring>
-          </property>
-         </widget>
-        </item>
         <item row="0" column="1">
          <widget class="KIntSpinBox" name="spinPollingInterval">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
           <property name="toolTip">
            <string>Polling Interval</string>
           </property>
@@ -515,7 +508,7 @@
            <bool>false</bool>
           </property>
           <property name="suffix">
-           <string> mins</string>
+           <string> minutes</string>
           </property>
           <property name="minimum">
            <number>1</number>
@@ -525,6 +518,16 @@
           </property>
           <property name="value">
            <number>10</number>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="0">
+         <widget class="QLabel" name="lblPollingInterval">
+          <property name="text">
+           <string>Polling interval:</string>
+          </property>
+          <property name="buddy">
+           <cstring>spinPollingInterval</cstring>
           </property>
          </widget>
         </item>
