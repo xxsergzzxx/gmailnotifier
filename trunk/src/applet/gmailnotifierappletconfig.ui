@@ -167,15 +167,15 @@
            </layout>
           </item>
           <item row="5" column="0" colspan="2">
-           <widget class="QCheckBox" name="cbBypassNotifications">
+           <widget class="QCheckBox" name="cbDisableNotifications">
             <property name="enabled">
              <bool>true</bool>
             </property>
             <property name="toolTip">
-             <string>Don't do any notifications for this account</string>
+             <string>Disable notifications for this account</string>
             </property>
             <property name="text">
-             <string>Bypass notifications for this account</string>
+             <string>Disable notifications for this account</string>
             </property>
            </widget>
           </item>

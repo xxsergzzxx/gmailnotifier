@@ -72,7 +72,7 @@ KConfigGroup GmailNotifierAppletConfig::config()
         m_cg.writeEntry(prefix+"Password", KStringHandler::obscure(account["Password"].toString()));
         m_cg.writeEntry(prefix+"Label", account["Label"].toString());
         m_cg.writeEntry(prefix+"Display", account["Display"].toString());
-        m_cg.writeEntry(prefix+"BypassNotifications", account["BypassNotifications"].toBool());
+        m_cg.writeEntry(prefix+"DisableNotifications", account["DisableNotifications"].toBool());
         cnt = i;
     }
 
@@ -92,7 +92,7 @@ KConfigGroup GmailNotifierAppletConfig::config()
         m_cg.deleteEntry(prefix+"Password");
         m_cg.deleteEntry(prefix+"Label");
         m_cg.deleteEntry(prefix+"Display");
-        m_cg.deleteEntry(prefix+"BypassNotifications");
+        m_cg.deleteEntry(prefix+"DisableNotifications");
 
         ++cnt;
     }
@@ -135,7 +135,7 @@ void GmailNotifierAppletConfig::on_btnAddModify_clicked()
     data["Password"] = ui.lePassword->text();
     data["Label"] = ui.leLabel->text();
     data["Display"] = ui.leDisplay->text();
-    data["BypassNotifications"] = ui.cbBypassNotifications->isChecked();
+    data["DisableNotifications"] = ui.cbDisableNotifications->isChecked();
 
     int pos = accountPosition(ui.leLogin->text(), ui.leLabel->text());
     if (pos == -1) {
@@ -187,7 +187,7 @@ void GmailNotifierAppletConfig::on_listAccounts_itemPressed(QListWidgetItem *ite
     ui.lePassword->setText(data["Password"].toString());
     ui.leLabel->setText(data["Label"].toString());
     ui.leDisplay->setText(data["Display"].toString());
-    ui.cbBypassNotifications->setChecked(data["BypassNotifications"].toBool());
+    ui.cbDisableNotifications->setChecked(data["DisableNotifications"].toBool());
 
     ui.btnDelete->setEnabled(true);
     setUpDownButtonsEnabled();
@@ -263,7 +263,7 @@ void GmailNotifierAppletConfig::initDialog()
         account["Password"] = KStringHandler::obscure(m_cg.readEntry(prefix+"Password", QString()));
         account["Label"] = m_cg.readEntry(prefix+"Label", QString());
         account["Display"] = m_cg.readEntry(prefix+"Display", QString());
-        account["BypassNotifications"] = m_cg.readEntry(prefix+"BypassNotifications", false);
+        account["DisableNotifications"] = m_cg.readEntry(prefix+"DisableNotifications", false);
 
         addItemToList(account);
 

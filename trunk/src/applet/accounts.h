@@ -58,7 +58,7 @@ public:
     QString      password(const QString &accountId) const;
     QString      label(const QString &accountId) const;
     QString      display(const QString &accountId) const;
-    bool         bypassNotifications(const QString &accountId) const;
+    bool         disableNotifications(const QString &accountId) const;
     int          unreadMailCount(const QString &accountdId) const;
     QVariantList mailEntries(const QString &accountId) const;
     QVariantList newMailEntries(const QString &accountId) const;
@@ -67,24 +67,24 @@ public:
 
 private:
     struct account_t {
-        QString      login;               // Account login
-        QString      password;            // Account password
-        QString      label;               // Label
-        QString      display;             // Display
-        bool         bypassNotifications; // Bypass Notifications?
-        int          unreadMailCount;     // Unread mail count
-        QVariantList mailEntries;         // Mail entries
-        QVariantList newMailEntries;      // New mail entries (since the previous polling)
+        QString      login;                // Account login
+        QString      password;             // Account password
+        QString      label;                // Label
+        QString      display;              // Display
+        bool         disableNotifications; // Disable Notifications?
+        int          unreadMailCount;      // Unread mail count
+        QVariantList mailEntries;          // Mail entries
+        QVariantList newMailEntries;       // New mail entries (since the previous polling)
 
         account_t() {
-            login               = QString();
-            password            = QString();
-            label               = QString();
-            display             = QString();
-            bypassNotifications = false;
-            unreadMailCount     = -1;
-            mailEntries         = QVariantList();
-            newMailEntries      = QVariantList();
+            login                = QString();
+            password             = QString();
+            label                = QString();
+            display              = QString();
+            disableNotifications = false;
+            unreadMailCount      = -1;
+            mailEntries          = QVariantList();
+            newMailEntries       = QVariantList();
         };
     };
 

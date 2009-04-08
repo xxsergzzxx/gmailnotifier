@@ -108,7 +108,7 @@ void GmailNotifierApplet::dataUpdated(const QString &source, const Plasma::DataE
     }
 
     // Fire notification if needed
-    if (!m_accounts.bypassNotifications(source)) {
+    if (!m_accounts.disableNotifications(source)) {
         fireNotification(source);
     }
 
@@ -229,7 +229,7 @@ void GmailNotifierApplet::initApplet()
         account["Password"] = config().readEntry(prefix+"Password", QString());
         account["Label"] = config().readEntry(prefix+"Label", QString());
         account["Display"] = config().readEntry(prefix+"Display", QString());
-        account["BypassNotifications"] = config().readEntry(prefix+"BypassNotifications", false);
+        account["DisableNotifications"] = config().readEntry(prefix+"DisableNotifications", false);
 
         // Add this account
         m_accounts.add(account);

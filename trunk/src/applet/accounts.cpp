@@ -86,8 +86,8 @@ bool Accounts::add(const QVariantMap &accountInfos)
         account.display = accountInfos.value("Display").toString();
     }
 
-    if (accountInfos.contains("BypassNotifications")) {
-        account.bypassNotifications = accountInfos.value("BypassNotifications").toBool();
+    if (accountInfos.contains("DisableNotifications")) {
+        account.disableNotifications = accountInfos.value("DisableNotifications").toBool();
     }
 
     m_accounts[accountId] = account;
@@ -193,11 +193,11 @@ QString Accounts::display(const QString &accountId) const
     return display;
 } // display()
 
-bool Accounts::bypassNotifications(const QString &accountId) const
+bool Accounts::disableNotifications(const QString &accountId) const
 {
     kDebug();
-    return m_accounts.value(accountId).bypassNotifications;
-} // bypassNotifications()
+    return m_accounts.value(accountId).disableNotifications;
+} // disableNotifications()
 
 int Accounts::unreadMailCount(const QString &accountId) const
 {
