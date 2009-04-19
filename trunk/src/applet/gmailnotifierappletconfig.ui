@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>382</width>
-    <height>612</height>
+    <width>393</width>
+    <height>588</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -229,38 +229,6 @@
         <item row="5" column="1" rowspan="2">
          <layout class="QVBoxLayout" name="verticalLayout">
           <item>
-           <spacer name="verticalSpacer">
-            <property name="orientation">
-             <enum>Qt::Vertical</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>20</width>
-              <height>40</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item>
-           <widget class="KPushButton" name="btnDelete">
-            <property name="enabled">
-             <bool>false</bool>
-            </property>
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="toolTip">
-             <string>Delete the selected account</string>
-            </property>
-            <property name="text">
-             <string>Delete</string>
-            </property>
-           </widget>
-          </item>
-          <item>
            <widget class="KPushButton" name="btnUp">
             <property name="enabled">
              <bool>false</bool>
@@ -295,6 +263,25 @@
             </property>
             <property name="text">
              <string>Down</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="KPushButton" name="btnDelete">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="toolTip">
+             <string>Delete the selected account</string>
+            </property>
+            <property name="text">
+             <string>Delete</string>
             </property>
            </widget>
           </item>
@@ -575,11 +562,13 @@
   <tabstop>lePassword</tabstop>
   <tabstop>leLabel</tabstop>
   <tabstop>leDisplay</tabstop>
+  <tabstop>cbDisableNotifications</tabstop>
+  <tabstop>cbExcludeFromTotalCount</tabstop>
   <tabstop>btnAddModify</tabstop>
   <tabstop>listAccounts</tabstop>
-  <tabstop>btnDelete</tabstop>
   <tabstop>btnUp</tabstop>
   <tabstop>btnDown</tabstop>
+  <tabstop>btnDelete</tabstop>
   <tabstop>comboBackground</tabstop>
   <tabstop>kcbIconColor</tabstop>
   <tabstop>kcbDialogColor</tabstop>
