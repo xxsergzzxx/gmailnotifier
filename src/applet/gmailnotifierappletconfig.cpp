@@ -109,7 +109,9 @@ KConfigGroup GmailNotifierAppletConfig::config()
 void GmailNotifierAppletConfig::on_leLogin_textChanged(const QString &text)
 {
     kDebug();
-    Q_UNUSED(text)
+
+    ui.lblAtDomain->setVisible(!text.contains('@'));
+
     setAddModifyButtonEnabled();
     adaptAddModifyButtonLabel();
 } // on_leLogin_textChanged()

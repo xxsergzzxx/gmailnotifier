@@ -40,10 +40,11 @@ GmailNotifierSource::GmailNotifierSource(const QString &accountName, const QStri
     kDebug() << "AccountName:" << accountName;
     kDebug() << "LabelName:" << labelName;
 
-    m_url.setUrl("https://mail.google.com:443/mail/feed/atom/", QUrl::StrictMode);
+    m_url.setUrl(atomFeedUrl(accountName), QUrl::StrictMode);
     m_url.setPath(m_url.path()+labelName); // Add the label afterward to workaround a bug
                                            // when labels contain characters such as [, ], ...
-    m_url.setUserName(accountName);
+    m_url.setUserName(accountName); // FIXME: Do we need to remove any trailing "@domain.tld"
+                                    //        from here in case of hosted domains ?
 
     KUrl dbgUrl(m_url);
     dbgUrl.setPassword( (!dbgUrl.password().isEmpty() ? "**********" : QString()) );
@@ -153,6 +154,27 @@ void GmailNotifierSource::result(KJob *job)
     m_atomFeed.clear();
     m_job = 0;
 } // result()
+
+
+/*
+** private:
+*/
+QString GmailNotifierSource::atomFeedUrl(const QString &account) const
+{
+    kDebug();
+
+    QString url;
+
+    if (account.contains('@')) {
+        QString domain(account.mid(account.indexOf('@')+1));
+        kDebug() << "Using custom domain:" << domain;
+        url = QString("https://mail.google.com:443/a/%1/feed/atom/").arg(domain);
+    } else {
+        url =  "https://mail.google.com:443/mail/feed/atom/";
+    }
+
+    return url;
+} // atomFeedUrl()
 
 
 #include "gmailnotifiersource.moc"

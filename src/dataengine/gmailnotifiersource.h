@@ -57,6 +57,8 @@ private Q_SLOTS:
     void result(KJob *job);
 
 private:
+    QString atomFeedUrl(const QString &account) const;
+
     KUrl         m_url;
     KIO::Job    *m_job;
     QByteArray   m_atomFeed;
