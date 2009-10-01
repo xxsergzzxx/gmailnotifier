@@ -320,7 +320,9 @@ void GmailNotifierApplet::fireNotification(const QString &accountId)
 
     QString eventId;
     QString message;
-    message = i18n("<table><tr><td><b>Source</b>: </td><td>%1</td></tr>").arg(m_accounts.display(accountId));
+    message  = "<table><tr><td><b>";
+    message += i18n("Account");
+    message += QString("</b>: </td><td>%1</td></tr>").arg(m_accounts.display(accountId));
 
     // If there are new entries we fire a notification
     if (m_accounts.newMailEntries(accountId).size() > 0) {
@@ -328,14 +330,19 @@ void GmailNotifierApplet::fireNotification(const QString &accountId)
 
         // Check number of new entries
         if (m_accounts.newMailEntries(accountId).size() == 1) {
-            message += i18n("<tr><td><b>From</b>: </td><td>%1</td></tr><tr><td><b>Subject</b>: </td><td>%2</td></tr>").arg(m_accounts.newMailEntries(accountId).at(0).toMap()["author"].toMap()["name"].toString()).arg(m_accounts.newMailEntries(accountId).at(0).toMap()["title"].toString());
+            message += "<tr><td><b>";
+            message += i18nc("The sender name/address of an email", "From");
+            message += "</b>: </td><td>"+m_accounts.newMailEntries(accountId).at(0).toMap()["author"].toMap()["name"].toString();
+            message += "</td></tr><tr><td><b>";
+            message += i18nc("The subject of an email", "Subject");
+            message += "</b>: </td><td>"+m_accounts.newMailEntries(accountId).at(0).toMap()["title"].toString();
+            message += "</td></tr>";
         } else {
-            message += i18n("<tr><td colspan=2>You have <b>%1</b> new messages.</td></tr>").arg(m_accounts.newMailEntries(accountId).size());
+            message += "<tr><td colspan=2>"+i18n("You have <b>%1</b> new messages.", m_accounts.newMailEntries(accountId).size())+"</td></tr>";
         }
-                    
     } else {
         eventId = "no-new-mail";
-            message += i18n("<tr><td colspan=2>No new message.</td></tr>");
+        message += "<tr><td colspan=2>"+i18n("No new message.")+"</td></tr>";
     }
 
     message += "</table>";
