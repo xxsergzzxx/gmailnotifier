@@ -21,6 +21,9 @@ target_link_libraries(plasma_applet_gmailnotifier
                       ${KDE4_PLASMA_LIBS}
                       ${KDE4_KNOTIFYCONFIG_LIBS})
 
+# Disable I18N for now...
+# add_subdirectory(i18n)
+
 install(TARGETS plasma_applet_gmailnotifier          DESTINATION ${PLUGIN_INSTALL_DIR}  )
 install(FILES   plasma-applet-gmailnotifier.desktop  DESTINATION ${SERVICES_INSTALL_DIR})
 install(FILES   plasma-applet-gmailnotifier.notifyrc DESTINATION ${DATA_INSTALL_DIR}/plasma-applet-gmailnotifier)
