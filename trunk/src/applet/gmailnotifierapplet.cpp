@@ -101,7 +101,7 @@ void GmailNotifierApplet::dataUpdated(const QString &source, const Plasma::DataE
     // Only update data if there were no errors
     QString newMailCount;
     if (data.contains("error")) {
-        newMailCount = "Error";
+        newMailCount = i18n("Error");
     } else {
         m_accounts.updateData(source, data);
         newMailCount = QString("%1").arg(m_accounts.unreadMailCount(source));
