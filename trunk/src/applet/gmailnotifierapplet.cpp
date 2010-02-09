@@ -240,7 +240,7 @@ void GmailNotifierApplet::initApplet()
 
     // If the account list is empty, set the applet in unconfigured state
     m_appletConfigured = (m_accounts.size() != 0);
-    Plasma::Applet::setConfigurationRequired(!m_appletConfigured);
+    // Plasma::Applet::setConfigurationRequired(!m_appletConfigured); // FIXME: Find why this is making KDE>=4.4 crash !
 
     m_dialog->setAccounts(m_accounts);
     m_dialog->setDisplayLogo(config().readEntry("DisplayLogo", Defaults::displayLogo));
